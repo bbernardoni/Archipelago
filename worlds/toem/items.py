@@ -12,7 +12,7 @@ class ItemGroup:
     STAMP = "Stamp"
     PHOTO = "Photo"
     ITEM = "Item"
-    CASETTE = "CASETTE"
+    CASSETTE = "Cassette"
 
 
 @final
@@ -315,8 +315,8 @@ item_table: dict[str, ItemData] = {
     ItemName.VIKING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.FOOT_CAST: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.BERET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASETTE, Area.HOMELANDA),
-    ItemName.SQUIRREL_PHOTO_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASETTE, Area.OAKLAVILLE),
+    ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.HOMELANDA),
+    ItemName.SQUIRREL_PHOTO_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.OAKLAVILLE),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}

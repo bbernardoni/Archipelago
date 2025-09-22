@@ -80,8 +80,8 @@ class ToemWorld(World):
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
             logic_groups.add(LocationGroup.ITEM)
-        if self.options.include_casettes:
-            logic_groups.add(LocationGroup.CASETTE)
+        if self.options.include_cassettes:
+            logic_groups.add(LocationGroup.CASSETTE)
         if self.options.include_achievements:
             logic_groups.add(LocationGroup.ACHIEVEMENT)
 
@@ -116,8 +116,8 @@ class ToemWorld(World):
         logic_groups: set[str] = {ItemGroup.STAMP, ItemGroup.PHOTO}
         if self.options.include_items:
             logic_groups.add(ItemGroup.ITEM)
-        if self.options.include_casettes:
-            logic_groups.add(ItemGroup.CASETTE)
+        if self.options.include_cassettes:
+            logic_groups.add(ItemGroup.CASSETTE)
 
         for group, item_names in item_name_groups.items():
             if group not in logic_groups:
@@ -153,7 +153,7 @@ class ToemWorld(World):
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
-                "include_casettes",
+                "include_cassettes",
                 "include_achievements",
             ),
         }
