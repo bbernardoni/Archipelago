@@ -18,10 +18,10 @@ class IncludeItems(Toggle):
     default: ClassVar[int] = 1
 
 
-class IncludeCasettes(Toggle):
-    """Include casette tapes as locations."""
+class IncludeCassettes(Toggle):
+    """Include cassette tapes as locations."""
 
-    display_name: ClassVar[str] = "Include Casettes"
+    display_name: ClassVar[str] = "Include Cassettes"
     default: ClassVar[int] = 1
 
 
@@ -37,5 +37,5 @@ class ToemOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
     include_basto: IncludeBasto
     include_items: IncludeItems
-    include_casettes: IncludeCasettes
+    include_cassettes: IncludeCassettes
     include_achievements: IncludeAchievements

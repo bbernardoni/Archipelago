@@ -13,7 +13,7 @@ class LocationGroup:
     QUEST = "Quest"
     COMPENDIUM = "Compendium"
     ITEM = "Item"
-    CASETTE = "Casette"
+    CASSETTE = "Cassette"
     ACHIEVEMENT = "Achievement"
 
 
@@ -35,7 +35,7 @@ class LocationName:
     ITEM_CAMERA = "Item - Camera"
     ITEM_CLOGS = "Item - Clogs"
 
-    TAPE_PHOTO_OF_HOME = "Casette - Jamal Green - Photo of Home"
+    TAPE_PHOTO_OF_HOME = "Cassette - Jamal Green - Photo of Home"
 
     CHEEVO_BEGINNING = "Achievement - The beginning"
     CHEEVO_HOME_SWEET_HOME = "Achievement - Home sweet home"
@@ -82,7 +82,7 @@ class LocationName:
     ITEM_SOAKED_SOCK = "Item - Soaked sock"
     ITEM_MONSTER_MASK = "Item - Monster mask"
 
-    TAPE_SQUIRREL_PHOTO = "Casette - Launchable Socks - Squirrel Photography"
+    TAPE_SQUIRREL_PHOTO = "Cassette - Launchable Socks - Squirrel Photography"
 
     CHEEVO_CALM_FOREST = "Achievement - The calm forest"
     CHEEVO_MAJESTIC_HOTEL = "Achievement - A majestic hotel"
@@ -332,7 +332,7 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_BACKPACK: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
     LocationName.ITEM_CAMERA: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
     LocationName.ITEM_CLOGS: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
-    LocationName.TAPE_PHOTO_OF_HOME: LocationData(RegionName.HOMELANDA, LocationGroup.CASETTE, Area.HOMELANDA),
+    LocationName.TAPE_PHOTO_OF_HOME: LocationData(RegionName.HOMELANDA, LocationGroup.CASSETTE, Area.HOMELANDA),
     LocationName.CHEEVO_BEGINNING: LocationData(RegionName.HOMELANDA, LocationGroup.ACHIEVEMENT, Area.HOMELANDA),
     LocationName.CHEEVO_HOME_SWEET_HOME: LocationData(RegionName.HOMELANDA, LocationGroup.ACHIEVEMENT, Area.HOMELANDA),
     LocationName.QUEST_SUS_FOREST: LocationData(RegionName.OAKLAVILLE, LocationGroup.QUEST, Area.OAKLAVILLE),
@@ -373,7 +373,7 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_GHOST_GLASSES: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM, Area.OAKLAVILLE),
     LocationName.ITEM_SOAKED_SOCK: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM, Area.OAKLAVILLE),
     LocationName.ITEM_MONSTER_MASK: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM, Area.OAKLAVILLE),
-    LocationName.TAPE_SQUIRREL_PHOTO: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASETTE, Area.OAKLAVILLE),
+    LocationName.TAPE_SQUIRREL_PHOTO: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASSETTE, Area.OAKLAVILLE),
     LocationName.CHEEVO_CALM_FOREST: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT, Area.OAKLAVILLE),
     LocationName.CHEEVO_MAJESTIC_HOTEL: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT, Area.OAKLAVILLE),
     LocationName.CHEEVO_SLOW_AND_STEADY: LocationData(
