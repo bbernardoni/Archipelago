@@ -29,11 +29,9 @@ class LocationName:
     COMP_HOME_BIRD = "Compendium - Home bird"
     COMP_TATO = "Compendium - Tato"
 
-    ITEM_BACKPACK = "Item - Backpack"
-    ITEM_CASSETTE_PLAYER = "Item - Cassette Player"
-    ITEM_ALBUM = "Item - Album"
-    ITEM_CAMERA = "Item - Camera"
     ITEM_CLOGS = "Item - Clogs"
+    ITEM_AWARD_MASK = "Item - Award Mask"
+    ITEM_VIKING_TICKET = "Item - Viking Express Ticket"
 
     TAPE_PHOTO_OF_HOME = "Cassette - Jamal Green - Photo of Home"
 
@@ -135,7 +133,6 @@ class LocationName:
     ITEM_HARD_HAT = "Item - Hard hat"
     ITEM_DIVING_HELMET = "Item - Diving helmet"
     ITEM_RUBBER_BOOTS = "Item - Rubber boots"
-    ITEM_FISHERMAN_WHISTLE = "Item - Fisherman's whisle"
     ITEM_SANDWICH = "Item - Supreme deluxe sandwich"
     ITEM_PIRATE_HAT = "Item - Pirate hat"
     ITEM_PAPER_HAT = "Item - Paper hat"
@@ -308,6 +305,7 @@ class LocationName:
     ITEM_VIKING_HELMET = "Item - Viking helmet"
     ITEM_FOOT_CAST = "Item - Foot cast"
     ITEM_BERET = "Item - Beret"
+    ITEM_ROYAL_CROWN = "Item - Royal crown"
 
 
 class ToemLocation(Location):
@@ -329,9 +327,9 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_FLIES: LocationData(RegionName.HOMELANDA, LocationGroup.COMPENDIUM, Area.HOMELANDA),
     LocationName.COMP_HOME_BIRD: LocationData(RegionName.HOMELANDA, LocationGroup.COMPENDIUM, Area.HOMELANDA),
     LocationName.COMP_TATO: LocationData(RegionName.HOMELANDA, LocationGroup.COMPENDIUM, Area.HOMELANDA),
-    LocationName.ITEM_BACKPACK: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
-    LocationName.ITEM_CAMERA: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
     LocationName.ITEM_CLOGS: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
+    LocationName.ITEM_AWARD_MASK: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
+    LocationName.ITEM_VIKING_TICKET: LocationData(RegionName.HOMELANDA, LocationGroup.ITEM, Area.HOMELANDA),
     LocationName.TAPE_PHOTO_OF_HOME: LocationData(RegionName.HOMELANDA, LocationGroup.CASSETTE, Area.HOMELANDA),
     LocationName.CHEEVO_BEGINNING: LocationData(RegionName.HOMELANDA, LocationGroup.ACHIEVEMENT, Area.HOMELANDA),
     LocationName.CHEEVO_HOME_SWEET_HOME: LocationData(RegionName.HOMELANDA, LocationGroup.ACHIEVEMENT, Area.HOMELANDA),
@@ -427,7 +425,6 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_HARD_HAT: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
     LocationName.ITEM_DIVING_HELMET: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
     LocationName.ITEM_RUBBER_BOOTS: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
-    LocationName.ITEM_FISHERMAN_WHISTLE: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
     LocationName.ITEM_SANDWICH: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
     LocationName.ITEM_PIRATE_HAT: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
     LocationName.ITEM_PAPER_HAT: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, Area.STANHAMN),
@@ -587,6 +584,7 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_VIKING_HELMET: LocationData(RegionName.BASTO, LocationGroup.ITEM, Area.BASTO),
     LocationName.ITEM_FOOT_CAST: LocationData(RegionName.BASTO, LocationGroup.ITEM, Area.BASTO),
     LocationName.ITEM_BERET: LocationData(RegionName.BASTO, LocationGroup.ITEM, Area.BASTO),
+    LocationName.ITEM_ROYAL_CROWN: LocationData(RegionName.BASTO, LocationGroup.ITEM, Area.BASTO),
 }
 
 
