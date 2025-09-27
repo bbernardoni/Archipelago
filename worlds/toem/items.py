@@ -99,9 +99,9 @@ class ItemName:
     TATO_KING_PHOTO = "Tato king photo"
     WATER_STRIDER_PHOTO = "Water strider photo"
 
-    BACKPACK = "Backpack"
-    CAMERA = "Camera"
     CLOGS = "Clogs"
+    AWARD_MASK = "Award Mask"
+    VIKING_TICKET = "Viking Express Ticket"
     FINGER = "Foam finger"
     TRIPOD = "Tripod"
     COWBOY_HAT = "Cowboy hat"
@@ -118,7 +118,6 @@ class ItemName:
     HARD_HAT = "Hard hat"
     DIVING_HELMET = "Diving helmet"
     RUBBER_BOOTS = "Rubber boots"
-    FISHERMAN_WHISTLE = "Fisherman's whisle"
     SANDWICH = "Supreme deluxe sandwich"
     PIRATE_HAT = "Pirate hat"
     PAPER_HAT = "Paper hat"
@@ -145,7 +144,7 @@ class ItemName:
     FLIP_FLOPS = "Flip-flops"
     ICE_CREAM = "Ice cream"
     ROYAL_CAPE = "Royal cape"
-    MINIGAME_TICKET = "minigame ticket"
+    MINIGAME_TICKET = "Minigame ticket"
     LEI = "Lei"
     VACATION_SHIRT = "Vacation shirt"
     ROYAL_CANE = "Royal cane"
@@ -154,6 +153,7 @@ class ItemName:
     VIKING_HELMET = "Viking helmet"
     FOOT_CAST = "Foot cast"
     BERET = "Beret"
+    ROYAL_CROWN = "Royal crown"
 
     PHOTO_OF_HOME_TAPE = "Jamal Green - Photo of Home"
     SQUIRREL_PHOTO_TAPE = "Launchable Socks - Squirrel Photography"
@@ -260,9 +260,9 @@ item_table: dict[str, ItemData] = {
     ItemName.TATO_COCO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
     ItemName.TATO_KING_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
     ItemName.WATER_STRIDER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BACKPACK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
-    ItemName.CAMERA: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
     ItemName.CLOGS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
+    ItemName.AWARD_MASK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
+    ItemName.VIKING_TICKET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
     ItemName.FINGER: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
     ItemName.TRIPOD: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
     ItemName.COWBOY_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
@@ -279,7 +279,6 @@ item_table: dict[str, ItemData] = {
     ItemName.HARD_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
     ItemName.DIVING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
     ItemName.RUBBER_BOOTS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.FISHERMAN_WHISTLE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
     ItemName.SANDWICH: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
     ItemName.PIRATE_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
     ItemName.PAPER_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
@@ -310,6 +309,7 @@ item_table: dict[str, ItemData] = {
     ItemName.LEI: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.VACATION_SHIRT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.ROYAL_CANE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
+    ItemName.ROYAL_CROWN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.EMPTY_BOTTLE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.WATER_BOTTLE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.VIKING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
