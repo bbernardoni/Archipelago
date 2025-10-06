@@ -22,7 +22,7 @@ class IncludeCassettes(Toggle):
     """Include cassette tapes as locations."""
 
     display_name: ClassVar[str] = "Include Cassettes"
-    default: ClassVar[int] = 1
+    default: ClassVar[int] = 0
 
 
 class IncludeAchievements(Toggle):

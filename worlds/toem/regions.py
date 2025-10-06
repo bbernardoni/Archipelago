@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import final
 
-from .constants import Area
-
 
 @final
 class RegionName:
@@ -18,16 +16,16 @@ class RegionName:
 
 @dataclass
 class RegionData:
-    area: str
+    region: str
     exits: tuple[str, ...] = ()
 
 
 toem_regions: dict[str, RegionData] = {
-    RegionName.HOMELANDA: RegionData(Area.HOMELANDA, exits=(RegionName.OAKLAVILLE,)),
-    RegionName.OAKLAVILLE: RegionData(Area.OAKLAVILLE, exits=(RegionName.STANHAMN,)),
-    RegionName.STANHAMN: RegionData(Area.STANHAMN, exits=(RegionName.LOGCITY,)),
-    RegionName.LOGCITY: RegionData(Area.LOGCITY, exits=(RegionName.KIIRUBERG,)),
-    RegionName.KIIRUBERG: RegionData(Area.KIIRUBERG, exits=(RegionName.MOUNTAIN_TOP,)),
-    RegionName.MOUNTAIN_TOP: RegionData(Area.MOUNTAIN_TOP, exits=(RegionName.BASTO,)),
-    RegionName.BASTO: RegionData(Area.BASTO),
+    RegionName.HOMELANDA: RegionData(RegionName.HOMELANDA, exits=(RegionName.OAKLAVILLE,)),
+    RegionName.OAKLAVILLE: RegionData(RegionName.OAKLAVILLE, exits=(RegionName.STANHAMN,)),
+    RegionName.STANHAMN: RegionData(RegionName.STANHAMN, exits=(RegionName.LOGCITY,)),
+    RegionName.LOGCITY: RegionData(RegionName.LOGCITY, exits=(RegionName.KIIRUBERG,)),
+    RegionName.KIIRUBERG: RegionData(RegionName.KIIRUBERG, exits=(RegionName.MOUNTAIN_TOP,)),
+    RegionName.MOUNTAIN_TOP: RegionData(RegionName.MOUNTAIN_TOP, exits=(RegionName.BASTO,)),
+    RegionName.BASTO: RegionData(RegionName.BASTO),
 }

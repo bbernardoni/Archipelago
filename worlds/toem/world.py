@@ -5,7 +5,7 @@ from typing_extensions import override
 from BaseClasses import Item, ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 
-from .constants import GAME_NAME, Area
+from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, filler_items, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
@@ -16,7 +16,7 @@ from .locations import (
 )
 from .options import ToemOptions
 from .regions import RegionName, toem_regions
-from .rules import EventName, set_entrance_rules, set_location_rules, set_victory_rule
+from .rules import EventName, set_item_rules, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
     from Options import PerGameCommonOptions
@@ -49,7 +49,7 @@ class ToemWorld(World):
 
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
-        if not self.options.include_basto and data.area == Area.BASTO:
+        if not self.options.include_basto and data.region == RegionName.BASTO:
             return
 
         region = self.get_region(data.region)
@@ -60,7 +60,7 @@ class ToemWorld(World):
     @override
     def create_regions(self) -> None:
         for region_name, region_data in toem_regions.items():
-            if not self.options.include_basto and region_data.area == Area.BASTO:
+            if not self.options.include_basto and region_data.region == RegionName.BASTO:
                 continue
             region = Region(region_name, self.player, self.multiworld)
             self.multiworld.regions.append(region)
@@ -125,7 +125,7 @@ class ToemWorld(World):
 
             for item_name in item_names:
                 data = item_table[item_name]
-                if not self.options.include_basto and data.area == Area.BASTO:
+                if not self.options.include_basto and data.region == RegionName.BASTO:
                     continue
 
                 itempool.extend(self.create_item(item_name) for _ in range(data.quantity))
@@ -142,6 +142,7 @@ class ToemWorld(World):
 
     @override
     def set_rules(self) -> None:
+        set_item_rules(self)
         set_entrance_rules(self)
         set_location_rules(self)
         set_victory_rule(self)
