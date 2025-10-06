@@ -4,7 +4,8 @@ from typing import final
 
 from BaseClasses import Item, ItemClassification
 
-from .constants import GAME_NAME, Area
+from .constants import GAME_NAME
+from .regions import RegionName
 
 
 @final
@@ -101,11 +102,10 @@ class ItemName:
 
     CLOGS = "Clogs"
     AWARD_MASK = "Award Mask"
-    VIKING_TICKET = "Viking Express Ticket"
     FINGER = "Foam finger"
     TRIPOD = "Tripod"
     COWBOY_HAT = "Cowboy hat"
-    LOST_SOCK = "Lost sock"
+    WET_SOCKS = "Pair of wet socks"
     FJALLBJORN_HAT = "Fjällbjörn hat"
     GHOST_GLASSES = "Ghost glasses"
     SOAKED_SOCK = "Soaked sock"
@@ -124,7 +124,6 @@ class ItemName:
     FLAG = "Photo challenger flag"
     HOTBEAN_HAT = "Hotbean hat"
     REPORTER_HAT = "Reporter hat"
-    MUDDY_CAMERA = "Muddy camera"
     SNEAKERS = "Sneakers"
     CINNAMON_BUN = "Cinnamon bun"
     FRISBEE = "Frisbee"
@@ -149,7 +148,6 @@ class ItemName:
     VACATION_SHIRT = "Vacation shirt"
     ROYAL_CANE = "Royal cane"
     EMPTY_BOTTLE = "Empty bottle"
-    WATER_BOTTLE = "Water bottle"
     VIKING_HELMET = "Viking helmet"
     FOOT_CAST = "Foot cast"
     BERET = "Beret"
@@ -168,155 +166,145 @@ class ItemData:
     classification: ItemClassification
     quantity: int
     group: str
-    area: str
+    region: str
 
+progression_useful = ItemClassification.progression | ItemClassification.useful
 
 item_table: dict[str, ItemData] = {
-    ItemName.HOMELANDA_STAMP: ItemData(
-        ItemClassification.progression_skip_balancing, 3, ItemGroup.STAMP, Area.HOMELANDA
-    ),
-    ItemName.OAKLAVILLE_STAMP: ItemData(
-        ItemClassification.progression_skip_balancing, 15, ItemGroup.STAMP, Area.OAKLAVILLE
-    ),
-    ItemName.STANHAMN_STAMP: ItemData(
-        ItemClassification.progression_skip_balancing, 16, ItemGroup.STAMP, Area.STANHAMN
-    ),
-    ItemName.LOGCITY_STAMP: ItemData(ItemClassification.progression_skip_balancing, 18, ItemGroup.STAMP, Area.LOGCITY),
-    ItemName.KIIRUBERG_STAMP: ItemData(
-        ItemClassification.progression_skip_balancing, 13, ItemGroup.STAMP, Area.KIIRUBERG
-    ),
-    ItemName.BASTO_STAMP: ItemData(ItemClassification.progression_skip_balancing, 20, ItemGroup.STAMP, Area.BASTO),
-    ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
-    ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
-    ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
-    ItemName.TATO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
-    ItemName.ANT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.BEEHIVE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.BUTTERFLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.OSKAR_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.SERO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.FOREST_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.LADYBUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.TOM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.NESTWORM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.PET_ROCK_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.SNAIL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.SQUIRREL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.STAG_BEETLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.TATO_BUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.TATO_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.OAKLAVILLE),
-    ItemName.BUBBLE_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.FIA_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.FRAS_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.WILLEMIJN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.CRAB_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.DRAGONFLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.HAPPY_CARP_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.JELLYFISH_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.KING_FISH_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.SEAGULL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.SEAHORSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.SUNDAY_SWAN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.TATO_SCUBA_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.TATO_SWIM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.TOAD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.STANHAMN),
-    ItemName.BUSINESS_PIGEON_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.PORTILLO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.MOUSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.PIGEON_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.PUNK_PARROT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.TATO_SKATEBOARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.TATO_TOURIST_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.TURTLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.LOGCITY),
-    ItemName.MIKEE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.NARIKO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.COSMO_DEER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.TEDDY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.FLUFF_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.HEDGEHOG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.METEOPAL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.GOAT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.OWL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.SNOW_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.TATO_ALIEN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.TATO_SKI_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.KIIRUBERG),
-    ItemName.BAT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.SNAKE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BEAK_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BITLING_FROG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BITLING_MOUSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BITLING_SNAIL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.BITLING_TATO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.COCO_CRAB_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.DAY_LIZARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.DRILL_MOLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.EGGERT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.FIRE_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.GLOW_WORM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.ITSY_BITSY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.MUD_FROG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.NIGHT_LIZARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.SNOUT_BUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.TATO_COCO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.TATO_KING_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.WATER_STRIDER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
-    ItemName.CLOGS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
-    ItemName.AWARD_MASK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
-    ItemName.VIKING_TICKET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
-    ItemName.FINGER: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.TRIPOD: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.COWBOY_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.LOST_SOCK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.FJALLBJORN_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.GHOST_GLASSES: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.SOAKED_SOCK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.MONSTER_MASK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
-    ItemName.FRAMES_FILTERS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.FISHING_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.HONK_ATTACHMENT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.UMBRELLA: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.OLD_KEY: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.HARD_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.DIVING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.RUBBER_BOOTS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.SANDWICH: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.PIRATE_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.PAPER_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.FLAG: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.STANHAMN),
-    ItemName.HOTBEAN_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.REPORTER_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.MUDDY_CAMERA: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.SNEAKERS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.CINNAMON_BUN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.FRISBEE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.LOGCITY),
-    ItemName.CLIMBING_BOOTS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.KIIRUBERG),
-    ItemName.PUFFER_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.KIIRUBERG),
-    ItemName.SCARF: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.KIIRUBERG),
-    ItemName.SKI_GOGGLES: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.KIIRUBERG),
-    ItemName.SPACE_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.KIIRUBERG),
-    ItemName.WATERGUN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.SUN_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.MELONEAR: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.BANAKIN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.ORANGANAS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.BEANUT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.PICKAXE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.SUN_CAP: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.FLIP_FLOPS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.ICE_CREAM: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.ROYAL_CAPE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.MINIGAME_TICKET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.LEI: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.VACATION_SHIRT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.ROYAL_CANE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.ROYAL_CROWN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.EMPTY_BOTTLE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.WATER_BOTTLE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.VIKING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.FOOT_CAST: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.BERET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
-    ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.HOMELANDA),
-    ItemName.SQUIRREL_PHOTO_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.OAKLAVILLE),
+    ItemName.HOMELANDA_STAMP: ItemData(progression_useful, 3, ItemGroup.STAMP, RegionName.HOMELANDA),
+    ItemName.OAKLAVILLE_STAMP: ItemData(ItemClassification.progression, 15, ItemGroup.STAMP, RegionName.OAKLAVILLE),
+    ItemName.STANHAMN_STAMP: ItemData(ItemClassification.progression_skip_balancing, 16, ItemGroup.STAMP, RegionName.STANHAMN),
+    ItemName.LOGCITY_STAMP: ItemData(ItemClassification.progression_skip_balancing, 18, ItemGroup.STAMP, RegionName.LOGCITY),
+    ItemName.KIIRUBERG_STAMP: ItemData(ItemClassification.progression_skip_balancing, 13, ItemGroup.STAMP, RegionName.KIIRUBERG),
+    ItemName.BASTO_STAMP: ItemData(ItemClassification.progression_skip_balancing, 20, ItemGroup.STAMP, RegionName.BASTO),
+    ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
+    ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
+    ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
+    ItemName.TATO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
+    ItemName.ANT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.BEEHIVE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.BUTTERFLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.OSKAR_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.SERO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.FOREST_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.LADYBUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.TOM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.NESTWORM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.PET_ROCK_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.SNAIL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.SQUIRREL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.STAG_BEETLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.TATO_BUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.TATO_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.OAKLAVILLE),
+    ItemName.BUBBLE_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.FIA_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.FRAS_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.WILLEMIJN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.CRAB_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.DRAGONFLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.HAPPY_CARP_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.JELLYFISH_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.KING_FISH_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.SEAGULL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.SEAHORSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.SUNDAY_SWAN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.TATO_SCUBA_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.TATO_SWIM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.TOAD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.STANHAMN),
+    ItemName.BUSINESS_PIGEON_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.PORTILLO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.MOUSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.PIGEON_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.PUNK_PARROT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.TATO_SKATEBOARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.TATO_TOURIST_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.TURTLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.LOGCITY),
+    ItemName.MIKEE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.NARIKO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.COSMO_DEER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.TEDDY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.FLUFF_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.HEDGEHOG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.METEOPAL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.GOAT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.OWL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.SNOW_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.TATO_ALIEN_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.TATO_SKI_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.KIIRUBERG),
+    ItemName.BAT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.SNAKE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.BEAK_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.BITLING_FROG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.BITLING_MOUSE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.BITLING_SNAIL_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.BITLING_TATO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.COCO_CRAB_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.DAY_LIZARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.DRILL_MOLE_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.EGGERT_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.FIRE_FLY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.GLOW_WORM_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.ITSY_BITSY_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.MUD_FROG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.NIGHT_LIZARD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.SNOUT_BUG_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.TATO_COCO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.TATO_KING_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.WATER_STRIDER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.BASTO),
+    ItemName.CLOGS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.HOMELANDA),
+    ItemName.AWARD_MASK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.HOMELANDA),
+    ItemName.FINGER: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.TRIPOD: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.COWBOY_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.WET_SOCKS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.FJALLBJORN_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.GHOST_GLASSES: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.SOAKED_SOCK: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.MONSTER_MASK: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.FRAMES_FILTERS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.FISHING_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.HONK_ATTACHMENT: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.UMBRELLA: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.OLD_KEY: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.HARD_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.DIVING_HELMET: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.RUBBER_BOOTS: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.SANDWICH: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.PIRATE_HAT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.PAPER_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.FLAG: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
+    ItemName.HOTBEAN_HAT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
+    ItemName.REPORTER_HAT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
+    ItemName.SNEAKERS: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.LOGCITY),
+    ItemName.CINNAMON_BUN: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
+    ItemName.FRISBEE: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
+    ItemName.CLIMBING_BOOTS: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.PUFFER_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.SCARF: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.SKI_GOGGLES: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.SPACE_HELMET: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.WATERGUN: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.SUN_HAT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.MELONEAR: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.BANAKIN: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.ORANGANAS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.BEANUT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.PICKAXE: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.SUN_CAP: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.FLIP_FLOPS: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.ICE_CREAM: ItemData(ItemClassification.progression, 4, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.ROYAL_CAPE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.MINIGAME_TICKET: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.LEI: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.VACATION_SHIRT: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.ROYAL_CANE: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.EMPTY_BOTTLE: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.VIKING_HELMET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.FOOT_CAST: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.BERET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.ROYAL_CROWN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
+    ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.HOMELANDA),
+    ItemName.SQUIRREL_PHOTO_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.OAKLAVILLE),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}
@@ -327,7 +315,7 @@ def get_item_group(item_name: str) -> str:
 
 
 def get_item_area(location_name: str) -> str:
-    return item_table[location_name].area
+    return item_table[location_name].region
 
 
 item_name_groups: dict[str, set[str]] = {
