@@ -36,17 +36,13 @@ def set_item_rules(world: "ToemWorld") -> None:
 
 def set_entrance_rules(world: "ToemWorld") -> None:
     entrance_rules: dict[tuple[str, str], CollectionRule] = {
-        (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(
-            ItemName.HOMELANDA_STAMP, world.player, 1
-        ),
-        (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(
-            ItemName.OAKLAVILLE_STAMP, world.player, 7
-        ),
-        (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, 8),
-        (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, 9),
-        (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(
-            ItemName.KIIRUBERG_STAMP, world.player, 6
-        ),
+        (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
+        (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state:
+            state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement) and 
+            state.has(ItemName.HONK_ATTACHMENT, world.player),
+        (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
+        (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
+        (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
         (RegionName.MOUNTAIN_TOP, RegionName.BASTO): lambda state: state.has(ItemName.CLIMBING_BOOTS, world.player),
     }
 
@@ -77,7 +73,7 @@ def set_victory_rule(world: "ToemWorld") -> None:
         victory_event_name = EventName.BASTO_BONFIRE
         victory_rule = lambda state: (
             state.has(ItemName.WATERGUN, world.player) and
-            state.has(ItemName.BASTO_STAMP, world.player, 10)
+            state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement)
         )
     else:
         victory_event_name = EventName.TOEM_EXPERIENCED
