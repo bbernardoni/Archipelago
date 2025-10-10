@@ -6,7 +6,7 @@ from BaseClasses import Item, ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 
 from .constants import GAME_NAME
-from .items import ItemGroup, ToemItem, filler_items, item_name_groups, item_name_to_id, item_table
+from .items import ItemGroup, ToemItem, ItemName, filler_items, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
     ToemLocation,
@@ -47,6 +47,11 @@ class ToemWorld(World):
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = RegionName.HOMELANDA
 
+    def generate_early(self) -> None:
+        self.multiworld.local_early_items[self.player][ItemName.HOMELANDA_STAMP] = 1
+        if self.options.honk_attachement_early:
+            self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
+
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
         if not self.options.include_basto and data.region == RegionName.BASTO:
@@ -80,10 +85,10 @@ class ToemWorld(World):
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
             logic_groups.add(LocationGroup.ITEM)
-        if self.options.include_cassettes:
-            logic_groups.add(LocationGroup.CASSETTE)
-        if self.options.include_achievements:
-            logic_groups.add(LocationGroup.ACHIEVEMENT)
+        #if self.options.include_cassettes:
+        #    logic_groups.add(LocationGroup.CASSETTE)
+        #if self.options.include_achievements:
+        #    logic_groups.add(LocationGroup.ACHIEVEMENT)
 
         for group, location_names in location_name_groups.items():
             if group not in logic_groups:
@@ -116,8 +121,8 @@ class ToemWorld(World):
         logic_groups: set[str] = {ItemGroup.STAMP, ItemGroup.PHOTO}
         if self.options.include_items:
             logic_groups.add(ItemGroup.ITEM)
-        if self.options.include_cassettes:
-            logic_groups.add(ItemGroup.CASSETTE)
+        #if self.options.include_cassettes:
+        #    logic_groups.add(ItemGroup.CASSETTE)
 
         for group, item_names in item_name_groups.items():
             if group not in logic_groups:
@@ -154,7 +159,14 @@ class ToemWorld(World):
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
-                "include_cassettes",
-                "include_achievements",
+                #"include_cassettes",
+                #"include_achievements",
+                "homelanda_stamp_requirement",
+                "oaklaville_stamp_requirement",
+                "stanhamn_stamp_requirement",
+                "logcity_stamp_requirement",
+                "kiiruberg_stamp_requirement",
+                "basto_stamp_requirement",
+                "honk_attachement_early",
             ),
         }
