@@ -94,7 +94,7 @@ class ToemOptions(PerGameCommonOptions):
     include_items: IncludeItems
     # Not implemented
     #include_cassettes: IncludeCassettes
-    #include_achievements: IncludeAchievements
+    include_achievements: IncludeAchievements
     homelanda_stamp_requirement: HomelandaStampRequirement
     oaklaville_stamp_requirement: OaklavilleStampRequirement
     stanhamn_stamp_requirement: StanhamnStampRequirement

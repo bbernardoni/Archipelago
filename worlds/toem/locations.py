@@ -325,6 +325,11 @@ clothing_items = (
     ItemName.RUBBER_BOOTS, ItemName.HOTBEAN_HAT, ItemName.REPORTER_HAT, ItemName.SNEAKERS, ItemName.CLIMBING_BOOTS, 
     ItemName.SCARF, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.MONSTER_MASK, ItemName.FLAG
 )
+completionist_reqs = (
+    ItemName.GHOST_GLASSES, ItemName.WET_SOCKS, ItemName.TRIPOD, ItemName.HONK_ATTACHMENT, ItemName.CLIMBING_BOOTS, ItemName.SANDWICH, 
+    ItemName.PIRATE_HAT, ItemName.FRAMES_FILTERS, ItemName.CINNAMON_BUN, ItemName.REPORTER_HAT, ItemName.HOTBEAN_HAT, ItemName.FRISBEE,
+    ItemName.SPACE_HELMET, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF, ItemName.CLOGS
+) # Fisherman's Whistle
 
 location_table: dict[str, LocationData] = {
     LocationName.QUEST_PHOTO_OF_NANA: LocationData(RegionName.HOMELANDA, LocationGroup.QUEST),
@@ -433,7 +438,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_VOYAGE_UNDERWATER: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
     LocationName.CHEEVO_EMPLOYEE_OF_THE_MONTH: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_CALM_AS_SEA: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
-    LocationName.CHEEVO_SEAWORTHY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT)), # Fisherman's Whistle
+    LocationName.CHEEVO_SEAWORTHY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT, ItemName.GHOST_GLASSES, ItemName.FRAMES_FILTERS)), # Fisherman's Whistle
     LocationName.CHEEVO_FLIGHT_READY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_SPARKLING_JUMP: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_GOOD_BOY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
@@ -471,7 +476,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_BIG_CITY: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_CLOCKTOWER: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_PROFESSIONAL: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
-    LocationName.CHEEVO_BUSINESS: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT, (ItemName.CINNAMON_BUN, ItemName.REPORTER_HAT, ItemName.HOTBEAN_HAT, ItemName.FRAMES_FILTERS, ItemName.HONK_ATTACHMENT)),
+    LocationName.CHEEVO_BUSINESS: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT, (ItemName.CINNAMON_BUN, ItemName.REPORTER_HAT, ItemName.HOTBEAN_HAT, ItemName.HONK_ATTACHMENT, ItemName.GHOST_GLASSES, ItemName.FRISBEE)),
     LocationName.CHEEVO_FOLLOWERS: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_NEW_JOB: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.QUEST_YETI_CUTE: LocationData(RegionName.KIIRUBERG, LocationGroup.QUEST, (ItemName.CLIMBING_BOOTS,)),
@@ -505,18 +510,18 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_SKI_GOGGLES: LocationData(RegionName.KIIRUBERG, LocationGroup.ITEM),
     LocationName.ITEM_SPACE_HELMET: LocationData(RegionName.KIIRUBERG, LocationGroup.ITEM, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_SNOWY_PEAKS: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT),
-    LocationName.CHEEVO_GEARED_UP: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
+    LocationName.CHEEVO_GEARED_UP: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
     LocationName.CHEEVO_HURDLE: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
-    LocationName.CHEEVO_FIGHTER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.SPACE_HELMET, ItemName.HONK_ATTACHMENT)),
-    LocationName.CHEEVO_YOUTH: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT)),
+    LocationName.CHEEVO_FIGHTER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.SPACE_HELMET, ItemName.HONK_ATTACHMENT, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
+    LocationName.CHEEVO_YOUTH: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_STORY: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_CLOSE: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_TOEM: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_CUTIES: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT)),
-    LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.CINNAMON_BUN)),
-    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
+    LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.CINNAMON_BUN, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)), # Fisherman's Whistle
+    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, (ItemName.CLOGS,)),
     LocationName.CHEEVO_COSPLAYER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, clothing_items),
-    LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT), # TODO
+    LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, completionist_reqs),
     LocationName.QUEST_BALLOONS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_ARTHUR: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.PICKAXE)),
     LocationName.QUEST_BAD_HAIR_DAY: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
