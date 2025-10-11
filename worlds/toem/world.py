@@ -47,6 +47,7 @@ class ToemWorld(World):
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = RegionName.HOMELANDA
 
+    @override
     def generate_early(self) -> None:
         self.multiworld.local_early_items[self.player][ItemName.HOMELANDA_STAMP] = 1
         if self.options.honk_attachement_early:
@@ -87,8 +88,8 @@ class ToemWorld(World):
             logic_groups.add(LocationGroup.ITEM)
         #if self.options.include_cassettes:
         #    logic_groups.add(LocationGroup.CASSETTE)
-        #if self.options.include_achievements:
-        #    logic_groups.add(LocationGroup.ACHIEVEMENT)
+        if self.options.include_achievements:
+            logic_groups.add(LocationGroup.ACHIEVEMENT)
 
         for group, location_names in location_name_groups.items():
             if group not in logic_groups:
@@ -160,7 +161,7 @@ class ToemWorld(World):
                 "include_basto",
                 "include_items",
                 #"include_cassettes",
-                #"include_achievements",
+                "include_achievements",
                 "homelanda_stamp_requirement",
                 "oaklaville_stamp_requirement",
                 "stanhamn_stamp_requirement",
