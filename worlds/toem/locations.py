@@ -307,6 +307,18 @@ class LocationName:
     ITEM_FOOT_CAST = "Item - Foot cast"
     ITEM_BERET = "Item - Beret"
     ITEM_ROYAL_CROWN = "Item - Royal crown"
+    
+    CHEEVO_TOPICAL_PARADISE = "Achievement - Tropical paradise"
+    CHEEVO_MAXIMUM_VACATION = "Achievement - Maximum vacation"
+    CHEEVO_KINGS_SHIRT = "Achievement - King's new shirt"
+    CHEEVO_MOONLIT_BEAUTY = "Achievement - Moonlit beauty"
+    CHEEVO_SELF_PORTRAIT = "Achievement - Self portrait"
+    CHEEVO_WAZZUUPPP = "Achievement - Wazzuuppp"
+    CHEEVO_PRO_GAMER = "Achievement - Pro gamer"
+    CHEEVO_SPLISH_SPLASH = "Achievement - Splish-splash"
+    CHEEVO_ROYAL_CASTLE = "Achievement - The Royal Castle"
+    CHEEVO_SOME_MORE = "Achievement - And some more"
+    CHEEVO_VIKINGS_HOLIDAY = "Achievement - A Viking's holiday"
 
 
 class ToemLocation(Location):
@@ -585,6 +597,17 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_FOOT_CAST: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
     LocationName.ITEM_BERET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.CLIMBING_BOOTS, ItemName.SOAKED_SOCK, ItemName.HONK_ATTACHMENT)),
     LocationName.ITEM_ROYAL_CROWN: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)), 
+    LocationName.CHEEVO_TOPICAL_PARADISE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT),
+    LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.VACATION_SHIRT, ItemName.FLIP_FLOPS, ItemName.SUN_HAT)),
+    LocationName.CHEEVO_KINGS_SHIRT: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.ROYAL_CAPE)),
+    LocationName.CHEEVO_MOONLIT_BEAUTY: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN,)),
+    LocationName.CHEEVO_SELF_PORTRAIT: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN,)),
+    LocationName.CHEEVO_WAZZUUPPP: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.FRAMES_FILTERS)),
+    LocationName.CHEEVO_PRO_GAMER: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.HONK_ATTACHMENT)),
+    LocationName.CHEEVO_SPLISH_SPLASH: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.HONK_ATTACHMENT)),
+    LocationName.CHEEVO_ROYAL_CASTLE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN,)),
+    LocationName.CHEEVO_SOME_MORE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.PICKAXE)),
+    LocationName.CHEEVO_VIKINGS_HOLIDAY: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.PICKAXE, ItemName.BANAKIN, ItemName.MELONEAR, ItemName.BEANUT, ItemName.ORANGANAS, ItemName.ICE_CREAM, ItemName.EMPTY_BOTTLE)),
 }
 
 
