@@ -6,7 +6,7 @@ from BaseClasses import Item, ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 
 from .constants import GAME_NAME
-from .items import ItemGroup, ToemItem, ItemName, filler_items, item_name_groups, item_name_to_id, item_table
+from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
     ToemLocation,
@@ -144,7 +144,7 @@ class ToemWorld(World):
 
     @override
     def get_filler_item_name(self) -> str:
-        return self.random.choice(filler_items)
+        return self.random.choice(tuple(item_name_groups[ItemGroup.PHOTO]))
 
     @override
     def set_rules(self) -> None:

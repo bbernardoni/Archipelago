@@ -327,10 +327,3 @@ item_name_groups.update(
     {group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)}
 )
 
-filler_items: tuple[str, ...] = (
-    ItemName.HOMELANDA_STAMP,
-    ItemName.OAKLAVILLE_STAMP,
-    ItemName.STANHAMN_STAMP,
-    ItemName.LOGCITY_STAMP,
-    ItemName.KIIRUBERG_STAMP,
-)
