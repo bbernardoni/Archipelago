@@ -293,10 +293,10 @@ class LocationName:
     ITEM_PICKAXE = "Item - Pickaxe"
     ITEM_SUN_CAP = "Item - Sun cap"
     ITEM_FLIP_FLOPS = "Item - Flip-flops"
-    ITEM_ICE_CREAM_BANAKIN = "Item - Ice cream (BANAKIN)"
-    ITEM_ICE_CREAM_MELONEAR = "Item - Ice cream (MELONEAR)"
-    ITEM_ICE_CREAM_BEANUT = "Item - Ice cream (BEANUT)"
-    ITEM_ICE_CREAM_ORANGANAS = "Item - Ice cream (ORANGANAS)"
+    ITEM_ICE_CREAM_BANAKIN = "Item - Ice cream (Banakin)"
+    ITEM_ICE_CREAM_MELONEAR = "Item - Ice cream (Melonear)"
+    ITEM_ICE_CREAM_BEANUT = "Item - Ice cream (Beanut)"
+    ITEM_ICE_CREAM_ORANGANAS = "Item - Ice cream (Oranganas)"
     ITEM_ROYAL_CAPE = "Item - Royal cape"
     ITEM_MINIGAME_TICKET = "Item - minigame ticket"
     ITEM_LEI = "Item - Lei"
@@ -415,7 +415,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_POWER: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)),
     LocationName.QUEST_CHAOS: LocationData(RegionName.STANHAMN, LocationGroup.QUEST),
     LocationName.QUEST_FLAME: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,ItemName.GHOST_GLASSES)),
-    LocationName.QUEST_SANDWICH: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,ItemName.GHOST_GLASSES)),
+    LocationName.QUEST_SANDWICH: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,ItemName.GHOST_GLASSES, ItemName.SANDWICH)),
     LocationName.QUEST_GARBAGE: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)),
     LocationName.QUEST_WHISTLING: LocationData(RegionName.STANHAMN, LocationGroup.QUEST),
     LocationName.QUEST_MELODY: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)), # Fisherman's Whistle
@@ -531,7 +531,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_TOEM: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_CUTIES: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT)),
     LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.CINNAMON_BUN, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)), # Fisherman's Whistle
-    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, (ItemName.CLOGS,)),
+    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_COSPLAYER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, clothing_items),
     LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, completionist_reqs),
     LocationName.QUEST_BALLOONS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
@@ -539,7 +539,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_BAD_HAIR_DAY: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_TAKE_A_NAP: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_SPOOKY_STORIES: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
-    LocationName.QUEST_PORTRAITS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
+    LocationName.QUEST_PORTRAITS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_CINEMA: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_NIGHT_LIGHTS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_JET_SKI: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
@@ -551,7 +551,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_DRY_SEASON: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_MUSCLES: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.EMPTY_BOTTLE)),
     LocationName.QUEST_SAND_CASTLE: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
-    LocationName.QUEST_CARNIVAL: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.HONK_ATTACHMENT)),
+    LocationName.QUEST_CARNIVAL: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_BATS: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_BITLING: LocationData(RegionName.BASTO, LocationGroup.QUEST, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
     LocationName.COMP_BAT: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
@@ -567,21 +567,21 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_EGGERT: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.COMP_FIRE_FLY: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.COMP_GLOW_WORM: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
-    LocationName.COMP_ITSY_BITSY: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
+    LocationName.COMP_ITSY_BITSY: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN, ItemName.PICKAXE)),
     LocationName.COMP_MUD_FROG: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.COMP_NIGHT_LIZARD: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.COMP_SNOUT_BUG: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.COMP_TATO_COCO: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
-    LocationName.COMP_TATO_KING: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
+    LocationName.COMP_TATO_KING: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN, ItemName.PICKAXE)),
     LocationName.COMP_WATER_STRIDER: LocationData(RegionName.BASTO, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
     LocationName.ITEM_WATERGUN: LocationData(RegionName.BASTO, LocationGroup.ITEM),
-    LocationName.ITEM_SUN_HAT: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)),
+    LocationName.ITEM_SUN_HAT: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_MELONEAR: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_BANAKIN: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_ORANGANAS: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_BEANUT: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_PICKAXE: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
-    LocationName.ITEM_SUN_CAP: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
+    LocationName.ITEM_SUN_CAP: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)),
     LocationName.ITEM_FLIP_FLOPS: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)),
     LocationName.ITEM_ICE_CREAM_BANAKIN: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.BANAKIN)),
     LocationName.ITEM_ICE_CREAM_MELONEAR: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.MELONEAR)),
@@ -593,9 +593,9 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_VACATION_SHIRT: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.MINIGAME_TICKET)),
     LocationName.ITEM_ROYAL_CANE: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.MINIGAME_TICKET)),
     LocationName.ITEM_EMPTY_BOTTLE: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN,)),
-    LocationName.ITEM_VIKING_HELMET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
+    LocationName.ITEM_VIKING_HELMET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE, ItemName.ICE_CREAM)),
     LocationName.ITEM_FOOT_CAST: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
-    LocationName.ITEM_BERET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.CLIMBING_BOOTS, ItemName.SOAKED_SOCK, ItemName.HONK_ATTACHMENT)),
+    LocationName.ITEM_BERET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.ROYAL_CAPE, ItemName.CLIMBING_BOOTS, ItemName.WET_SOCKS, ItemName.HONK_ATTACHMENT)),
     LocationName.ITEM_ROYAL_CROWN: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)), 
     LocationName.CHEEVO_TOPICAL_PARADISE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.VACATION_SHIRT, ItemName.FLIP_FLOPS, ItemName.SUN_HAT)),
