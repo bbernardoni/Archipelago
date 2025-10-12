@@ -26,7 +26,7 @@ class IncludeCassettes(Toggle):
 
 
 class IncludeAchievements(Toggle):
-    """Include achievements as locations. Adds more stamps to the pool to compensate."""
+    """Include achievements as locations. Adds more photos to the pool to compensate."""
 
     display_name: ClassVar[str] = "Include Achievements"
     default: ClassVar[int] = 0
