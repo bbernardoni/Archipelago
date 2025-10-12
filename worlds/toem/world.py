@@ -50,7 +50,7 @@ class ToemWorld(World):
     @override
     def generate_early(self) -> None:
         self.multiworld.local_early_items[self.player][ItemName.HOMELANDA_STAMP] = 1
-        if self.options.honk_attachement_early:
+        if self.options.include_items and self.options.honk_attachement_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
     def create_location(self, name: str) -> ToemLocation | None:
@@ -86,8 +86,8 @@ class ToemWorld(World):
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
             logic_groups.add(LocationGroup.ITEM)
-        #if self.options.include_cassettes:
-        #    logic_groups.add(LocationGroup.CASSETTE)
+        if self.options.include_cassettes:
+            logic_groups.add(LocationGroup.CASSETTE)
         if self.options.include_achievements:
             logic_groups.add(LocationGroup.ACHIEVEMENT)
 
@@ -122,8 +122,8 @@ class ToemWorld(World):
         logic_groups: set[str] = {ItemGroup.STAMP, ItemGroup.PHOTO}
         if self.options.include_items:
             logic_groups.add(ItemGroup.ITEM)
-        #if self.options.include_cassettes:
-        #    logic_groups.add(ItemGroup.CASSETTE)
+        if self.options.include_cassettes:
+            logic_groups.add(ItemGroup.CASSETTE)
 
         for group, item_names in item_name_groups.items():
             if group not in logic_groups:
@@ -160,7 +160,7 @@ class ToemWorld(World):
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
-                #"include_cassettes",
+                "include_cassettes",
                 "include_achievements",
                 "homelanda_stamp_requirement",
                 "oaklaville_stamp_requirement",
