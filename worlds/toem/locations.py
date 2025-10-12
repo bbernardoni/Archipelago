@@ -80,6 +80,9 @@ class LocationName:
     ITEM_SOAKED_SOCK = "Item - Soaked sock"
     ITEM_MONSTER_MASK = "Item - Monster mask"
 
+    TAPE_SUMMER_BREEZE = "Cassette - Jamal Green - Summer Breeze"
+    TAPE_SQUIRREL_HOTEL = "Cassette - Jamal Green - The Grand Squirrel Hotel"
+    TAPE_PINE_NEEDLES = "Cassette - Launchable Socks - Pine Needles"
     TAPE_SQUIRREL_PHOTO = "Cassette - Launchable Socks - Squirrel Photography"
 
     CHEEVO_CALM_FOREST = "Achievement - The calm forest"
@@ -137,6 +140,12 @@ class LocationName:
     ITEM_PIRATE_HAT = "Item - Pirate hat"
     ITEM_PAPER_HAT = "Item - Paper hat"
     ITEM_FLAG = "Item - Photo challenger flag"
+    
+    TAPE_FISHERMANS_WHISTLE = "Cassette - Fisherman's Whistle"
+    TAPE_SMILING_HUNTSMAN = "Cassette - JG+LS - The Smiling Huntsman"
+    TAPE_NAUT = "Cassette - Jamal Green - NAUT"
+    TAPE_PLACE_IN_SUN = "Cassette - Launchable Socks - A Place In The Sun"
+    TAPE_FISHERMANS_TUNE = "Cassette - Launchable Socks - Fisherman's Tune"
 
     CHEEVO_SET_SAIL = "Achievement - Set sail for good weather"
     CHEEVO_VOYAGE_UNDERWATER = "Achievement - A voyage underwater"
@@ -181,6 +190,12 @@ class LocationName:
     ITEM_SNEAKERS = "Item - Sneakers"
     ITEM_CINNAMON_BUN = "Item - Cinnamon bun"
     ITEM_FRISBEE = "Item - Frisbee"
+    
+    TAPE_RATSKULLZ_THEME = "Cassette - Anes Sabanovic - Ratskullz Theme"
+    TAPE_BIG_CITY = "Cassette - JG+LS - The Big City"
+    TAPE_HUSTLE_BUSTLE = "Cassette - Jamal Green - Hustle Bustle Shuffle"
+    TAPE_HOP_SKIP_STEP = "Cassette - Launchable Socks - Hop Skip Step"
+    TAPE_ON_THE_HOUR = "Cassette - Launchable Socks - On The Hour"
 
     CHEEVO_BIG_CITY = "Achievement - The big city"
     CHEEVO_CLOCKTOWER = "Achievement - The grand clock tower"
@@ -222,6 +237,11 @@ class LocationName:
     ITEM_SCARF = "Item - Scarf"
     ITEM_SKI_GOGGLES = "Item - Ski goggles"
     ITEM_SPACE_HELMET = "Item - Space helmet"
+    
+    TAPE_LIFE_THROUGH_LENS = "Cassette - Jamal Green - Life Through a Lens"
+    TAPE_PETTING_DEER = "Cassette - Jamal Green - The Petting of a Sacred Deer"
+    TAPE_STORIES_OF_SNOW = "Cassette - Launchable Socks - Stories Of Snow"
+    TAPE_TALL_SHY = "Cassette - Launchable Socks - Tall & Shy"
 
     CHEEVO_SNOWY_PEAKS = "Achievement - Snowy peaks"
     CHEEVO_GEARED_UP = "Achievement - All geared up"
@@ -308,6 +328,13 @@ class LocationName:
     ITEM_BERET = "Item - Beret"
     ITEM_ROYAL_CROWN = "Item - Royal crown"
     
+    TAPE_NIGHT_JAM = "Cassette - JG+LS - Night Jam"
+    TAPE_WARM_DAYS_NIGHT = "Cassette - Jamal Green - A Warm Days Night"
+    TAPE_ONE_BY_ONE = "Cassette - Jamal Green - One By One"
+    TAPE_HAMMOCK_DAYS = "Cassette - Launchable Socks - Hammock Days"
+    TAPE_SAILORS_TUNE = "Cassette - Launchable Socks - Sailor's Tune"
+    TAPE_SONG_OF_THE_SEA = "Cassette - Launchable Socks - Song Of The Sea"
+    
     CHEEVO_TOPICAL_PARADISE = "Achievement - Tropical paradise"
     CHEEVO_MAXIMUM_VACATION = "Achievement - Maximum vacation"
     CHEEVO_KINGS_SHIRT = "Achievement - King's new shirt"
@@ -340,8 +367,8 @@ clothing_items = (
 completionist_reqs = (
     ItemName.GHOST_GLASSES, ItemName.WET_SOCKS, ItemName.TRIPOD, ItemName.HONK_ATTACHMENT, ItemName.CLIMBING_BOOTS, ItemName.SANDWICH, 
     ItemName.PIRATE_HAT, ItemName.FRAMES_FILTERS, ItemName.CINNAMON_BUN, ItemName.REPORTER_HAT, ItemName.HOTBEAN_HAT, ItemName.FRISBEE,
-    ItemName.SPACE_HELMET, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF, ItemName.CLOGS
-) # Fisherman's Whistle
+    ItemName.SPACE_HELMET, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF, ItemName.CLOGS, ItemName.FISHERMANS_WHISTLE_TAPE
+)
 
 location_table: dict[str, LocationData] = {
     LocationName.QUEST_PHOTO_OF_NANA: LocationData(RegionName.HOMELANDA, LocationGroup.QUEST),
@@ -394,6 +421,9 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_GHOST_GLASSES: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM),
     LocationName.ITEM_SOAKED_SOCK: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM, (ItemName.WET_SOCKS,)),
     LocationName.ITEM_MONSTER_MASK: LocationData(RegionName.OAKLAVILLE, LocationGroup.ITEM, (ItemName.TRIPOD, ItemName.HONK_ATTACHMENT, ItemName.CLIMBING_BOOTS)),
+    LocationName.TAPE_SUMMER_BREEZE: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASSETTE),
+    LocationName.TAPE_SQUIRREL_HOTEL: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASSETTE),
+    LocationName.TAPE_PINE_NEEDLES: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASSETTE),
     LocationName.TAPE_SQUIRREL_PHOTO: LocationData(RegionName.OAKLAVILLE, LocationGroup.CASSETTE),
     LocationName.CHEEVO_CALM_FOREST: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_MAJESTIC_HOTEL: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT),
@@ -403,7 +433,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_CALMED_DOWN: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_JUST_A_SOCK: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT, (ItemName.WET_SOCKS,)),
     LocationName.CHEEVO_YOU_FOUND_US: LocationData(RegionName.OAKLAVILLE, LocationGroup.ACHIEVEMENT),
-    LocationName.QUEST_KING_FISH: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)), # Fisherman's Whistle
+    LocationName.QUEST_KING_FISH: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT, ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.QUEST_GOOD_SPOT: LocationData(RegionName.STANHAMN, LocationGroup.QUEST),
     LocationName.QUEST_SUS_HARBOR: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)),
     LocationName.QUEST_PAPER_HATS: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT)),
@@ -418,7 +448,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_SANDWICH: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,ItemName.GHOST_GLASSES, ItemName.SANDWICH)),
     LocationName.QUEST_GARBAGE: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)),
     LocationName.QUEST_WHISTLING: LocationData(RegionName.STANHAMN, LocationGroup.QUEST),
-    LocationName.QUEST_MELODY: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)), # Fisherman's Whistle
+    LocationName.QUEST_MELODY: LocationData(RegionName.STANHAMN, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT, ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.COMP_BUBBLE_FLY: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM),
     LocationName.COMP_FIA: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT,)),
     LocationName.COMP_FRAS: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM),
@@ -427,7 +457,7 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_DRAGONFLY: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT,)),
     LocationName.COMP_HAPPY_CARP: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
     LocationName.COMP_JELLYFISH: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
-    LocationName.COMP_KING_FISH: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT,)), # Fisherman's Whistle
+    LocationName.COMP_KING_FISH: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT, ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.COMP_SEAGULL: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM),
     LocationName.COMP_SEAHORSE: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
     LocationName.COMP_SUNDAY_SWAN: LocationData(RegionName.STANHAMN, LocationGroup.COMPENDIUM),
@@ -446,11 +476,16 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_PIRATE_HAT: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.OLD_KEY)),
     LocationName.ITEM_PAPER_HAT: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT)),
     LocationName.ITEM_FLAG: LocationData(RegionName.STANHAMN, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT, ItemName.CLIMBING_BOOTS)),
+    LocationName.TAPE_FISHERMANS_WHISTLE: LocationData(RegionName.STANHAMN, LocationGroup.CASSETTE),
+    LocationName.TAPE_SMILING_HUNTSMAN: LocationData(RegionName.STANHAMN, LocationGroup.CASSETTE, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
+    LocationName.TAPE_NAUT: LocationData(RegionName.STANHAMN, LocationGroup.CASSETTE),
+    LocationName.TAPE_PLACE_IN_SUN: LocationData(RegionName.STANHAMN, LocationGroup.CASSETTE),
+    LocationName.TAPE_FISHERMANS_TUNE: LocationData(RegionName.STANHAMN, LocationGroup.CASSETTE, (ItemName.HONK_ATTACHMENT, ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.CHEEVO_SET_SAIL: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_VOYAGE_UNDERWATER: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
     LocationName.CHEEVO_EMPLOYEE_OF_THE_MONTH: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_CALM_AS_SEA: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
-    LocationName.CHEEVO_SEAWORTHY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT, ItemName.GHOST_GLASSES, ItemName.FRAMES_FILTERS)), # Fisherman's Whistle
+    LocationName.CHEEVO_SEAWORTHY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT, ItemName.GHOST_GLASSES, ItemName.FRAMES_FILTERS, ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.CHEEVO_FLIGHT_READY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_SPARKLING_JUMP: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
     LocationName.CHEEVO_GOOD_BOY: LocationData(RegionName.STANHAMN, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
@@ -485,6 +520,11 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_SNEAKERS: LocationData(RegionName.LOGCITY, LocationGroup.ITEM),
     LocationName.ITEM_CINNAMON_BUN: LocationData(RegionName.LOGCITY, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT,)),
     LocationName.ITEM_FRISBEE: LocationData(RegionName.LOGCITY, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT,)),
+    LocationName.TAPE_RATSKULLZ_THEME: LocationData(RegionName.LOGCITY, LocationGroup.CASSETTE),
+    LocationName.TAPE_BIG_CITY: LocationData(RegionName.LOGCITY, LocationGroup.CASSETTE),
+    LocationName.TAPE_HUSTLE_BUSTLE: LocationData(RegionName.LOGCITY, LocationGroup.CASSETTE),
+    LocationName.TAPE_HOP_SKIP_STEP: LocationData(RegionName.LOGCITY, LocationGroup.CASSETTE),
+    LocationName.TAPE_ON_THE_HOUR: LocationData(RegionName.LOGCITY, LocationGroup.CASSETTE),
     LocationName.CHEEVO_BIG_CITY: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_CLOCKTOWER: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_PROFESSIONAL: LocationData(RegionName.LOGCITY, LocationGroup.ACHIEVEMENT),
@@ -521,6 +561,10 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_SCARF: LocationData(RegionName.KIIRUBERG, LocationGroup.ITEM),
     LocationName.ITEM_SKI_GOGGLES: LocationData(RegionName.KIIRUBERG, LocationGroup.ITEM),
     LocationName.ITEM_SPACE_HELMET: LocationData(RegionName.KIIRUBERG, LocationGroup.ITEM, (ItemName.CLIMBING_BOOTS,)),
+    LocationName.TAPE_LIFE_THROUGH_LENS: LocationData(RegionName.KIIRUBERG, LocationGroup.CASSETTE, (ItemName.CLIMBING_BOOTS,)),
+    LocationName.TAPE_PETTING_DEER: LocationData(RegionName.KIIRUBERG, LocationGroup.CASSETTE, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
+    LocationName.TAPE_STORIES_OF_SNOW: LocationData(RegionName.KIIRUBERG, LocationGroup.CASSETTE),
+    LocationName.TAPE_TALL_SHY: LocationData(RegionName.KIIRUBERG, LocationGroup.CASSETTE, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
     LocationName.CHEEVO_SNOWY_PEAKS: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_GEARED_UP: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
     LocationName.CHEEVO_HURDLE: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
@@ -530,7 +574,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_CLOSE: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_TOEM: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS,)),
     LocationName.CHEEVO_CUTIES: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT)),
-    LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.CINNAMON_BUN, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)), # Fisherman's Whistle
+    LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, (ItemName.CLIMBING_BOOTS, ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET, ItemName.FISHERMANS_WHISTLE_TAPE, ItemName.CINNAMON_BUN, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.SCARF)),
     LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_COSPLAYER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT, clothing_items),
     LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT, completionist_reqs),
@@ -597,6 +641,12 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_FOOT_CAST: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM)),
     LocationName.ITEM_BERET: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.ROYAL_CAPE, ItemName.CLIMBING_BOOTS, ItemName.WET_SOCKS, ItemName.HONK_ATTACHMENT)),
     LocationName.ITEM_ROYAL_CROWN: LocationData(RegionName.BASTO, LocationGroup.ITEM, (ItemName.WATERGUN, ItemName.PICKAXE)), 
+    LocationName.TAPE_NIGHT_JAM: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_WARM_DAYS_NIGHT: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_ONE_BY_ONE: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_HAMMOCK_DAYS: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_SAILORS_TUNE: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)), # Basto stamp requirement handled as special case
+    LocationName.TAPE_SONG_OF_THE_SEA: LocationData(RegionName.BASTO, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
     LocationName.CHEEVO_TOPICAL_PARADISE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.VACATION_SHIRT, ItemName.FLIP_FLOPS, ItemName.SUN_HAT)),
     LocationName.CHEEVO_KINGS_SHIRT: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.ICE_CREAM, ItemName.ROYAL_CAPE)),

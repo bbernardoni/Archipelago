@@ -154,7 +154,30 @@ class ItemName:
     ROYAL_CROWN = "Royal crown"
 
     PHOTO_OF_HOME_TAPE = "Jamal Green - Photo of Home"
+    SUMMER_BREEZE_TAPE = "Jamal Green - Summer Breeze"
+    SQUIRREL_HOTEL_TAPE = "Jamal Green - The Grand Squirrel Hotel"
+    PINE_NEEDLES_TAPE = "Launchable Socks - Pine Needles"
     SQUIRREL_PHOTO_TAPE = "Launchable Socks - Squirrel Photography"
+    FISHERMANS_WHISTLE_TAPE = "Fisherman's Whistle"
+    SMILING_HUNTSMAN_TAPE = "JG+LS - The Smiling Huntsman"
+    NAUT_TAPE = "Jamal Green - NAUT"
+    PLACE_IN_SUN_TAPE = "Launchable Socks - A Place In The Sun"
+    FISHERMANS_TUNE_TAPE = "Launchable Socks - Fisherman's Tune"
+    RATSKULLZ_THEME_TAPE = "Anes Sabanovic - Ratskullz Theme"
+    BIG_CITY_TAPE = "JG+LS - The Big City"
+    HUSTLE_BUSTLE_TAPE = "Jamal Green - Hustle Bustle Shuffle"
+    HOP_SKIP_STEP_TAPE = "Launchable Socks - Hop Skip Step"
+    ON_THE_HOUR_TAPE = "Launchable Socks - On The Hour"
+    LIFE_THROUGH_LENS_TAPE = "Jamal Green - Life Through a Lens"
+    PETTING_DEER_TAPE = "Jamal Green - The Petting of a Sacred Deer"
+    STORIES_OF_SNOW_TAPE = "Launchable Socks - Stories Of Snow"
+    TALL_SHY_TAPE = "Launchable Socks - Tall & Shy"
+    NIGHT_JAM_TAPE = "JG+LS - Night Jam"
+    WARM_DAYS_NIGHT_TAPE = "Jamal Green - A Warm Days Night"
+    ONE_BY_ONE_TAPE = "Jamal Green - One By One"
+    HAMMOCK_DAYS_TAPE = "Launchable Socks - Hammock Days"
+    SAILORS_TUNE_TAPE = "Launchable Socks - Sailor's Tune"
+    SONG_OF_THE_SEA_TAPE = "Launchable Socks - Song Of The Sea"
 
 
 class ToemItem(Item):
@@ -304,7 +327,30 @@ item_table: dict[str, ItemData] = {
     ItemName.BERET: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
     ItemName.ROYAL_CROWN: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, RegionName.BASTO),
     ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.HOMELANDA),
+    ItemName.SUMMER_BREEZE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.OAKLAVILLE),
+    ItemName.SQUIRREL_HOTEL_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.OAKLAVILLE),
+    ItemName.PINE_NEEDLES_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.OAKLAVILLE),
     ItemName.SQUIRREL_PHOTO_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.OAKLAVILLE),
+    ItemName.FISHERMANS_WHISTLE_TAPE: ItemData(ItemClassification.progression, 1, ItemGroup.CASSETTE, RegionName.STANHAMN),
+    ItemName.SMILING_HUNTSMAN_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.STANHAMN),
+    ItemName.NAUT_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.STANHAMN),
+    ItemName.PLACE_IN_SUN_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.STANHAMN),
+    ItemName.FISHERMANS_TUNE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.STANHAMN),
+    ItemName.RATSKULLZ_THEME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.LOGCITY),
+    ItemName.BIG_CITY_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.LOGCITY),
+    ItemName.HUSTLE_BUSTLE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.LOGCITY),
+    ItemName.HOP_SKIP_STEP_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.LOGCITY),
+    ItemName.ON_THE_HOUR_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.LOGCITY),
+    ItemName.LIFE_THROUGH_LENS_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.KIIRUBERG),
+    ItemName.PETTING_DEER_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.KIIRUBERG),
+    ItemName.STORIES_OF_SNOW_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.KIIRUBERG),
+    ItemName.TALL_SHY_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.KIIRUBERG),
+    ItemName.NIGHT_JAM_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.WARM_DAYS_NIGHT_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.ONE_BY_ONE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.HAMMOCK_DAYS_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.SAILORS_TUNE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.SONG_OF_THE_SEA_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}

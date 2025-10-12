@@ -92,8 +92,7 @@ class ToemOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
     include_basto: IncludeBasto
     include_items: IncludeItems
-    # Not implemented
-    #include_cassettes: IncludeCassettes
+    include_cassettes: IncludeCassettes
     include_achievements: IncludeAchievements
     homelanda_stamp_requirement: HomelandaStampRequirement
     oaklaville_stamp_requirement: OaklavilleStampRequirement
