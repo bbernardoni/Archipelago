@@ -31,7 +31,7 @@ class ToemWebWorld(WebWorld):
             language="English",
             file_name="setup_en.md",
             link="setup/en",
-            authors=["DrTChops"],
+            authors=["DrTChops","0xDEAFC0DE"],
         ),
     ]
 
@@ -156,7 +156,7 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": "0.1.0",
+            "version": "1.0.0",
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
