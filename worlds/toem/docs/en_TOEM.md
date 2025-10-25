@@ -17,4 +17,4 @@ The number of stamps required to move on is customizable for each region. Additi
 
 ## What is the goal?
 
-The default goal is to Experience TOEM and beat the base game. If the Basto DLC is included via an option the goal is to changed to the Basto bonfire event.
+The default goal is to Experience TOEM and beat the base game. If the Basto DLC is included via an option the goal is changed to the Basto bonfire event.
