@@ -21,6 +21,6 @@ See [here](https://github.com/bbernardoni/Archipelago/blob/toem/worlds/toem/docs
 
 1. Launch the game (if installed correctly, the BepInEx terminal window should open as well).
 2. Enter your connection details in the text boxes at the top right and hit connect.
-3. If successful, connection details box will now display the "Connected" status.
-4. If you already have a previous save, the "New Advanture" menu will pop up. If achievements are randomized, the "Reset in-game achievements" option should already be turned on. Hit yes to reset your save.
+3. If successful, the connection details box will now display the "Connected" status.
+4. If you already have a previous save, the "New Adventure" menu will pop up. If achievements are randomized, the "Reset in-game achievements" option should already be turned on. Hit yes to reset your save.
 5. Start the game normally.
