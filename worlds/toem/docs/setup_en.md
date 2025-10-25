@@ -1,6 +1,6 @@
 # TOEM: A Photo Adventure for Archipelago Setup Guide
 
-See [here]((https://github.com/bbernardoni/Archipelago/blob/toem/worlds/toem/docs/en_TOEM.md) for more details on the Randomizer itself.
+See [here](https://github.com/bbernardoni/Archipelago/blob/toem/worlds/toem/docs/en_TOEM.md) for more details on the Randomizer itself.
 
 ## Required Software
 
