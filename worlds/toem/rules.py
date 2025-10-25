@@ -53,6 +53,8 @@ def set_entrance_rules(world: "ToemWorld") -> None:
     }
 
     for (from_, to_), rule in entrance_rules.items():
+        if to_ == RegionName.BASTO and not world.options.include_basto:
+            continue
         set_rule(world.get_entrance(f"{from_} -> {to_}"), rule)
 
 
