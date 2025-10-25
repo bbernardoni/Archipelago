@@ -80,10 +80,10 @@ class BastoStampRequirement(Range):
     default = 10
 
 
-class HonkAttachementEarly(Toggle):
+class HonkAttachmentEarly(Toggle):
     """Add honk attachment to `early_items`. Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn."""
 
-    display_name: ClassVar[str] = "Honk Attachement Early"
+    display_name: ClassVar[str] = "Honk Attachment Early"
     default: ClassVar[int] = 0
 
 
@@ -100,5 +100,5 @@ class ToemOptions(PerGameCommonOptions):
     logcity_stamp_requirement: LogcityStampRequirement
     kiiruberg_stamp_requirement: KiirubergStampRequirement
     basto_stamp_requirement: BastoStampRequirement
-    honk_attachment_early: HonkAttachementEarly
+    honk_attachment_early: HonkAttachmentEarly
 
