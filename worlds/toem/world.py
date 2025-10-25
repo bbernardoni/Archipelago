@@ -50,7 +50,7 @@ class ToemWorld(World):
     @override
     def generate_early(self) -> None:
         self.multiworld.local_early_items[self.player][ItemName.HOMELANDA_STAMP] = 1
-        if self.options.include_items and self.options.honk_attachement_early:
+        if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
     def create_location(self, name: str) -> ToemLocation | None:
@@ -168,6 +168,6 @@ class ToemWorld(World):
                 "logcity_stamp_requirement",
                 "kiiruberg_stamp_requirement",
                 "basto_stamp_requirement",
-                "honk_attachement_early",
+                "honk_attachment_early",
             ),
         }

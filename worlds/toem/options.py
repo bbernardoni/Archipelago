@@ -100,5 +100,5 @@ class ToemOptions(PerGameCommonOptions):
     logcity_stamp_requirement: LogcityStampRequirement
     kiiruberg_stamp_requirement: KiirubergStampRequirement
     basto_stamp_requirement: BastoStampRequirement
-    honk_attachement_early: HonkAttachementEarly
+    honk_attachment_early: HonkAttachementEarly
 
