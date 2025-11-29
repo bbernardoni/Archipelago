@@ -21,12 +21,32 @@ class EventName:
 CollectionRule = Callable[[CollectionState], bool]
 
 
+progressive_stamp_requirements = {}
+def init_stamp_requirements(world: "ToemWorld") -> None:
+    if world.options.progressive_stamps:
+        total = world.options.homelanda_stamp_requirement
+        progressive_stamp_requirements[RegionName.HOMELANDA] = total
+        total += world.options.oaklaville_stamp_requirement
+        progressive_stamp_requirements[RegionName.OAKLAVILLE] = total
+        total += world.options.stanhamn_stamp_requirement
+        progressive_stamp_requirements[RegionName.STANHAMN] = total
+        total += world.options.logcity_stamp_requirement
+        progressive_stamp_requirements[RegionName.LOGCITY] = total
+        total += world.options.kiiruberg_stamp_requirement
+        progressive_stamp_requirements[RegionName.KIIRUBERG] = total
+        total += world.options.basto_stamp_requirement
+        progressive_stamp_requirements[RegionName.BASTO] = total
+
+
 def set_item_rules(world: "ToemWorld") -> None:
     for location in world.get_locations():
         if location.address is None: # skip events
             continue
         if location.name == LocationName.TAPE_SAILORS_TUNE:
-            add_rule(location, lambda state: state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement))
+            if world.options.progressive_stamps:
+                add_rule(location, lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.BASTO]))
+            else:
+                add_rule(location, lambda state: state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement))
         item_filter = lambda req: (
             (item_table[req].group == ItemGroup.ITEM and world.options.include_items) or
             (item_table[req].group == ItemGroup.CASSETTE and world.options.include_cassettes)
@@ -41,21 +61,37 @@ def set_item_rules(world: "ToemWorld") -> None:
 
 
 def set_entrance_rules(world: "ToemWorld") -> None:
-    entrance_rules: dict[tuple[str, str], CollectionRule] = {
-        (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
-        (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state:
-            state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement) and 
-            (not world.options.include_items or state.has(ItemName.HONK_ATTACHMENT, world.player)),
-        (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
-        (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
-        (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
-        (RegionName.MOUNTAIN_TOP, RegionName.BASTO): lambda state: not world.options.include_items or state.has(ItemName.CLIMBING_BOOTS, world.player),
-    }
+    if world.options.progressive_stamps:
+        stamp_entrance_rules: dict[tuple[str, str], CollectionRule] = {
+            (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.HOMELANDA]),
+            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.OAKLAVILLE]),
+            (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.STANHAMN]),
+            (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.LOGCITY]),
+            (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.KIIRUBERG]),
+        }
+    else:
+        stamp_entrance_rules: dict[tuple[str, str], CollectionRule] = {
+            (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
+            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement),
+            (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
+            (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
+            (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
+        }
 
-    for (from_, to_), rule in entrance_rules.items():
+    for (from_, to_), rule in stamp_entrance_rules.items():
         if to_ == RegionName.BASTO and not world.options.include_basto:
             continue
         set_rule(world.get_entrance(f"{from_} -> {to_}"), rule)
+
+    if world.options.include_items:
+        item_entrance_rules: dict[tuple[str, str], CollectionRule] = {
+            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.HONK_ATTACHMENT, world.player),
+            (RegionName.MOUNTAIN_TOP, RegionName.BASTO): lambda state: state.has(ItemName.CLIMBING_BOOTS, world.player),
+        }
+        for (from_, to_), rule in item_entrance_rules.items():
+            if to_ == RegionName.BASTO and not world.options.include_basto:
+                continue
+            add_rule(world.get_entrance(f"{from_} -> {to_}"), rule)
 
 
 def set_location_rules(world: "ToemWorld") -> None:
@@ -79,10 +115,16 @@ def set_location_rules(world: "ToemWorld") -> None:
 def set_victory_rule(world: "ToemWorld") -> None:
     if world.options.include_basto:
         victory_event_name = EventName.BASTO_BONFIRE
-        victory_rule = lambda state: (
-            (not world.options.include_items or state.has(ItemName.WATERGUN, world.player)) and
-            state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement)
-        )
+        if world.options.progressive_stamps:
+            victory_rule = lambda state: (
+                (not world.options.include_items or state.has(ItemName.WATERGUN, world.player)) and
+                state.has(ItemName.PROGRESSIVE_STAMP, world.player, progressive_stamp_requirements[RegionName.BASTO])
+            )
+        else:
+            victory_rule = lambda state: (
+                (not world.options.include_items or state.has(ItemName.WATERGUN, world.player)) and
+                state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement)
+            )
     else:
         victory_event_name = EventName.TOEM_EXPERIENCED
         victory_rule = lambda state: not world.options.include_items or state.has(ItemName.CLIMBING_BOOTS, world.player)
