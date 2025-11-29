@@ -24,6 +24,7 @@ class ItemName:
     LOGCITY_STAMP = "Logcity stamp"
     KIIRUBERG_STAMP = "Kiiruberg stamp"
     BASTO_STAMP = "Basto stamp"
+    PROGRESSIVE_STAMP = "Progressive stamp"
 
     COW_PHOTO = "Cow photo"
     FLIES_PHOTO = "Flies photo"
@@ -351,6 +352,7 @@ item_table: dict[str, ItemData] = {
     ItemName.HAMMOCK_DAYS_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SAILORS_TUNE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SONG_OF_THE_SEA_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
+    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.HOMELANDA),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}

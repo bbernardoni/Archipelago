@@ -32,6 +32,13 @@ class IncludeAchievements(Toggle):
     default: ClassVar[int] = 0
 
 
+class ProgressiveStamps(Toggle):
+    """Make stamps progressive. Makes it so any stamp item will give you a stamp for the earliest region that still needs stamps for the bus ticket."""
+
+    display_name: ClassVar[str] = "Progressive Stamps"
+    default: ClassVar[int] = 1
+
+
 class HomelandaStampRequirement(Range):
     """The number of stamps required to leave Homelanda."""
     display_name = "Homelanda Stamp Requirement"
@@ -94,6 +101,7 @@ class ToemOptions(PerGameCommonOptions):
     include_items: IncludeItems
     include_cassettes: IncludeCassettes
     include_achievements: IncludeAchievements
+    progressive_stamps: ProgressiveStamps
     homelanda_stamp_requirement: HomelandaStampRequirement
     oaklaville_stamp_requirement: OaklavilleStampRequirement
     stanhamn_stamp_requirement: StanhamnStampRequirement

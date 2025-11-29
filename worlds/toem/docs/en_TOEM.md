@@ -13,7 +13,7 @@ Stamps and compendium photos are always randomized. Items, cassettes, and achiev
 
 Basic items such as the camera, backpack, cassette player, and community card are not randomized. The Basto Ticket is also not randomized.
 
-The number of stamps required to move on is customizable for each region. Additionally, the honk attachment can be added to `early_items` which forces it to be in some player's sphere one. Both of these options can be tweaked to help avoid the player being BK'ed when in a multiworld with games that have a lot of checks.
+By default stamps are progressive where any stamp item will give you a stamp for the earliest region that still needs stamps for the bus ticket. Turning this off will make each stamp item specific to a region. The number of stamps required to move on is customizable for each region. Additionally, the honk attachment can be added to `early_items` which forces it to be in some player's sphere one. These options can be tweaked to help avoid the player being BK'ed when in a multiworld with games that have a lot of checks.
 
 ## What is the goal?
 

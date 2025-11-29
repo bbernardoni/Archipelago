@@ -16,7 +16,7 @@ from .locations import (
 )
 from .options import ToemOptions
 from .regions import RegionName, toem_regions
-from .rules import EventName, set_item_rules, set_entrance_rules, set_location_rules, set_victory_rule
+from .rules import EventName, init_stamp_requirements, set_item_rules, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
     from Options import PerGameCommonOptions
@@ -49,7 +49,8 @@ class ToemWorld(World):
 
     @override
     def generate_early(self) -> None:
-        self.multiworld.local_early_items[self.player][ItemName.HOMELANDA_STAMP] = 1
+        homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
+        self.multiworld.local_early_items[self.player][homelanda_stamp] = 1
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
@@ -131,10 +132,18 @@ class ToemWorld(World):
 
             for item_name in item_names:
                 data = item_table[item_name]
+                quantity = data.quantity
                 if not self.options.include_basto and data.region == RegionName.BASTO:
                     continue
+                if data.group == ItemGroup.STAMP:
+                    if self.options.progressive_stamps and item_name != ItemName.PROGRESSIVE_STAMP:
+                        continue
+                    if not self.options.progressive_stamps and item_name == ItemName.PROGRESSIVE_STAMP:
+                        continue
+                    if not self.options.include_basto and item_name == ItemName.PROGRESSIVE_STAMP:
+                        quantity -= 20 
 
-                itempool.extend(self.create_item(item_name) for _ in range(data.quantity))
+                itempool.extend(self.create_item(item_name) for _ in range(quantity))
 
         total_locations = len(self.multiworld.get_unfilled_locations(self.player))
         while len(itempool) < total_locations:
@@ -148,6 +157,7 @@ class ToemWorld(World):
 
     @override
     def set_rules(self) -> None:
+        init_stamp_requirements(self)
         set_item_rules(self)
         set_entrance_rules(self)
         set_location_rules(self)
@@ -156,12 +166,13 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": "1.0.0",
+            "version": "1.1.0",
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
                 "include_cassettes",
                 "include_achievements",
+                "progressive_stamps",
                 "homelanda_stamp_requirement",
                 "oaklaville_stamp_requirement",
                 "stanhamn_stamp_requirement",
