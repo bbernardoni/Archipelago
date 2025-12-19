@@ -46,7 +46,7 @@ class ToemWorld(World):
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = RegionName.HOMELANDA
-    progressive_stamp_requirements: ClassVar[dict[str, int]] = {}
+    progressive_stamp_requirements: dict[str, int]
 
     @override
     def generate_early(self) -> None:
