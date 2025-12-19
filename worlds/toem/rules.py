@@ -23,6 +23,7 @@ CollectionRule = Callable[[CollectionState], bool]
 
 def init_stamp_requirements(world: "ToemWorld") -> None:
     if world.options.progressive_stamps:
+        world.progressive_stamp_requirements = {}
         total = world.options.homelanda_stamp_requirement
         world.progressive_stamp_requirements[RegionName.HOMELANDA] = total
         total += world.options.oaklaville_stamp_requirement
