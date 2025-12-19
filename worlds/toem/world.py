@@ -167,7 +167,7 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": "1.1.0",
+            "version": "1.1.1",
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
