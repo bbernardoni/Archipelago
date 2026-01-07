@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import final
 
 
@@ -13,19 +12,194 @@ class RegionName:
     MOUNTAIN_TOP = "Mountain Top"
     BASTO = "Basto"
 
+@final
+class SubRegionName:
+    # Menu
+    START_MENU = "Start menu"
+    BUS_MENU = "Bus menu"
+    # Homelanda
+    HOMELANDA_PLAYER_ROOM = "Player room"
+    HOMELANDA_LIVING_ROOM = "Living room"
+    HOMELANDA_BUS_STOP = "Bus stop"
+    # Oaklaville
+    OAKLAVILLE_BUS_STOP = "Bus stop"
+    OAKLAVILLE_OUTSIDE_HOTEL = "Outside hotel"
+    OAKLAVILLE_HOTEL = "Hotel"
+    OAKLAVILLE_HOTEL_ELEVATOR = "Hotel elevator"
+    OAKLAVILLE_GHOST_CUP_GAME = "Ghost cup game"
+    OAKLAVILLE_MUSHROOM_HOUSE = "Mushroom house"
+    OAKLAVILLE_HIDE_AND_SEEK = "Hide and seek"
+    OAKLAVILLE_GRAVEYARD = "Graveyard"
+    OAKLAVILLE_SKELETON_HOUSE = "Skeleton house"
+    OAKLAVILLE_SKELETON_HOUSE_BALCONY = "Skeleton house balcony"
+    OAKLAVILLE_CAMP = "Camp"
+    OAKLAVILLE_TRAIL = "Trail"
+    OAKLAVILLE_LOOKOUT = "Lookout"
+    OAKLAVILLE_PLAYGROUND = "Playground"
+    OAKLAVILLE_OUTSIDE_RAVE = "Outside rave"
+    OAKLAVILLE_RAVE = "Rave"
+    # Stanhamn
+    STANHAMN_BUS_STOP = "Bus stop"
+    STANHAMN_PHOTO_GUILD_HUT = "Photo guild hut"
+    STANHAMN_PIRATE_DRAWBRIDGE = "Pirate Drawbridge"
+    STANHAMN_HIPPO_BEACH = "Hippo beach"
+    STANHAMN_UNDERWATER = "Underwater"
+    STANHAMN_OUTSIDE_LIGHTHOUSE = "Outside lighthouse"
+    STANHAMN_LIGHTHOUSE = "Lighthouse"
+    STANHAMN_LIGHTHOUSE_ROOF = "Lighthouse roof"
+    STANHAMN_KING_FISH_BEACH = "King fish beach"
+    STANHAMN_DOCKS_LEFT = "Docks left"
+    STANHAMN_DOCKS_RIGHT = "Docks right"
+    STANHAMN_FISHING_TOWER = "Fishing tower"
+    STANHAMN_GHOST_DRAWBRIDGE_TOP = "Ghost drawbridge top"
+    STANHAMN_GHOST_DRAWBRIDGE_BOTTOM = "Ghost drawbridge bottom"
+    STANHAMN_OUTSIDE_HYDROPLANT = "Outside hydroplant"
+    STANHAMN_HYDROPLANT = "Hydroplant"
+    # Logcity
+    LOGCITY_BUS_STOP = "Bus stop"
+    LOGCITY_CLOCK_TOWER = "Clock tower"
+    LOGCITY_CROSSWALK = "Cross walk"
+    LOGCITY_OVERPASS = "Overpass"
+    LOGCITY_NEWS_HOUSE = "News house"
+    LOGCITY_SKATE_PARK = "Skate park"
+    LOGCITY_RATSKULLZ_ALLEY = "Ratskullz alley"
+    LOGCITY_OUTSIDE_FASHION_SHOW = "Outside fashion show"
+    LOGCITY_FASHION_SHOW = "Fashion show"
+    LOGCITY_FASHION_SHOW_BACKSTAGE = "Fashion show backstage"
+    LOGCITY_OUTSIDE_CAFE = "Outside cafe"
+    LOGCITY_CAFE = "Cafe"
+    LOGCITY_OUTSIDE_GALLERY = "Outside gallery"
+    LOGCITY_GALLERY = "Gallery"
+    # Kiiruberg
+    KIIRUBERG_BUS_STOP = "Bus stop"
+    KIIRUBERG_BIRTHDAY_PARTY = "Birthday party"
+    KIIRUBERG_BALLOON_HOUSE = "Balloon house"
+    KIIRUBERG_FROZEN_POND = "Frozen pond"
+    KIIRUBERG_OLD_MANS_HOUSE = "Old man's house"
+    KIIRUBERG_SNOWMAN_SQUARE = "Snowman square"
+    KIIRUBERG_MILITARY_BASE = "Military base"
+    KIIRUBERG_MECKS_HOUSE = "Meck's house"
+    KIIRUBERG_OUTSIDE_WIZARD_TOWER = "Outside wizard tower"
+    KIIRUBERG_WIZARD_TOWER = "Wizard tower"
+    KIIRUBERG_COSMO_GARDEN = "Cosmo Garden"
+    KIIRUBERG_CLIFFS = "Cliffs"
+    KIIRUBERG_BLIZZARD_BRIDGE = "Blizzard bridge"
+    KIIRUBERG_BLIZZARD_MONSTER = "Blizzard monster"
+    KIIRUBERG_OUTSIDE_OBSERVATORY = "Outside observatory"
+    KIIRUBERG_OBSERVATORY = "Observatory"
+    KIIRUBERG_SKI_LIFT_BASE = "Ski lift base"
+    KIIRUBERG_SKI_LODGE = "Ski lodge"
+    KIIRUBERG_SKI_MOUNTAIN_TOP = "Ski mountain top"
+    # Mountain Top
+    MOUNTAIN_TOP_BUS_STOP = "Bus stop"
+    MOUNTAIN_TOP_TOEM = "Toem"
+    # Basto
+    BASTO_BUS_STOP = "Harbour"
+    BASTO_LILY_PAD_POND = "Lily pad pond"
+    BASTO_CAMP = "Campsite"
+    BASTO_TENT = "Tent"
+    BASTO_OUTSIDE_CASTLE = "Outside castle"
+    BASTO_CASTLE = "Castle"
+    BASTO_GYM_HOUSE = "Gym house"
+    BASTO_BONFIRE = "Bonfire"
+    BASTO_CARNIVAL = "Carnival"
+    BASTO_GHOST_HANGOUT = "Ghost hangout"
+    BASTO_CAVE = "Cave"
+    BASTO_SECRET_CAVE = "Secret cave room"
+    BASTO_JUNGLE = "Jungle"
 
-@dataclass
-class RegionData:
-    region: str
-    exits: tuple[str, ...] = ()
-
-
-toem_regions: dict[str, RegionData] = {
-    RegionName.HOMELANDA: RegionData(RegionName.HOMELANDA, exits=(RegionName.OAKLAVILLE,)),
-    RegionName.OAKLAVILLE: RegionData(RegionName.OAKLAVILLE, exits=(RegionName.STANHAMN,)),
-    RegionName.STANHAMN: RegionData(RegionName.STANHAMN, exits=(RegionName.LOGCITY,)),
-    RegionName.LOGCITY: RegionData(RegionName.LOGCITY, exits=(RegionName.KIIRUBERG,)),
-    RegionName.KIIRUBERG: RegionData(RegionName.KIIRUBERG, exits=(RegionName.MOUNTAIN_TOP,)),
-    RegionName.MOUNTAIN_TOP: RegionData(RegionName.MOUNTAIN_TOP, exits=(RegionName.BASTO,)),
-    RegionName.BASTO: RegionData(RegionName.BASTO),
-}
+@final
+class FullRegionName:
+    # Menu
+    START_MENU = f"{RegionName.MENU} - {SubRegionName.START_MENU}"
+    BUS_MENU = f"{RegionName.MENU} - {SubRegionName.BUS_MENU}"
+    # Homelanda
+    HOMELANDA_PLAYER_ROOM = f"{RegionName.HOMELANDA} - {SubRegionName.HOMELANDA_PLAYER_ROOM}"
+    HOMELANDA_LIVING_ROOM = f"{RegionName.HOMELANDA} - {SubRegionName.HOMELANDA_LIVING_ROOM}"
+    HOMELANDA_BUS_STOP = f"{RegionName.HOMELANDA} - {SubRegionName.HOMELANDA_BUS_STOP}"
+    # Oaklaville
+    OAKLAVILLE_BUS_STOP = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_BUS_STOP}"
+    OAKLAVILLE_OUTSIDE_HOTEL = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_OUTSIDE_HOTEL}"
+    OAKLAVILLE_HOTEL = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_HOTEL}"
+    OAKLAVILLE_HOTEL_ELEVATOR = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_HOTEL_ELEVATOR}"
+    OAKLAVILLE_GHOST_CUP_GAME = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_GHOST_CUP_GAME}"
+    OAKLAVILLE_MUSHROOM_HOUSE = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_MUSHROOM_HOUSE}"
+    OAKLAVILLE_HIDE_AND_SEEK = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_HIDE_AND_SEEK}"
+    OAKLAVILLE_GRAVEYARD = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_GRAVEYARD}"
+    OAKLAVILLE_SKELETON_HOUSE = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_SKELETON_HOUSE}"
+    OAKLAVILLE_SKELETON_HOUSE_BALCONY = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_SKELETON_HOUSE_BALCONY}"
+    OAKLAVILLE_CAMP = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_CAMP}"
+    OAKLAVILLE_TRAIL = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_TRAIL}"
+    OAKLAVILLE_LOOKOUT = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_LOOKOUT}"
+    OAKLAVILLE_PLAYGROUND = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_PLAYGROUND}"
+    OAKLAVILLE_OUTSIDE_RAVE = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_OUTSIDE_RAVE}"
+    OAKLAVILLE_RAVE = f"{RegionName.OAKLAVILLE} - {SubRegionName.OAKLAVILLE_RAVE}"
+    # Stanhamn
+    STANHAMN_BUS_STOP = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_BUS_STOP}"
+    STANHAMN_PHOTO_GUILD_HUT = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_PHOTO_GUILD_HUT}"
+    STANHAMN_PIRATE_DRAWBRIDGE = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_PIRATE_DRAWBRIDGE}"
+    STANHAMN_HIPPO_BEACH = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_HIPPO_BEACH}"
+    STANHAMN_UNDERWATER = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_UNDERWATER}"
+    STANHAMN_OUTSIDE_LIGHTHOUSE = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_OUTSIDE_LIGHTHOUSE}"
+    STANHAMN_LIGHTHOUSE = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_LIGHTHOUSE}"
+    STANHAMN_LIGHTHOUSE_ROOF = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_LIGHTHOUSE_ROOF}"
+    STANHAMN_KING_FISH_BEACH = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_KING_FISH_BEACH}"
+    STANHAMN_DOCKS_LEFT = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_DOCKS_LEFT}"
+    STANHAMN_DOCKS_RIGHT = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_DOCKS_RIGHT}"
+    STANHAMN_FISHING_TOWER = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_FISHING_TOWER}"
+    STANHAMN_GHOST_DRAWBRIDGE_TOP = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_GHOST_DRAWBRIDGE_TOP}"
+    STANHAMN_GHOST_DRAWBRIDGE_BOTTOM = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_GHOST_DRAWBRIDGE_BOTTOM}"
+    STANHAMN_OUTSIDE_HYDROPLANT = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_OUTSIDE_HYDROPLANT}"
+    STANHAMN_HYDROPLANT = f"{RegionName.STANHAMN} - {SubRegionName.STANHAMN_HYDROPLANT}"
+    # Logcity
+    LOGCITY_BUS_STOP = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_BUS_STOP}"
+    LOGCITY_CLOCK_TOWER = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_CLOCK_TOWER}"
+    LOGCITY_CROSSWALK = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_CROSSWALK}"
+    LOGCITY_OVERPASS = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_OVERPASS}"
+    LOGCITY_NEWS_HOUSE = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_NEWS_HOUSE}"
+    LOGCITY_SKATE_PARK = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_SKATE_PARK}"
+    LOGCITY_RATSKULLZ_ALLEY = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_RATSKULLZ_ALLEY}"
+    LOGCITY_OUTSIDE_FASHION_SHOW = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_OUTSIDE_FASHION_SHOW}"
+    LOGCITY_FASHION_SHOW = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_FASHION_SHOW}"
+    LOGCITY_FASHION_SHOW_BACKSTAGE = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE}"
+    LOGCITY_OUTSIDE_CAFE = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_OUTSIDE_CAFE}"
+    LOGCITY_CAFE = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_CAFE}"
+    LOGCITY_OUTSIDE_GALLERY = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_OUTSIDE_GALLERY}"
+    LOGCITY_GALLERY = f"{RegionName.LOGCITY} - {SubRegionName.LOGCITY_GALLERY}"
+    # Kiiruberg
+    KIIRUBERG_BUS_STOP = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_BUS_STOP}"
+    KIIRUBERG_BIRTHDAY_PARTY = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_BIRTHDAY_PARTY}"
+    KIIRUBERG_BALLOON_HOUSE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_BALLOON_HOUSE}"
+    KIIRUBERG_FROZEN_POND = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_FROZEN_POND}"
+    KIIRUBERG_OLD_MANS_HOUSE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_OLD_MANS_HOUSE}"
+    KIIRUBERG_SNOWMAN_SQUARE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_SNOWMAN_SQUARE}"
+    KIIRUBERG_MILITARY_BASE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_MILITARY_BASE}"
+    KIIRUBERG_MECKS_HOUSE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_MECKS_HOUSE}"
+    KIIRUBERG_OUTSIDE_WIZARD_TOWER = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_OUTSIDE_WIZARD_TOWER}"
+    KIIRUBERG_WIZARD_TOWER = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_WIZARD_TOWER}"
+    KIIRUBERG_COSMO_GARDEN = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_COSMO_GARDEN}"
+    KIIRUBERG_CLIFFS = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_CLIFFS}"
+    KIIRUBERG_BLIZZARD_BRIDGE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE}"
+    KIIRUBERG_BLIZZARD_MONSTER = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_BLIZZARD_MONSTER}"
+    KIIRUBERG_OUTSIDE_OBSERVATORY = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY}"
+    KIIRUBERG_OBSERVATORY = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_OBSERVATORY}"
+    KIIRUBERG_SKI_LIFT_BASE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_SKI_LIFT_BASE}"
+    KIIRUBERG_SKI_LODGE = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_SKI_LODGE}"
+    KIIRUBERG_SKI_MOUNTAIN_TOP = f"{RegionName.KIIRUBERG} - {SubRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP}"
+    # Mountain Top
+    MOUNTAIN_TOP_BUS_STOP = f"{RegionName.MOUNTAIN_TOP} - {SubRegionName.MOUNTAIN_TOP_BUS_STOP}"
+    MOUNTAIN_TOP_TOEM = f"{RegionName.MOUNTAIN_TOP} - {SubRegionName.MOUNTAIN_TOP_TOEM}"
+    # Basto
+    BASTO_BUS_STOP = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP}"
+    BASTO_LILY_PAD_POND = f"{RegionName.BASTO} - {SubRegionName.BASTO_LILY_PAD_POND}"
+    BASTO_CAMP = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAMP}"
+    BASTO_TENT = f"{RegionName.BASTO} - {SubRegionName.BASTO_TENT}"
+    BASTO_OUTSIDE_CASTLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_OUTSIDE_CASTLE}"
+    BASTO_CASTLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_CASTLE}"
+    BASTO_GYM_HOUSE = f"{RegionName.BASTO} - {SubRegionName.BASTO_GYM_HOUSE}"
+    BASTO_BONFIRE = f"{RegionName.BASTO} - {SubRegionName.BASTO_BONFIRE}"
+    BASTO_CARNIVAL = f"{RegionName.BASTO} - {SubRegionName.BASTO_CARNIVAL}"
+    BASTO_GHOST_HANGOUT = f"{RegionName.BASTO} - {SubRegionName.BASTO_GHOST_HANGOUT}"
+    BASTO_CAVE = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAVE}"
+    BASTO_SECRET_CAVE = f"{RegionName.BASTO} - {SubRegionName.BASTO_SECRET_CAVE}"
+    BASTO_JUNGLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_JUNGLE}"
