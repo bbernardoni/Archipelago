@@ -250,79 +250,113 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
     RegionName.KIIRUBERG: {
         SubRegionName.KIIRUBERG_BUS_STOP: [
             Connection(FullRegionName.BUS_MENU, "Kiiruberg bus pickup", ERGroups.EXCLUDED),
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY, "Bus stop up", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Bus stop up", ERGroups.KIIRUBERG),
         ],
-        SubRegionName.KIIRUBERG_BIRTHDAY_PARTY: [
+        SubRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM: [
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP, "Birthday party rope from bottom", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
             Connection(FullRegionName.KIIRUBERG_BALLOON_HOUSE, "Balloon house entrance", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_BUS_STOP, "Birthday party down", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_FROZEN_POND, "Birthday party left", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE, "Birthday party up", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_SKI_LIFT_BASE, "Birthday party right", ERGroups.KIIRUBERG),
         ],
+        SubRegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP: [
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Birthday party rope from top", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, "Birthday party up", ERGroups.KIIRUBERG),
+        ],
         SubRegionName.KIIRUBERG_BALLOON_HOUSE: [
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY, "Balloon house exit", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Balloon house exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_FROZEN_POND: [
             Connection(FullRegionName.KIIRUBERG_OLD_MANS_HOUSE, "Old man's house entrance", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY, "Frozen pond right", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Frozen pond right", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_OLD_MANS_HOUSE: [
             Connection(FullRegionName.KIIRUBERG_FROZEN_POND, "Old man's house exit", ERGroups.KIIRUBERG),
         ],
-        SubRegionName.KIIRUBERG_SNOWMAN_SQUARE: [
+        SubRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM: [
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP, "Snowman square rope from bottom", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
             Connection(FullRegionName.KIIRUBERG_MILITARY_BASE, "Military base entrance", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_MECKS_HOUSE, "Meck's house entrance", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY, "Snowman square down", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP, "Snowman square down", ERGroups.KIIRUBERG),
+        ],
+        SubRegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP: [
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, "Snowman square rope from top", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
             Connection(FullRegionName.KIIRUBERG_OUTSIDE_WIZARD_TOWER, "Snowman square left", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_CLIFFS, "Snowman square up", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_BOTTOM, "Snowman square up", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_MILITARY_BASE: [
-            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE, "Military base exit", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, "Military base exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_MECKS_HOUSE: [
-            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE, "Meck's house exit", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, "Meck's house exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_OUTSIDE_WIZARD_TOWER: [
-            Connection(FullRegionName.KIIRUBERG_WIZARD_TOWER, "Wizard tower entrance", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE, "Outside wizard tower right", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_WIZARD_TOWER, "Wizard tower entrance", ERGroups.KIIRUBERG, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP, "Outside wizard tower right", ERGroups.KIIRUBERG, (ItemName.CLIMBING_BOOTS,)),
         ],
         SubRegionName.KIIRUBERG_WIZARD_TOWER: [
-            Connection(FullRegionName.KIIRUBERG_COSMO_GARDEN, "Wizard portal entrance", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_COSMO_GARDEN, "Wizard portal entrance", ERGroups.KIIRUBERG, (LocationName.QUEST_ICE_WIZARD,)),
             Connection(FullRegionName.KIIRUBERG_OUTSIDE_WIZARD_TOWER, "Wizard tower exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_COSMO_GARDEN: [
             Connection(FullRegionName.KIIRUBERG_WIZARD_TOWER, "Wizard portal exit", ERGroups.KIIRUBERG),
         ],
-        SubRegionName.KIIRUBERG_CLIFFS: [
-            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE, "Cliffs down", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE, "Cliffs right", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY, "Cliffs up", ERGroups.KIIRUBERG),
+        SubRegionName.KIIRUBERG_CLIFFS_BOTTOM: [
+            Connection(FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP, "Cliffs down", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_MIDDLE, "Cliffs bottom rope from bottom", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
         ],
-        SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE: [
-            Connection(FullRegionName.KIIRUBERG_CLIFFS, "Blizzard bridge left", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_MONSTER, "Blizzard bridge right", ERGroups.KIIRUBERG),
+        SubRegionName.KIIRUBERG_CLIFFS_MIDDLE: [
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT, "Cliffs right", ERGroups.KIIRUBERG, (ItemName.HONK_ATTACHMENT,)),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_BOTTOM, "Cliffs bottom rope from middle", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_TOP, "Cliffs top rope from middle", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+        ],
+        SubRegionName.KIIRUBERG_CLIFFS_TOP: [
+            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_BOTTOM, "Cliffs up", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_TOP, "Cliffs top rope from top", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+        ],
+        SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT: [
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_MIDDLE, "Blizzard bridge left", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from lower left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)), # check warm clothes?
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge break ice from bottom", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
+        ],
+        SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT: [
+            Connection(FullRegionName.KIIRUBERG_MAN_CAVE, "Man cave entrance", ERGroups.KIIRUBERG, (LocationName.QUEST_EXPERIENCE_TOEM,)), # not sure if best req, also check if ice reforms on exit
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from upper left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT, "Blizzard bridge break ice from top", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
+        ],
+        SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT: [
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT, "Blizzard bridge rope from lower right", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge rope from upper right", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_MONSTER, "Blizzard bridge right", ERGroups.KIIRUBERG, (ItemName.HONK_ATTACHMENT,)),
+        ],
+        SubRegionName.KIIRUBERG_MAN_CAVE: [
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Man cave exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_BLIZZARD_MONSTER: [
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE, "Blizzard monster exit", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard monster exit", ERGroups.KIIRUBERG),
         ],
-        SubRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY: [
+        SubRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_TOP: [
             Connection(FullRegionName.KIIRUBERG_OBSERVATORY, "Observatory entrance", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_CLIFFS, "Outside observatory down", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_BOTTOM, "Outside observatory rope from top", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+        ],
+        SubRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_BOTTOM: [
+            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_TOP, "Outside observatory rope from bottom", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_CLIFFS_TOP, "Outside observatory down", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP, "Outside observatory right", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_OBSERVATORY: [
-            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY, "Observatory exit", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_TOP, "Observatory exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_SKI_LIFT_BASE: [
             Connection(FullRegionName.KIIRUBERG_SKI_LODGE, "Ski lodge entrance", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY, "Ski lift base left", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Ski lift base left", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP, "Ski lift up", ERGroups.EXCLUDED),
         ],
         SubRegionName.KIIRUBERG_SKI_LODGE: [
             Connection(FullRegionName.KIIRUBERG_SKI_LIFT_BASE, "Ski lodge exit", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP: [
-            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY, "Ski mountain top left", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_BOTTOM, "Ski mountain top left", ERGroups.KIIRUBERG),
             Connection(FullRegionName.KIIRUBERG_SKI_LIFT_BASE, "Ski lift down", ERGroups.EXCLUDED),
         ],
     },
