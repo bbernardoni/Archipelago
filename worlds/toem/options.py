@@ -1,40 +1,35 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Options import PerGameCommonOptions, StartInventoryPool, Toggle, Range
+from Options import PerGameCommonOptions, StartInventoryPool, Toggle, Range, Choice
 
 
 class IncludeBasto(Toggle):
     """Include the free DLC Basto. Changes the goal to the Basto bonfire."""
-
     display_name: ClassVar[str] = "Include Basto"
     default: ClassVar[int] = 0
 
 
 class IncludeItems(Toggle):
     """Include inventory and clothing items as locations."""
-
     display_name: ClassVar[str] = "Include Items"
     default: ClassVar[int] = 1
 
 
 class IncludeCassettes(Toggle):
     """Include cassette tapes as locations."""
-
     display_name: ClassVar[str] = "Include Cassettes"
     default: ClassVar[int] = 0
 
 
 class IncludeAchievements(Toggle):
     """Include achievements as locations. Adds more photos to the pool to compensate."""
-
     display_name: ClassVar[str] = "Include Achievements"
     default: ClassVar[int] = 0
 
 
 class ProgressiveStamps(Toggle):
     """Make stamps progressive. Makes it so any stamp item will give you a stamp for the earliest region that still needs stamps for the bus ticket."""
-
     display_name: ClassVar[str] = "Progressive Stamps"
     default: ClassVar[int] = 1
 
@@ -89,9 +84,19 @@ class BastoStampRequirement(Range):
 
 class HonkAttachmentEarly(Toggle):
     """Add honk attachment to `early_items`. Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn."""
-
     display_name: ClassVar[str] = "Honk Attachment Early"
     default: ClassVar[int] = 0
+
+
+class EntranceRandomization(Choice):
+    """Should area entrances be randomized?
+    Disabled: No entrance randomization is done
+    Within Region: Only entrances within a region are randomized with each other
+    """
+    display_name = "Entrance Randomization"
+    default = 0
+    option_disabled = 0
+    option_within_region = 1
 
 
 @dataclass
@@ -109,4 +114,5 @@ class ToemOptions(PerGameCommonOptions):
     kiiruberg_stamp_requirement: KiirubergStampRequirement
     basto_stamp_requirement: BastoStampRequirement
     honk_attachment_early: HonkAttachmentEarly
+    entrance_randomization: EntranceRandomization
 

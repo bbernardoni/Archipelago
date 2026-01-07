@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from typing_extensions import override
 
-from BaseClasses import Item, ItemClassification, Region, Tutorial
+from BaseClasses import Item, ItemClassification, Region, Tutorial, EntranceType
 from worlds.AutoWorld import WebWorld, World
+from entrance_rando import randomize_entrances, bake_target_group_lookup
 
 from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
@@ -14,8 +15,9 @@ from .locations import (
     location_name_to_id,
     location_table,
 )
-from .options import ToemOptions
-from .regions import RegionName, toem_regions
+from .options import ToemOptions, EntranceRandomization
+from .regions import RegionName, FullRegionName
+from .connections import ERGroups, region_connections
 from .rules import EventName, init_stamp_requirements, set_item_rules, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
@@ -45,7 +47,7 @@ class ToemWorld(World):
     location_name_groups: ClassVar[dict[str, set[str]]] = location_name_groups
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
-    origin_region_name: str = RegionName.HOMELANDA
+    origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
 
     @override
@@ -57,7 +59,7 @@ class ToemWorld(World):
 
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
-        if not self.options.include_basto and data.region == RegionName.BASTO:
+        if not self.options.include_basto and data.region and data.region.startswith(RegionName.BASTO):
             return
 
         region = self.get_region(data.region)
@@ -67,23 +69,12 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        for region_name, region_data in toem_regions.items():
-            if not self.options.include_basto and region_data.region == RegionName.BASTO:
+        for parent, sub_regions in region_connections.items():
+            if not self.options.include_basto and parent == RegionName.BASTO:
                 continue
-            region = Region(region_name, self.player, self.multiworld)
-            self.multiworld.regions.append(region)
-
-        for region_name, region_data in toem_regions.items():
-            try:
-                region = self.get_region(region_name)
-            except KeyError:
-                continue
-            for exit_region_name in region_data.exits:
-                try:
-                    exit_region = self.get_region(exit_region_name)
-                except KeyError:
-                    continue
-                region.connect(exit_region)
+            for reg_name in sub_regions:
+                region = Region(f"{parent} - {reg_name}", self.player, self.multiworld)
+                self.multiworld.regions.append(region)
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
@@ -101,9 +92,9 @@ class ToemWorld(World):
                 self.create_location(location_name)
 
         if self.options.include_basto:
-            self.create_event(EventName.BASTO_BONFIRE, RegionName.BASTO)
+            self.create_event(EventName.BASTO_BONFIRE, FullRegionName.BASTO_BUS_STOP)
         else:
-            self.create_event(EventName.TOEM_EXPERIENCED, RegionName.MOUNTAIN_TOP)
+            self.create_event(EventName.TOEM_EXPERIENCED, FullRegionName.MOUNTAIN_TOP_TOEM)
 
     def create_event(self, event_name: str, region_name: str) -> None:
         item = ToemItem(event_name, ItemClassification.progression_skip_balancing, None, self.player)
@@ -111,6 +102,37 @@ class ToemWorld(World):
         location = ToemLocation(self.player, event_name, None, region)
         location.place_locked_item(item)
         region.locations.append(location)
+
+    @override
+    def connect_entrances(self) -> None:
+        for src_parent_name, sub_regions in region_connections.items():
+            if not self.options.include_basto and src_parent_name == RegionName.BASTO:
+                continue
+            for src_sub_region_name, connections in sub_regions.items():
+                src_region_name = f"{src_parent_name} - {src_sub_region_name}"
+                src_region = self.get_region(src_region_name)
+                for connection in connections:
+                    if not self.options.include_basto and connection.dst_region_name.startswith(RegionName.BASTO):
+                        continue
+                    if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
+                        dst_region = self.get_region(connection.dst_region_name)
+                        src_region.connect(dst_region, connection.connection_name)
+                    else:
+                        self.generate_entrance_pair(src_region, connection.connection_name, connection.group)
+        
+        if self.options.entrance_randomization != EntranceRandomization.option_disabled:
+            if self.options.entrance_randomization == EntranceRandomization.option_within_region:
+                get_target_groups = lambda group: [group]
+            group_lookup = bake_target_group_lookup(self, get_target_groups)
+            randomize_entrances(self, True, group_lookup)
+    
+    def generate_entrance_pair(region: Region, name: str, group: int):
+        exit = region.create_exit(name)
+        exit.randomization_group = group
+        exit.randomization_type = EntranceType.TWO_WAY
+        er_target = region.create_er_target(name)
+        er_target.randomization_group = group
+        er_target.randomization_type = EntranceType.TWO_WAY
 
     @override
     def create_item(self, name: str) -> ToemItem:
@@ -134,7 +156,7 @@ class ToemWorld(World):
             for item_name in item_names:
                 data = item_table[item_name]
                 quantity = data.quantity
-                if not self.options.include_basto and data.region == RegionName.BASTO:
+                if not self.options.include_basto and data.parent_region == RegionName.BASTO:
                     continue
                 if data.group == ItemGroup.STAMP:
                     if self.options.progressive_stamps and item_name != ItemName.PROGRESSIVE_STAMP:

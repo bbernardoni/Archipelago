@@ -190,7 +190,7 @@ class ItemData:
     classification: ItemClassification
     quantity: int
     group: str
-    region: str
+    parent_region: str
 
 progression_useful = ItemClassification.progression | ItemClassification.useful
 
@@ -352,7 +352,7 @@ item_table: dict[str, ItemData] = {
     ItemName.HAMMOCK_DAYS_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SAILORS_TUNE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SONG_OF_THE_SEA_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
-    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.HOMELANDA),
+    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.MENU),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}
@@ -363,7 +363,7 @@ def get_item_group(item_name: str) -> str:
 
 
 def get_item_area(location_name: str) -> str:
-    return item_table[location_name].region
+    return item_table[location_name].parent_region
 
 
 item_name_groups: dict[str, set[str]] = {
@@ -372,6 +372,6 @@ item_name_groups: dict[str, set[str]] = {
     if group != ""
 }
 item_name_groups.update(
-    {group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)}
+    {group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area) if group != RegionName.MENU}
 )
 
