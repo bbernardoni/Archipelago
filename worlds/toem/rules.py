@@ -1,12 +1,13 @@
 from collections.abc import Callable
 from typing import TYPE_CHECKING, final
 
-from BaseClasses import CollectionState
+from BaseClasses import CollectionState, Region
 from worlds.generic.Rules import set_rule, add_rule
 
 from .items import ItemName, ItemGroup, item_table
-from .locations import LocationName, location_table
-from .regions import RegionName
+from .locations import LocationName, LocationGroup, location_table, item_to_location_name
+from .regions import FullRegionName, RegionName
+from .connections import region_connections
 
 if TYPE_CHECKING:
     from . import ToemWorld
@@ -37,8 +38,81 @@ def init_stamp_requirements(world: "ToemWorld") -> None:
         total += world.options.basto_stamp_requirement
         world.progressive_stamp_requirements[RegionName.BASTO] = total
 
+ratskullz_locations = (
+    FullRegionName.LOGCITY_CLOCK_TOWER, FullRegionName.LOGCITY_CROSSWALK, FullRegionName.LOGCITY_OVERPASS, 
+    FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.LOGCITY_RATSKULLZ_ALLEY, FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, 
+    FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_OUTSIDE_GALLERY
+)
 
-def set_item_rules(world: "ToemWorld") -> None:
+def collect_requirements_regions(requirments: tuple[str | tuple[str]], world: "ToemWorld") -> set[Region]:
+    def collect_requirement_regions(requirment: str) -> set[Region]:
+        if requirment in location_table:
+            regions = collect_requirements_regions(location_table[requirment].requirements, world)
+            regions.add(world.get_region(location_table[requirment].region))
+            return regions
+        elif requirment in item_table:
+            if requirment==ItemName.ICE_CREAM and not world.options.include_items:
+                # require all four ice creams so that you can't use it in the wrong place
+                new_requirements = (location_table[LocationName.ITEM_ICE_CREAM_BANAKIN].requirements + 
+                    location_table[LocationName.ITEM_ICE_CREAM_MELONEAR].requirements +
+                    location_table[LocationName.ITEM_ICE_CREAM_BEANUT].requirements +
+                    location_table[LocationName.ITEM_ICE_CREAM_ORANGANAS].requirements)
+                regions = collect_requirements_regions(new_requirements, world)
+                regions.add(world.get_region(FullRegionName.BASTO_OUTSIDE_CASTLE))
+                return regions
+            if (item_table[requirment].group == ItemGroup.ITEM and not world.options.include_items or
+                item_table[requirment].group == ItemGroup.CASSETTE and not world.options.include_cassettes):
+                return collect_requirement_regions(item_to_location_name[requirment])
+            return set()
+        else:
+            return {world.get_region(requirment)}
+    
+    regions = set()
+    for req in requirments:
+        if isinstance(req, tuple):
+            for or_req in req:
+                regions.update(collect_requirement_regions(or_req))
+        else:
+            regions.update(collect_requirement_regions(req))
+    return regions
+
+def check_requirements(state: CollectionState, requirments: tuple[str | tuple[str]], world: "ToemWorld") -> bool:
+    def check_requirement(requirment: str) -> bool:
+        if requirment in location_table:
+            location = location_table[requirment]
+            if (location.group == LocationGroup.ITEM and not world.options.include_items or
+                location.group == LocationGroup.CASSETTE and not world.options.include_cassettes or
+                location.group == LocationGroup.ACHIEVEMENT and not world.options.include_achievements):
+                return state.can_reach_region(location.region, world.player) and check_requirements(state, location.requirements, world)
+            return state.can_reach_location(requirment, world.player)
+        elif requirment in item_table:
+            if requirment==ItemName.ICE_CREAM:
+                # require all four ice creams so that you can't use it in the wrong place
+                if not world.options.include_items:
+                    new_requirements = (location_table[LocationName.ITEM_ICE_CREAM_BANAKIN].requirements + 
+                        location_table[LocationName.ITEM_ICE_CREAM_MELONEAR].requirements +
+                        location_table[LocationName.ITEM_ICE_CREAM_BEANUT].requirements +
+                        location_table[LocationName.ITEM_ICE_CREAM_ORANGANAS].requirements)
+                    return check_requirements(state, new_requirements, world)
+                return state.has(requirment, world.player, 4)
+            if (item_table[requirment].group == ItemGroup.ITEM and not world.options.include_items or
+                item_table[requirment].group == ItemGroup.CASSETTE and not world.options.include_cassettes):
+                return check_requirements(state, location_table[item_to_location_name[requirment]].requirements, world)
+            return state.has(requirment, world.player)
+        return state.can_reach_region(requirment, world.player)
+    
+    for req in requirments:
+        if isinstance(req, tuple):
+            for or_req in req:
+                if check_requirement(or_req):
+                    break
+            else:
+                return False
+        elif not check_requirement(req):
+            return False
+    return True
+
+def set_location_rules(world: "ToemWorld") -> None:
     for location in world.get_locations():
         if location.address is None: # skip events
             continue
@@ -47,70 +121,52 @@ def set_item_rules(world: "ToemWorld") -> None:
                 add_rule(location, lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.BASTO]))
             else:
                 add_rule(location, lambda state: state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement))
-        item_filter = lambda req: (
-            (item_table[req].group == ItemGroup.ITEM and world.options.include_items) or
-            (item_table[req].group == ItemGroup.CASSETTE and world.options.include_cassettes)
-        )
-        requirements = tuple(req for req in location_table[location.name].requirements if item_filter(req))
+        elif location.name == LocationName.QUEST_RATSKULLZ:
+            add_rule(location, lambda state: sum(state.can_reach_region(loc, world.player) for loc in ratskullz_locations) >= 5)
+
+        requirements = location_table[location.name].requirements
         if len(requirements) == 0:
             continue
-        add_rule(location, lambda state, reqs=requirements: state.has_all(reqs, world.player))
-        # require all four ice creams so that you can't use it in the wrong place
-        if ItemName.ICE_CREAM in requirements:
-            add_rule(location, lambda state: state.has(ItemName.ICE_CREAM, world.player, 4))
+        add_rule(location, lambda state, reqs=requirements: check_requirements(state, reqs, world))
 
 
 def set_entrance_rules(world: "ToemWorld") -> None:
     if world.options.progressive_stamps:
-        stamp_entrance_rules: dict[tuple[str, str], CollectionRule] = {
-            (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.HOMELANDA]),
-            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.OAKLAVILLE]),
-            (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.STANHAMN]),
-            (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.LOGCITY]),
-            (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.KIIRUBERG]),
+        stamp_entrance_rules: dict[str, CollectionRule] = {
+            "Oaklaville bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.HOMELANDA]),
+            "Stanhamn bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.OAKLAVILLE]),
+            "Logcity bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.STANHAMN]),
+            "Kiiruberg bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.LOGCITY]),
+            "Mountain top bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.KIIRUBERG]),
         }
     else:
-        stamp_entrance_rules: dict[tuple[str, str], CollectionRule] = {
-            (RegionName.HOMELANDA, RegionName.OAKLAVILLE): lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
-            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement),
-            (RegionName.STANHAMN, RegionName.LOGCITY): lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
-            (RegionName.LOGCITY, RegionName.KIIRUBERG): lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
-            (RegionName.KIIRUBERG, RegionName.MOUNTAIN_TOP): lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
+        stamp_entrance_rules: dict[str, CollectionRule] = {
+            "Oaklaville bus stop": lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
+            "Stanhamn bus stop": lambda state: state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement),
+            "Logcity bus stop": lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
+            "Kiiruberg bus stop": lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
+            "Mountain top bus stop": lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
         }
 
-    for (from_, to_), rule in stamp_entrance_rules.items():
-        if to_ == RegionName.BASTO and not world.options.include_basto:
+    for entrance, rule in stamp_entrance_rules.items():
+        set_rule(world.get_entrance(entrance), rule)
+
+    for parent, sub_regions in region_connections.items():
+        if not world.options.include_basto and parent == RegionName.BASTO:
             continue
-        set_rule(world.get_entrance(f"{from_} -> {to_}"), rule)
-
-    if world.options.include_items:
-        item_entrance_rules: dict[tuple[str, str], CollectionRule] = {
-            (RegionName.OAKLAVILLE, RegionName.STANHAMN): lambda state: state.has(ItemName.HONK_ATTACHMENT, world.player),
-            (RegionName.MOUNTAIN_TOP, RegionName.BASTO): lambda state: state.has(ItemName.CLIMBING_BOOTS, world.player),
-        }
-        for (from_, to_), rule in item_entrance_rules.items():
-            if to_ == RegionName.BASTO and not world.options.include_basto:
-                continue
-            add_rule(world.get_entrance(f"{from_} -> {to_}"), rule)
-
-
-def set_location_rules(world: "ToemWorld") -> None:
-    location_rules: dict[str, CollectionRule] = {
-        LocationName.QUEST_EXPERIENCE_TOEM: lambda state: state.can_reach_region(RegionName.MOUNTAIN_TOP, world.player),
-        LocationName.QUEST_MONSTERS: lambda state: state.can_reach_region(RegionName.KIIRUBERG, world.player),
-        LocationName.ITEM_MONSTER_MASK: lambda state: state.can_reach_region(RegionName.KIIRUBERG, world.player),
-        LocationName.QUEST_GHOST_HELPER: lambda state: state.can_reach_region(RegionName.LOGCITY, world.player),
-        LocationName.CHEEVO_STRONG_AS_AN_OAK: lambda state: state.can_reach_region(RegionName.KIIRUBERG, world.player),
-        LocationName.ITEM_FLAG: lambda state: state.can_reach_region(RegionName.KIIRUBERG, world.player),
-        LocationName.QUEST_PAINTINGS: lambda state: state.can_reach_region(RegionName.MOUNTAIN_TOP, world.player),
-        LocationName.CHEEVO_STORY: lambda state: state.can_reach_region(RegionName.MOUNTAIN_TOP, world.player),
-    }
-
-    valid_locations = set(location.name for location in world.get_locations())
-    for location_name, rule in location_rules.items():
-        if location_name in valid_locations:
-            add_rule(world.get_location(location_name), rule)
-
+        for _, connections in sub_regions.items():
+            for connection in connections:
+                if not world.options.include_basto and connection.dst_region_name == FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY:
+                    continue
+                requirements = connection.requirements
+                if len(requirements) == 0:
+                    continue
+                rule = lambda state, reqs=requirements: check_requirements(state, reqs, world)
+                entrance = world.get_entrance(connection.name)
+                add_rule(entrance, rule)
+                regions = collect_requirements_regions(requirements, world)
+                for region in regions:
+                    world.multiworld.register_indirect_condition(region, entrance)
 
 def set_victory_rule(world: "ToemWorld") -> None:
     if world.options.include_basto:
@@ -127,7 +183,7 @@ def set_victory_rule(world: "ToemWorld") -> None:
             )
     else:
         victory_event_name = EventName.TOEM_EXPERIENCED
-        victory_rule = lambda state: not world.options.include_items or state.has(ItemName.CLIMBING_BOOTS, world.player)
+        victory_rule = lambda state: check_requirements(state, (LocationName.QUEST_EXPERIENCE_TOEM,), world)
 
     set_rule(world.get_location(victory_event_name), victory_rule)
     world.multiworld.completion_condition[world.player] = lambda state: state.has(

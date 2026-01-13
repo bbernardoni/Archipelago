@@ -1,5 +1,6 @@
-from typing import final
-
+from typing import final, ClassVar
+from BaseClasses import Region, Entrance
+from entrance_rando import ERPlacementState
 
 @final
 class RegionName:
@@ -102,18 +103,30 @@ class SubRegionName:
     MOUNTAIN_TOP_BUS_STOP = "Bus stop"
     MOUNTAIN_TOP_TOEM = "Toem"
     # Basto
-    BASTO_BUS_STOP = "Harbour"
-    BASTO_LILY_PAD_POND = "Lily pad pond"
-    BASTO_CAMP = "Campsite"
+    BASTO_BUS_STOP_TOP_DAY = "Harbor top day"
+    BASTO_BUS_STOP_TOP_NIGHT = "Harbor top night"
+    BASTO_BUS_STOP_BOTTOM_DAY = "Harbor bottom day"
+    BASTO_BUS_STOP_BOTTOM_NIGHT = "Harbor bottom night"
+    BASTO_LILY_PAD_POND_LEFT_DAY = "Lily pad pond left day"
+    BASTO_LILY_PAD_POND_LEFT_NIGHT = "Lily pad pond left night"
+    BASTO_LILY_PAD_POND_RIGHT = "Lily pad pond right"
+    BASTO_CAMP_DAY = "Campsite day"
+    BASTO_CAMP_NIGHT = "Campsite night"
     BASTO_TENT = "Tent"
     BASTO_OUTSIDE_CASTLE = "Outside castle"
-    BASTO_CASTLE = "Castle"
+    BASTO_CASTLE_DAY = "Castle day"
+    BASTO_CASTLE_NIGHT = "Castle night"
     BASTO_GYM_HOUSE = "Gym house"
-    BASTO_BONFIRE = "Bonfire"
-    BASTO_CARNIVAL = "Carnival"
+    BASTO_BONFIRE_TOP = "Bonfire top"
+    BASTO_BONFIRE_BOTTOM_DAY = "Bonfire bottom day"
+    BASTO_BONFIRE_BOTTOM_NIGHT = "Bonfire bottom night"
+    BASTO_CARNIVAL_DAY = "Carnival day"
+    BASTO_CARNIVAL_NIGHT = "Carnival night"
     BASTO_GHOST_HANGOUT = "Ghost hangout"
-    BASTO_CAVE = "Cave"
-    BASTO_SECRET_CAVE = "Secret cave room"
+    BASTO_CAVE_DAY = "Cave day"
+    BASTO_CAVE_NIGHT = "Cave night"
+    BASTO_SECRET_CAVE_DAY = "Secret cave room day"
+    BASTO_SECRET_CAVE_NIGHT = "Secret cave room night"
     BASTO_JUNGLE = "Jungle"
 
 @final
@@ -206,16 +219,42 @@ class FullRegionName:
     MOUNTAIN_TOP_BUS_STOP = f"{RegionName.MOUNTAIN_TOP} - {SubRegionName.MOUNTAIN_TOP_BUS_STOP}"
     MOUNTAIN_TOP_TOEM = f"{RegionName.MOUNTAIN_TOP} - {SubRegionName.MOUNTAIN_TOP_TOEM}"
     # Basto
-    BASTO_BUS_STOP = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP}"
-    BASTO_LILY_PAD_POND = f"{RegionName.BASTO} - {SubRegionName.BASTO_LILY_PAD_POND}"
-    BASTO_CAMP = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAMP}"
+    BASTO_BUS_STOP_TOP_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP_TOP_DAY}"
+    BASTO_BUS_STOP_TOP_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP_TOP_NIGHT}"
+    BASTO_BUS_STOP_BOTTOM_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP_BOTTOM_DAY}"
+    BASTO_BUS_STOP_BOTTOM_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT}"
+    BASTO_LILY_PAD_POND_LEFT_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_LILY_PAD_POND_LEFT_DAY}"
+    BASTO_LILY_PAD_POND_LEFT_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT}"
+    BASTO_LILY_PAD_POND_RIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_LILY_PAD_POND_RIGHT}"
+    BASTO_CAMP_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAMP_DAY}"
+    BASTO_CAMP_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAMP_NIGHT}"
     BASTO_TENT = f"{RegionName.BASTO} - {SubRegionName.BASTO_TENT}"
     BASTO_OUTSIDE_CASTLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_OUTSIDE_CASTLE}"
-    BASTO_CASTLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_CASTLE}"
+    BASTO_CASTLE_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_CASTLE_DAY}"
+    BASTO_CASTLE_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_CASTLE_NIGHT}"
     BASTO_GYM_HOUSE = f"{RegionName.BASTO} - {SubRegionName.BASTO_GYM_HOUSE}"
-    BASTO_BONFIRE = f"{RegionName.BASTO} - {SubRegionName.BASTO_BONFIRE}"
-    BASTO_CARNIVAL = f"{RegionName.BASTO} - {SubRegionName.BASTO_CARNIVAL}"
+    BASTO_BONFIRE_TOP = f"{RegionName.BASTO} - {SubRegionName.BASTO_BONFIRE_TOP}"
+    BASTO_BONFIRE_BOTTOM_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_BONFIRE_BOTTOM_DAY}"
+    BASTO_BONFIRE_BOTTOM_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_BONFIRE_BOTTOM_NIGHT}"
+    BASTO_CARNIVAL_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_CARNIVAL_DAY}"
+    BASTO_CARNIVAL_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_CARNIVAL_NIGHT}"
     BASTO_GHOST_HANGOUT = f"{RegionName.BASTO} - {SubRegionName.BASTO_GHOST_HANGOUT}"
-    BASTO_CAVE = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAVE}"
-    BASTO_SECRET_CAVE = f"{RegionName.BASTO} - {SubRegionName.BASTO_SECRET_CAVE}"
+    BASTO_CAVE_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAVE_DAY}"
+    BASTO_CAVE_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_CAVE_NIGHT}"
+    BASTO_SECRET_CAVE_DAY = f"{RegionName.BASTO} - {SubRegionName.BASTO_SECRET_CAVE_DAY}"
+    BASTO_SECRET_CAVE_NIGHT = f"{RegionName.BASTO} - {SubRegionName.BASTO_SECRET_CAVE_NIGHT}"
     BASTO_JUNGLE = f"{RegionName.BASTO} - {SubRegionName.BASTO_JUNGLE}"
+
+class ToemEntrance(Entrance):
+    def can_connect_to(self, other: Entrance, dead_end: bool, er_state: "ERPlacementState") -> bool:
+        """
+        """
+        living_room_entrances = ["Player room exit", "Homelanda house entrance"]
+        if self.name in living_room_entrances and other.name in living_room_entrances:
+            return False
+        
+        # Run the regular Entrance class's method and return its result like normal.
+        return super().can_connect_to(other, dead_end, er_state)
+
+class ToemRegion(Region):
+    entrance_type: ClassVar[type[ToemEntrance]] = ToemEntrance
