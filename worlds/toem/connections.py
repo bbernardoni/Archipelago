@@ -76,13 +76,13 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
         SubRegionName.OAKLAVILLE_OUTSIDE_HOTEL: [
             Connection(FullRegionName.OAKLAVILLE_BUS_STOP, "Outside hotel down", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_HOTEL, "Outside hotel left", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_GHOST_CUP_GAME, "Outside hotel right", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_CAMP, "Hotel entrance", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_GHOST_CUP_GAME, "Outside hotel left", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_CAMP, "Outside hotel right", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_HOTEL, "Hotel entrance", ERGroups.OAKLAVILLE),
         ],
         SubRegionName.OAKLAVILLE_HOTEL: [
             Connection(FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, "Hotel exit", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_HOTEL_ELEVATOR, "Hotel elevator entrance", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_HOTEL_ELEVATOR, "Hotel elevator entrance", ERGroups.OAKLAVILLE, (LocationName.QUEST_HOTEL_CHEF,)),
         ],
         SubRegionName.OAKLAVILLE_HOTEL_ELEVATOR: [
             Connection(FullRegionName.OAKLAVILLE_HOTEL, "Hotel elevator exit", ERGroups.OAKLAVILLE, (LocationName.QUEST_HOTEL_CHEF,)),
@@ -112,34 +112,42 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
         SubRegionName.OAKLAVILLE_CAMP: [
             Connection(FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, "Scout camp left", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_TRAIL, "Scout camp up", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, "Scout camp up", ERGroups.OAKLAVILLE),
             Connection(FullRegionName.OAKLAVILLE_PLAYGROUND, "Scout camp right", ERGroups.OAKLAVILLE),
         ],
-        SubRegionName.OAKLAVILLE_TRAIL: [
-            Connection(FullRegionName.OAKLAVILLE_CAMP, "Oaklaville trail down", ERGroups.OAKLAVILLE),
+        SubRegionName.OAKLAVILLE_TRAIL_TOP: [
+            Connection(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, "Oaklaville trail log from top", ERGroups.EXCLUDED, (LocationName.QUEST_LOG_JAM,)),
             Connection(FullRegionName.OAKLAVILLE_LOOKOUT, "Oaklaville trail up", ERGroups.OAKLAVILLE),
         ],
+        SubRegionName.OAKLAVILLE_TRAIL_BOTTOM: [
+            Connection(FullRegionName.OAKLAVILLE_TRAIL_TOP, "Oaklaville trail log from bottom", ERGroups.EXCLUDED, (LocationName.QUEST_LOG_JAM,)),
+            Connection(FullRegionName.OAKLAVILLE_CAMP, "Oaklaville trail down", ERGroups.OAKLAVILLE),
+        ],
         SubRegionName.OAKLAVILLE_LOOKOUT: [
-            Connection(FullRegionName.OAKLAVILLE_TRAIL, "Lookout exit", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_TRAIL_TOP, "Lookout exit", ERGroups.OAKLAVILLE),
         ],
         SubRegionName.OAKLAVILLE_PLAYGROUND: [
             Connection(FullRegionName.OAKLAVILLE_CAMP, "Playground left", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE, "Playground right", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_BOTTOM, "Playground right", ERGroups.OAKLAVILLE),
         ],
-        SubRegionName.OAKLAVILLE_OUTSIDE_RAVE: [
+        SubRegionName.OAKLAVILLE_OUTSIDE_RAVE_TOP: [
+            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_BOTTOM, "Rave bouncer from top", ERGroups.EXCLUDED, (ItemName.GHOST_GLASSES, FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_BOTTOM)),
+            Connection(FullRegionName.OAKLAVILLE_RAVE, "Rave entrance", ERGroups.OAKLAVILLE),
+        ],
+        SubRegionName.OAKLAVILLE_OUTSIDE_RAVE_BOTTOM: [
+            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_TOP, "Rave bouncer from bottom", ERGroups.EXCLUDED, (ItemName.GHOST_GLASSES,)),
             Connection(FullRegionName.OAKLAVILLE_PLAYGROUND, "Outside rave left", ERGroups.OAKLAVILLE),
-            Connection(FullRegionName.OAKLAVILLE_RAVE, "Rave entrance", ERGroups.OAKLAVILLE, (ItemName.GHOST_GLASSES,)),
         ],
         SubRegionName.OAKLAVILLE_RAVE: [
-            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE, "Rave exit", ERGroups.OAKLAVILLE),
+            Connection(FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_TOP, "Rave exit", ERGroups.OAKLAVILLE),
         ],
     },
     RegionName.STANHAMN: {
         SubRegionName.STANHAMN_BUS_STOP: [
             Connection(FullRegionName.BUS_MENU, "Stanhamn bus pickup", ERGroups.EXCLUDED),
             Connection(FullRegionName.STANHAMN_PHOTO_GUILD_HUT, "Photo guild hut entrance", ERGroups.STANHAMN),
-            Connection(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, "Bus stop left", ERGroups.STANHAMN),
-            Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Bus stop right", ERGroups.STANHAMN),
+            Connection(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, "Stanhamn bus stop left", ERGroups.STANHAMN),
+            Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Stanhamn bus stop right", ERGroups.STANHAMN),
             Connection(FullRegionName.STANHAMN_OUTSIDE_HYDROPLANT, "Raft up", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
         ],
         SubRegionName.STANHAMN_PHOTO_GUILD_HUT: [
@@ -151,11 +159,11 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
         SubRegionName.STANHAMN_HIPPO_BEACH: [
             Connection(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, "Hippo beach right", ERGroups.STANHAMN),
-            Connection(FullRegionName.STANHAMN_UNDERWATER, "Hippo beach manhole", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
+            Connection(FullRegionName.STANHAMN_UNDERWATER, "Hippo beach manhole", ERGroups.STANHAMN, (ItemName.HONK_ATTACHMENT, ItemName.DIVING_HELMET)),
             Connection(FullRegionName.STANHAMN_OUTSIDE_LIGHTHOUSE, "Hippo beach left", ERGroups.STANHAMN),
         ],
         SubRegionName.STANHAMN_UNDERWATER: [
-            Connection(FullRegionName.STANHAMN_HIPPO_BEACH, "Underwater exit", ERGroups.EXCLUDED),
+            Connection(FullRegionName.STANHAMN_HIPPO_BEACH, "Underwater exit", ERGroups.STANHAMN),
         ],
         SubRegionName.STANHAMN_OUTSIDE_LIGHTHOUSE: [
             Connection(FullRegionName.STANHAMN_HIPPO_BEACH, "Outside lighthouse right", ERGroups.STANHAMN),
@@ -208,7 +216,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
             Connection(FullRegionName.LOGCITY_CLOCK_TOWER, "Escalator up", ERGroups.LOGCITY),
         ],
         SubRegionName.LOGCITY_CLOCK_TOWER: [
-            Connection(FullRegionName.LOGCITY_BUS_STOP, "Bus stop entrance", ERGroups.LOGCITY),
+            Connection(FullRegionName.LOGCITY_BUS_STOP, "Logcity bus stop entrance", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_CROSSWALK, "Clock tower left", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, "Clock tower up", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_OUTSIDE_CAFE, "Clock tower right", ERGroups.LOGCITY),
@@ -235,17 +243,21 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
             Connection(FullRegionName.LOGCITY_SKATE_PARK, "Ratskullz alley exit", ERGroups.LOGCITY),
         ],
         SubRegionName.LOGCITY_OUTSIDE_FASHION_SHOW: [
-            Connection(FullRegionName.LOGCITY_FASHION_SHOW, "Fashion show entrance", ERGroups.LOGCITY),
+            Connection(FullRegionName.LOGCITY_FASHION_SHOW_BOTTOM, "Fashion show entrance", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_CLOCK_TOWER, "Outside fashion show down", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_OVERPASS, "Outside fashion show left", ERGroups.LOGCITY),
             Connection(FullRegionName.LOGCITY_OUTSIDE_GALLERY, "Outside fashion show right", ERGroups.LOGCITY),
         ],
-        SubRegionName.LOGCITY_FASHION_SHOW: [
+        SubRegionName.LOGCITY_FASHION_SHOW_TOP: [
+            Connection(FullRegionName.LOGCITY_FASHION_SHOW_BOTTOM, "Fashion show security from top", ERGroups.EXCLUDED, (ItemName.REPORTER_HAT, FullRegionName.LOGCITY_FASHION_SHOW_BOTTOM)),
+            Connection(FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, "Fashion show backstage entrance", ERGroups.LOGCITY),
+        ],
+        SubRegionName.LOGCITY_FASHION_SHOW_BOTTOM: [
+            Connection(FullRegionName.LOGCITY_FASHION_SHOW_TOP, "Fashion show security from bottom", ERGroups.EXCLUDED, (ItemName.REPORTER_HAT,)),
             Connection(FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, "Fashion show exit", ERGroups.LOGCITY),
-            Connection(FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, "Fashion show backstage entrance", ERGroups.LOGCITY, (ItemName.REPORTER_HAT,)),
         ],
         SubRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE: [
-            Connection(FullRegionName.LOGCITY_FASHION_SHOW, "Fashion show backstage exit", ERGroups.LOGCITY),
+            Connection(FullRegionName.LOGCITY_FASHION_SHOW_TOP, "Fashion show backstage exit", ERGroups.LOGCITY),
         ],
         SubRegionName.LOGCITY_OUTSIDE_CAFE: [
             Connection(FullRegionName.LOGCITY_CAFE, "Cafe entrance", ERGroups.LOGCITY),
@@ -268,7 +280,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
     RegionName.KIIRUBERG: {
         SubRegionName.KIIRUBERG_BUS_STOP: [
             Connection(FullRegionName.BUS_MENU, "Kiiruberg bus pickup", ERGroups.EXCLUDED),
-            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Bus stop up", ERGroups.KIIRUBERG),
+            Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, "Kiiruberg bus stop up", ERGroups.KIIRUBERG),
         ],
         SubRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM: [
             Connection(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP, "Birthday party rope from bottom", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
@@ -381,7 +393,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
     RegionName.MOUNTAIN_TOP: {
         SubRegionName.MOUNTAIN_TOP_BUS_STOP: [
             Connection(FullRegionName.BUS_MENU, "Mountain top bus pickup", ERGroups.EXCLUDED),
-            Connection(FullRegionName.MOUNTAIN_TOP_TOEM, "Bus stop climb", ERGroups.MOUNTAIN_TOP),
+            Connection(FullRegionName.MOUNTAIN_TOP_TOEM, "Mountain top bus stop climb", ERGroups.MOUNTAIN_TOP),
         ],
         SubRegionName.MOUNTAIN_TOP_TOEM: [
             Connection(FullRegionName.MOUNTAIN_TOP_BUS_STOP, "Toem descend", ERGroups.MOUNTAIN_TOP),
@@ -389,19 +401,19 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
     },
     RegionName.BASTO: {
         SubRegionName.BASTO_BUS_STOP_TOP_DAY: [
-            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, "Harbor gate from top day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, "Harbor up day", ERGroups.BASTO_DAY),
+            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, "Basto harbor gate from top day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, "Basto harbor up day", ERGroups.BASTO_DAY),
         ],
         SubRegionName.BASTO_BUS_STOP_TOP_NIGHT: [
-            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, "Harbor gate from top night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, "Harbor up night", ERGroups.BASTO_NIGHT),
+            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, "Basto harbor gate from top night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, "Basto harbor up night", ERGroups.BASTO_NIGHT),
         ],
         SubRegionName.BASTO_BUS_STOP_BOTTOM_DAY: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_DAY, "Harbor gate from bottom day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.BASTO_BUS_STOP_TOP_DAY, "Basto harbor gate from bottom day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
             Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Viking express Basto stop day", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
         ],
         SubRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, "Harbor gate from bottom night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, "Basto harbor gate from bottom night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
             Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Viking express Basto stop night", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
         ],
         SubRegionName.BASTO_LILY_PAD_POND_LEFT_DAY: [

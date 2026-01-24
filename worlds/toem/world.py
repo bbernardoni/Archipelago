@@ -4,7 +4,7 @@ from typing_extensions import override
 
 from BaseClasses import Item, ItemClassification, Tutorial, CollectionState
 from worlds.AutoWorld import WebWorld, World
-from entrance_rando import randomize_entrances
+from entrance_rando import randomize_entrances, EntranceRandomizationError
 
 from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
@@ -182,8 +182,33 @@ class ToemWorld(World):
         else:
             if self.options.entrance_randomization == EntranceRandomization.option_within_region:
                 group_lookup = within_region_groups
+            """
+            TOEM_MAX_GER_ATTEMPTS = 10
+            for i in range(TOEM_MAX_GER_ATTEMPTS):
+                try:
+                    pairings = randomize_entrances(self, True, group_lookup, on_connect=toem_on_connect).pairings
+                    break
+                except EntranceRandomizationError as err:
+                    if i >= TOEM_MAX_GER_ATTEMPTS - 1:
+                        raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps. Final error:\n\n{err}")
+                    for region in self.get_regions():
+                        for _exit in region.get_exits():
+                            if (_exit.randomization_group in available_shuffle_types
+                                    and _exit.parent_region
+                                    and _exit.connected_region
+                                    and _exit.name not in self.shuffle_data.er_pairings):
+                                disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
+            """
             pairings = randomize_entrances(self, True, group_lookup, on_connect=toem_on_connect).pairings
-            self.transitions = {from_: to_ for from_, to_ in pairings}
+            def rename(entrance: str) -> str:
+                if entrance.endswith(" day"):
+                    return entrance[:-len(" day")]
+                if entrance.endswith(" night"):
+                    return entrance[:-len(" night")]
+                if entrance.endswith(" other"):
+                    return entrance[:-len(" other")]
+                return entrance
+            self.transitions = {rename(from_): rename(to_) for from_, to_ in pairings}
         
         def visualize_world(state: CollectionState | None = None):
             from Utils import visualize_regions
