@@ -369,9 +369,9 @@ oaklaville_regions = (
     FullRegionName.OAKLAVILLE_BUS_STOP, FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, FullRegionName.OAKLAVILLE_HOTEL, 
     FullRegionName.OAKLAVILLE_HOTEL_ELEVATOR, FullRegionName.OAKLAVILLE_GHOST_CUP_GAME, FullRegionName.OAKLAVILLE_MUSHROOM_HOUSE, 
     FullRegionName.OAKLAVILLE_HIDE_AND_SEEK, FullRegionName.OAKLAVILLE_GRAVEYARD, FullRegionName.OAKLAVILLE_SKELETON_HOUSE, 
-    FullRegionName.OAKLAVILLE_SKELETON_HOUSE_BALCONY, FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_TRAIL, 
-    FullRegionName.OAKLAVILLE_LOOKOUT, FullRegionName.OAKLAVILLE_PLAYGROUND, FullRegionName.OAKLAVILLE_OUTSIDE_RAVE, 
-    FullRegionName.OAKLAVILLE_RAVE
+    FullRegionName.OAKLAVILLE_SKELETON_HOUSE_BALCONY, FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_TRAIL_TOP,
+    FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, FullRegionName.OAKLAVILLE_LOOKOUT, FullRegionName.OAKLAVILLE_PLAYGROUND,
+    FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_TOP, FullRegionName.OAKLAVILLE_OUTSIDE_RAVE_BOTTOM, FullRegionName.OAKLAVILLE_RAVE
 )
 stanhamn_quests = (
     LocationName.QUEST_KING_FISH, LocationName.QUEST_GOOD_SPOT, LocationName.QUEST_SUS_HARBOR, LocationName.QUEST_PAPER_HATS, 
@@ -396,8 +396,9 @@ logcity_quests = (
 logcity_regions = (
     FullRegionName.LOGCITY_BUS_STOP, FullRegionName.LOGCITY_CLOCK_TOWER, FullRegionName.LOGCITY_CROSSWALK, FullRegionName.LOGCITY_OVERPASS,
     FullRegionName.LOGCITY_NEWS_HOUSE, FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.LOGCITY_RATSKULLZ_ALLEY, 
-    FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, FullRegionName.LOGCITY_FASHION_SHOW, FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, 
-    FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_CAFE, FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_GALLERY
+    FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, FullRegionName.LOGCITY_FASHION_SHOW_TOP, FullRegionName.LOGCITY_FASHION_SHOW_BOTTOM,
+    FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_CAFE,
+    FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_GALLERY
 )
 kiiruberg_quests = (
     LocationName.QUEST_YETI_CUTE, LocationName.QUEST_ICE_WIZARD, LocationName.QUEST_MILITARY_SUS, LocationName.QUEST_ASTRONAUT, 
@@ -487,14 +488,14 @@ location_table: dict[str, LocationData] = {
     LocationName.TAPE_PHOTO_OF_HOME: LocationData(FullRegionName.HOMELANDA_BUS_STOP, LocationGroup.CASSETTE),
     LocationName.CHEEVO_BEGINNING: LocationData(FullRegionName.HOMELANDA_LIVING_ROOM, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_HOME_SWEET_HOME: LocationData(FullRegionName.HOMELANDA_BUS_STOP, LocationGroup.ACHIEVEMENT),
-    LocationName.QUEST_SUS_FOREST: LocationData(FullRegionName.OAKLAVILLE_TRAIL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_HIDE_AND_SEEK,)),
+    LocationName.QUEST_SUS_FOREST: LocationData(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_HIDE_AND_SEEK,)),
     LocationName.QUEST_MONSTERS: LocationData(FullRegionName.OAKLAVILLE_HOTEL, LocationGroup.QUEST, (ItemName.TRIPOD, ItemName.HONK_ATTACHMENT, FullRegionName.OAKLAVILLE_PLAYGROUND, FullRegionName.STANHAMN_HIPPO_BEACH, FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.KIIRUBERG_BLIZZARD_MONSTER)),
     LocationName.QUEST_SOCKS: LocationData(FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.QUEST, (ItemName.WET_SOCKS,)),
     LocationName.QUEST_SCOUTS: LocationData(FullRegionName.OAKLAVILLE_CAMP, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_LOOKOUT, FullRegionName.OAKLAVILLE_BUS_STOP, (FullRegionName.OAKLAVILLE_PLAYGROUND, FullRegionName.OAKLAVILLE_MUSHROOM_HOUSE))),
     LocationName.QUEST_HIDE_AND_SEEK: LocationData(FullRegionName.OAKLAVILLE_HIDE_AND_SEEK, LocationGroup.QUEST),
-    LocationName.QUEST_LOG_JAM: LocationData(FullRegionName.OAKLAVILLE_TRAIL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_BUS_STOP, FullRegionName.OAKLAVILLE_HOTEL)),
-    LocationName.QUEST_CHALLENGE_1: LocationData(FullRegionName.OAKLAVILLE_TRAIL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_CAMP,)),
-    LocationName.QUEST_CHALLENGE_2: LocationData(FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_TRAIL,)),
+    LocationName.QUEST_LOG_JAM: LocationData(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_BUS_STOP, FullRegionName.OAKLAVILLE_HOTEL)),
+    LocationName.QUEST_CHALLENGE_1: LocationData(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_CAMP,)),
+    LocationName.QUEST_CHALLENGE_2: LocationData(FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_TRAIL_BOTTOM,)),
     LocationName.QUEST_PAPARAZZI: LocationData(FullRegionName.OAKLAVILLE_RAVE, LocationGroup.QUEST),
     LocationName.QUEST_CAPTURE_HOTEL: LocationData(FullRegionName.OAKLAVILLE_HOTEL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_LOOKOUT,)),
     LocationName.QUEST_HOTEL_CHEF: LocationData(FullRegionName.OAKLAVILLE_HOTEL, LocationGroup.QUEST, (FullRegionName.OAKLAVILLE_LOOKOUT,)),
@@ -502,7 +503,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_GHOST_HELPER: LocationData(FullRegionName.OAKLAVILLE_SKELETON_HOUSE, LocationGroup.QUEST, (LocationName.QUEST_CUP_CHAMP, LocationName.QUEST_STALLION, LocationName.QUEST_SANDWICH, LocationName.QUEST_FLAME, LocationName.QUEST_DATE, LocationName.QUEST_SCARY_CITY)),
     LocationName.QUEST_CUP_CHAMP: LocationData(FullRegionName.OAKLAVILLE_GHOST_CUP_GAME, LocationGroup.QUEST, (ItemName.GHOST_GLASSES,)),
     LocationName.QUEST_FLOWER: LocationData(FullRegionName.OAKLAVILLE_PLAYGROUND, LocationGroup.QUEST),
-    LocationName.COMP_ANT: LocationData(FullRegionName.OAKLAVILLE_TRAIL, LocationGroup.COMPENDIUM),
+    LocationName.COMP_ANT: LocationData(FullRegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.COMPENDIUM),
     LocationName.COMP_BEEHIVE: LocationData(FullRegionName.OAKLAVILLE_PLAYGROUND, LocationGroup.COMPENDIUM),
     LocationName.COMP_BUTTERFLY: LocationData(FullRegionName.OAKLAVILLE_BUS_STOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_OSKAR: LocationData(FullRegionName.OAKLAVILLE_HOTEL, LocationGroup.COMPENDIUM),
