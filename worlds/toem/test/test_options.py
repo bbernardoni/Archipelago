@@ -13,6 +13,8 @@ class TestMin(ToemTestBase):
         "include_items": 0,
         "include_cassettes": 0,
         "include_achievements": 0,
+        "progressive_stamps": 0,
+        "honk_attachment_early": 0,
     }
 
 
@@ -22,4 +24,6 @@ class TestMax(ToemTestBase):
         "include_items": 1,
         "include_cassettes": 1,
         "include_achievements": 1,
+        "progressive_stamps": 1,
+        "honk_attachment_early": 1,
     }

@@ -255,9 +255,36 @@ class ToemEntrance(Entrance):
     def can_connect_to(self, other: Entrance, dead_end: bool, er_state: "ERPlacementState") -> bool:
         """
         """
-        living_room_entrances = ["Player room exit", "Homelanda house entrance"]
+        living_room_entrances = {"Player room exit", "Homelanda house entrance"}
         if self.name in living_room_entrances and other.name in living_room_entrances:
             return False
+        if not dead_end:
+            if other.name in {"Oaklaville trail up", "Rave entrance", "Fashion show backstage entrance"}:
+                return False
+            required_regions = {
+                "Oaklaville trail down": (FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_BUS_STOP, FullRegionName.OAKLAVILLE_HOTEL),
+                "Hotel exit": (FullRegionName.OAKLAVILLE_LOOKOUT,),
+                "Docks left exit": (FullRegionName.STANHAMN_HYDROPLANT,),
+                "Docks right exit": (FullRegionName.STANHAMN_HYDROPLANT,),
+                "Ghost drawbridge left": (FullRegionName.STANHAMN_HYDROPLANT,),
+                "Ghost drawbridge down": (FullRegionName.STANHAMN_HYDROPLANT,),
+                "Wizard tower exit": (FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT,),
+            }
+            if other.name in required_regions:
+                if not all(er_state.world.get_region(region) in er_state.placed_regions for region in required_regions[other.name]):
+                    return False
+            if other.name == "Hydroplant exit":
+                stanhamn_exits = [ex for region in er_state.world.multiworld.get_regions(er_state.world.player) if region.name.startswith(RegionName.STANHAMN)
+                                for ex in region.exits if not ex.connected_region]
+                placeable_stanhamn_exits = er_state.find_placeable_exits(True, stanhamn_exits)
+                if len(placeable_stanhamn_exits) <= 1:
+                    return False
+            if other.name == "Lookout exit":
+                oaklaville_exits = [ex for region in er_state.world.multiworld.get_regions(er_state.world.player) if region.name.startswith(RegionName.OAKLAVILLE)
+                                for ex in region.exits if not ex.connected_region]
+                placeable_oaklaville_exits = er_state.find_placeable_exits(True, oaklaville_exits)
+                if len(placeable_oaklaville_exits) <= 1:
+                    return False
         
         # Run the regular Entrance class's method and return its result like normal.
         return super().can_connect_to(other, dead_end, er_state)
