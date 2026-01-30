@@ -5,7 +5,7 @@ from BaseClasses import Entrance, EntranceType, Region
 from entrance_rando import ERPlacementState
 from .regions import FullRegionName, RegionName, SubRegionName
 from .items import ItemName
-from .locations import LocationName
+from .locations import LocationName, EventName
 
 class ERGroups(IntEnum):
     EXCLUDED = 0
@@ -17,9 +17,6 @@ class ERGroups(IntEnum):
     KIIRUBERG = 5
     MOUNTAIN_TOP = 6
     BASTO = 7
-    BASTO_CASTLE = 8
-    BASTO_DAY = 9
-    BASTO_NIGHT = 10
 
 within_region_groups: dict[ERGroups, list[ERGroups]] = {
     ERGroups.HOMELANDA: [ERGroups.HOMELANDA],
@@ -28,10 +25,7 @@ within_region_groups: dict[ERGroups, list[ERGroups]] = {
     ERGroups.LOGCITY: [ERGroups.LOGCITY],
     ERGroups.KIIRUBERG: [ERGroups.KIIRUBERG],
     ERGroups.MOUNTAIN_TOP: [ERGroups.MOUNTAIN_TOP],
-    ERGroups.BASTO: [ERGroups.BASTO, ERGroups.BASTO_DAY, ERGroups.BASTO_NIGHT, ERGroups.BASTO_CASTLE],
-    ERGroups.BASTO_CASTLE: [ERGroups.BASTO, ERGroups.BASTO_CASTLE],
-    ERGroups.BASTO_DAY: [ERGroups.BASTO, ERGroups.BASTO_DAY],
-    ERGroups.BASTO_NIGHT: [ERGroups.BASTO, ERGroups.BASTO_NIGHT],
+    ERGroups.BASTO: [ERGroups.BASTO],
 }
 
 @dataclass(frozen=True)
@@ -182,7 +176,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
         SubRegionName.STANHAMN_DOCKS_LEFT: [
             Connection(FullRegionName.STANHAMN_BUS_STOP, "Docks left exit", ERGroups.STANHAMN),
-            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, "Viking express Stamhamn stop", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
+            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM, "Viking express Stamhamn stop", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
             Connection(FullRegionName.STANHAMN_DOCKS_RIGHT, "Docks drawbridge from left", ERGroups.EXCLUDED, (LocationName.QUEST_POWER,)),
         ],
         SubRegionName.STANHAMN_DOCKS_RIGHT: [
@@ -400,58 +394,39 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
     },
     RegionName.BASTO: {
-        SubRegionName.BASTO_BUS_STOP_TOP_DAY: [
-            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, "Basto harbor gate from top day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, "Basto harbor up day", ERGroups.BASTO_DAY),
+        SubRegionName.BASTO_BUS_STOP_TOP: [
+            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM, "Basto harbor gate from top", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT, "Basto harbor up", ERGroups.BASTO),
         ],
-        SubRegionName.BASTO_BUS_STOP_TOP_NIGHT: [
-            Connection(FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, "Basto harbor gate from top night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, "Basto harbor up night", ERGroups.BASTO_NIGHT),
+        SubRegionName.BASTO_BUS_STOP_BOTTOM: [
+            Connection(FullRegionName.BASTO_BUS_STOP_TOP, "Basto harbor gate from bottom", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
+            Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Viking express Basto stop", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
         ],
-        SubRegionName.BASTO_BUS_STOP_BOTTOM_DAY: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_DAY, "Basto harbor gate from bottom day", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Viking express Basto stop day", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
-        ],
-        SubRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, "Basto harbor gate from bottom night", ERGroups.EXCLUDED, (ItemName.WATERGUN,)),
-            Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Viking express Basto stop night", ERGroups.EXCLUDED, (ItemName.BASTO_TICKET,)),
-        ],
-        SubRegionName.BASTO_LILY_PAD_POND_LEFT_DAY: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_DAY, "Lily pad pond down day", ERGroups.BASTO_DAY),
-            Connection(FullRegionName.BASTO_CAMP_DAY, "Lily pad pond left day", ERGroups.BASTO_DAY),
-        ],
-        SubRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT: [
-            Connection(FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, "Lily pad pond down night", ERGroups.BASTO_NIGHT),
-            Connection(FullRegionName.BASTO_CAMP_NIGHT, "Lily pad pond left night", ERGroups.BASTO_NIGHT),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_RIGHT, "Lily pad pond night bridge from left", ERGroups.EXCLUDED),
+        SubRegionName.BASTO_LILY_PAD_POND_LEFT: [
+            Connection(FullRegionName.BASTO_BUS_STOP_TOP, "Lily pad pond down", ERGroups.BASTO),
+            Connection(FullRegionName.BASTO_CAMP, "Lily pad pond left", ERGroups.BASTO),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_RIGHT, "Lily pad pond night bridge from left", ERGroups.EXCLUDED, (EventName.BASTO_LILY_PAD_POND_LEFT_NIGHT,)),
         ],
         SubRegionName.BASTO_LILY_PAD_POND_RIGHT: [
             Connection(FullRegionName.BASTO_GHOST_HANGOUT, "Lily pad pond right", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Lily pad pond up", ERGroups.BASTO),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, "Lily pad pond night bridge from right", ERGroups.EXCLUDED),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT, "Lily pad pond night bridge from right", ERGroups.EXCLUDED),
         ],
-        SubRegionName.BASTO_CAMP_DAY: [
-            Connection(FullRegionName.BASTO_TENT, "Tent entrance day", ERGroups.BASTO_DAY),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, "Campsite right day", ERGroups.BASTO_DAY),
-        ],
-        SubRegionName.BASTO_CAMP_NIGHT: [
-            Connection(FullRegionName.BASTO_TENT, "Tent entrance night", ERGroups.BASTO_NIGHT),
-            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, "Campsite right night", ERGroups.BASTO_NIGHT),
+        SubRegionName.BASTO_CAMP: [
+            Connection(FullRegionName.BASTO_TENT, "Tent entrance", ERGroups.BASTO),
+            Connection(FullRegionName.BASTO_LILY_PAD_POND_LEFT, "Campsite right", ERGroups.BASTO),
         ],
         SubRegionName.BASTO_TENT: [
-            Connection(FullRegionName.BASTO_CAMP_DAY, "Tent exit", ERGroups.BASTO), # night entrance handled as special case
+            Connection(FullRegionName.BASTO_CAMP, "Tent exit", ERGroups.BASTO),
         ],
         SubRegionName.BASTO_OUTSIDE_CASTLE: [
-            Connection(FullRegionName.BASTO_CASTLE_DAY, "Castle entrance", ERGroups.BASTO_CASTLE),
+            Connection(FullRegionName.BASTO_CASTLE, "Castle entrance", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_GYM_HOUSE, "Gym house entrance", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_LILY_PAD_POND_RIGHT, "Outside castle down", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_BONFIRE_TOP, "Outside castle left", ERGroups.BASTO),
         ],
-        SubRegionName.BASTO_CASTLE_DAY: [
-            Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Castle exit day", ERGroups.BASTO_DAY),
-        ],
-        SubRegionName.BASTO_CASTLE_NIGHT: [
-            Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Castle exit night", ERGroups.BASTO_NIGHT),
+        SubRegionName.BASTO_CASTLE: [
+            Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Castle exit", ERGroups.BASTO),
         ],
         SubRegionName.BASTO_GYM_HOUSE: [
             Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Gym house exit", ERGroups.BASTO),
@@ -459,43 +434,29 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         SubRegionName.BASTO_BONFIRE_TOP: [
             Connection(FullRegionName.BASTO_OUTSIDE_CASTLE, "Bonfire lower right", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_JUNGLE, "Bonfire upper right", ERGroups.BASTO),
-            Connection(FullRegionName.BASTO_BONFIRE_BOTTOM_DAY, "Bonfire day bridge from top", ERGroups.EXCLUDED),
+            Connection(FullRegionName.BASTO_BONFIRE_BOTTOM, "Bonfire day bridge from top", ERGroups.EXCLUDED),
         ],
-        SubRegionName.BASTO_BONFIRE_BOTTOM_DAY: [
-            Connection(FullRegionName.BASTO_CARNIVAL_DAY, "Carnival entrance day", ERGroups.BASTO_DAY),
-            Connection(FullRegionName.BASTO_BONFIRE_TOP, "Bonfire day bridge from bottom", ERGroups.EXCLUDED),
+        SubRegionName.BASTO_BONFIRE_BOTTOM: [
+            Connection(FullRegionName.BASTO_CARNIVAL, "Carnival entrance", ERGroups.BASTO),
+            Connection(FullRegionName.BASTO_BONFIRE_TOP, "Bonfire day bridge from bottom", ERGroups.EXCLUDED, (EventName.BASTO_BONFIRE_BOTTOM_DAY,)),
         ],
-        SubRegionName.BASTO_BONFIRE_BOTTOM_NIGHT: [
-            Connection(FullRegionName.BASTO_CARNIVAL_NIGHT, "Carnival entrance night", ERGroups.BASTO_NIGHT),
-        ],
-        SubRegionName.BASTO_CARNIVAL_DAY: [
-            Connection(FullRegionName.BASTO_BONFIRE_BOTTOM_DAY, "Carnival exit day", ERGroups.BASTO_DAY),
-        ],
-        SubRegionName.BASTO_CARNIVAL_NIGHT: [
-            Connection(FullRegionName.BASTO_BONFIRE_BOTTOM_NIGHT, "Carnival exit night", ERGroups.BASTO_NIGHT),
+        SubRegionName.BASTO_CARNIVAL: [
+            Connection(FullRegionName.BASTO_BONFIRE_BOTTOM, "Carnival exit", ERGroups.BASTO),
         ],
         SubRegionName.BASTO_GHOST_HANGOUT: [
-            Connection(FullRegionName.BASTO_CAVE_DAY, "Ghost hangout cave entrance", ERGroups.BASTO), # night entrance handled as special case
+            Connection(FullRegionName.BASTO_CAVE, "Ghost hangout cave entrance", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_LILY_PAD_POND_RIGHT, "Ghost hangout left", ERGroups.BASTO),
         ],
-        SubRegionName.BASTO_CAVE_DAY: [
-            Connection(FullRegionName.BASTO_SECRET_CAVE_DAY, "Secret cave room entrance day", ERGroups.BASTO_DAY, (ItemName.PICKAXE, ItemName.WATERGUN)),
-            Connection(FullRegionName.BASTO_GHOST_HANGOUT, "Ghost hangout cave exit day", ERGroups.BASTO_DAY),
-            Connection(FullRegionName.BASTO_JUNGLE, "Jungle cave exit day", ERGroups.BASTO_DAY),
+        SubRegionName.BASTO_CAVE: [
+            Connection(FullRegionName.BASTO_SECRET_CAVE, "Secret cave room entrance", ERGroups.BASTO, (ItemName.PICKAXE, ItemName.WATERGUN)),
+            Connection(FullRegionName.BASTO_GHOST_HANGOUT, "Ghost hangout cave exit", ERGroups.BASTO),
+            Connection(FullRegionName.BASTO_JUNGLE, "Jungle cave exit", ERGroups.BASTO),
         ],
-        SubRegionName.BASTO_CAVE_NIGHT: [
-            Connection(FullRegionName.BASTO_SECRET_CAVE_NIGHT, "Secret cave room entrance night", ERGroups.BASTO_NIGHT, (ItemName.PICKAXE, ItemName.WATERGUN)),
-            Connection(FullRegionName.BASTO_GHOST_HANGOUT, "Ghost hangout cave exit night", ERGroups.BASTO_NIGHT),
-            Connection(FullRegionName.BASTO_JUNGLE, "Jungle cave exit night", ERGroups.BASTO_NIGHT),
-        ],
-        SubRegionName.BASTO_SECRET_CAVE_DAY: [
-            Connection(FullRegionName.BASTO_CAVE_DAY, "Secret cave room exit day", ERGroups.BASTO_DAY),
-        ],
-        SubRegionName.BASTO_SECRET_CAVE_NIGHT: [
-            Connection(FullRegionName.BASTO_CAVE_NIGHT, "Secret cave room exit night", ERGroups.BASTO_NIGHT),
+        SubRegionName.BASTO_SECRET_CAVE: [
+            Connection(FullRegionName.BASTO_CAVE, "Secret cave room exit", ERGroups.BASTO),
         ],
         SubRegionName.BASTO_JUNGLE: [
-            Connection(FullRegionName.BASTO_CAVE_DAY, "Jungle cave entrance", ERGroups.BASTO), # night entrance handled as special case
+            Connection(FullRegionName.BASTO_CAVE, "Jungle cave entrance", ERGroups.BASTO),
             Connection(FullRegionName.BASTO_BONFIRE_TOP, "Jungle left", ERGroups.BASTO),
         ],
     },
@@ -509,44 +470,3 @@ def generate_entrance_pair(region: Region, name: str, group: int):
     er_target.randomization_group = group
     er_target.randomization_type = EntranceType.TWO_WAY
     return [exit, er_target]
-
-def toem_on_connect(er_state: ERPlacementState, placed_exits: list[Entrance], paired_entrances: list[Entrance]) -> bool:
-    def matching_entrance_name(name: str) -> str:
-        if name.endswith(' day'):
-            return name.replace(' day', ' night')
-        else:
-            return name.replace(' night', ' day')
-        
-    if placed_exits[0].randomization_group < ERGroups.BASTO:
-        if paired_entrances[0].randomization_group <= ERGroups.BASTO_CASTLE:
-            return False
-        else:
-            return False # TODO full game ER
-    elif placed_exits[0].randomization_group <= ERGroups.BASTO_CASTLE:
-        if paired_entrances[0].randomization_group <= ERGroups.BASTO_CASTLE:
-            return False
-        else:
-            other_time_target_name = matching_entrance_name(paired_entrances[0].name)
-            other_time_target = er_state.entrance_lookup.find_target(other_time_target_name)
-            new_pair = generate_entrance_pair(placed_exits[0].parent_region, placed_exits[0].name + " other", placed_exits[0].randomization_group)
-            er_state.entrance_lookup.add(new_pair[1])
-            er_state.collection_state.blocked_connections[er_state.world.player].add(new_pair[0])
-            er_state.connect(new_pair[0], other_time_target)
-    else:
-        if paired_entrances[0].randomization_group < ERGroups.BASTO:
-            return False # TODO full game ER
-        elif paired_entrances[0].randomization_group == ERGroups.BASTO:
-            new_pair = generate_entrance_pair(paired_entrances[0].connected_region, paired_entrances[0].name + " other", paired_entrances[0].randomization_group)
-            er_state.entrance_lookup.add(new_pair[1])
-            er_state.collection_state.blocked_connections[er_state.world.player].add(new_pair[0])
-            other_time_exit_name = matching_entrance_name(placed_exits[0].name)
-            other_time_exit = er_state.world.multiworld.get_entrance(other_time_exit_name, er_state.world.player)
-            er_state.connect(other_time_exit, new_pair[1])
-        else:
-            other_time_exit_name = matching_entrance_name(placed_exits[0].name)
-            other_time_exit = er_state.world.multiworld.get_entrance(other_time_exit_name, er_state.world.player)
-            other_time_target_name = matching_entrance_name(paired_entrances[0].name)
-            other_time_target = er_state.entrance_lookup.find_target(other_time_target_name)
-            er_state.connect(other_time_exit, other_time_target)
-            
-    return True

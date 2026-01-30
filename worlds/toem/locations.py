@@ -10,6 +10,31 @@ from .items import ItemName
 
 
 @final
+class EventName:
+    TOEM_EXPERIENCED = "TOEM Experienced"
+    BASTO_BONFIRE = "Basto Bonfire"
+    BASTO_LILY_PAD_POND_LEFT_DAY = "Basto - Lily pad pond left day"
+    BASTO_LILY_PAD_POND_LEFT_NIGHT = "Basto - Lily pad pond left night"
+    BASTO_CAMP_DAY = "Basto - Camp day"
+    BASTO_CAMP_NIGHT = "Basto - Camp night"
+    BASTO_BONFIRE_BOTTOM_DAY = "Basto - Bonfire bottom day"
+
+
+@dataclass(frozen=True)
+class EventData:
+    region: str
+    is_day: bool
+
+event_table: dict[str, EventData] = {
+    EventName.BASTO_LILY_PAD_POND_LEFT_DAY: EventData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, True),
+    EventName.BASTO_LILY_PAD_POND_LEFT_NIGHT: EventData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, False),
+    EventName.BASTO_CAMP_DAY: EventData(FullRegionName.BASTO_CAMP, True),
+    EventName.BASTO_CAMP_NIGHT: EventData(FullRegionName.BASTO_CAMP, False),
+    EventName.BASTO_BONFIRE_BOTTOM_DAY: EventData(FullRegionName.BASTO_BONFIRE_BOTTOM, True),
+}
+
+
+@final
 class LocationGroup:
     QUEST = "Quest"
     COMPENDIUM = "Compendium"
@@ -465,14 +490,12 @@ basto_quests = (
     LocationName.QUEST_SAND_CASTLE, LocationName.QUEST_CARNIVAL, LocationName.QUEST_BATS, LocationName.QUEST_BITLING
 )
 basto_regions = (
-    FullRegionName.BASTO_BUS_STOP_TOP_DAY, FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, 
-    FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, 
-    FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_CAMP_DAY, FullRegionName.BASTO_CAMP_NIGHT, FullRegionName.BASTO_TENT, 
-    FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT, FullRegionName.BASTO_GYM_HOUSE, 
-    FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_BONFIRE_BOTTOM_DAY, FullRegionName.BASTO_BONFIRE_BOTTOM_NIGHT, 
-    FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT, FullRegionName.BASTO_GHOST_HANGOUT, 
-    FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT, FullRegionName.BASTO_SECRET_CAVE_DAY, 
-    FullRegionName.BASTO_SECRET_CAVE_NIGHT, FullRegionName.BASTO_JUNGLE
+    FullRegionName.BASTO_BUS_STOP_TOP, FullRegionName.BASTO_BUS_STOP_BOTTOM, FullRegionName.BASTO_LILY_PAD_POND_LEFT,
+    FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_CAMP, FullRegionName.BASTO_TENT, 
+    FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_CASTLE, FullRegionName.BASTO_GYM_HOUSE, 
+    FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_BONFIRE_BOTTOM, FullRegionName.BASTO_CARNIVAL,
+    FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_CAVE, FullRegionName.BASTO_SECRET_CAVE, 
+    FullRegionName.BASTO_JUNGLE
 )
 
 location_table: dict[str, LocationData] = {
@@ -683,83 +706,83 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_GOING_LONG: LocationData(FullRegionName.MOUNTAIN_TOP_TOEM, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_COSPLAYER: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, clothing_items),
     LocationName.CHEEVO_COMPLETIONIST: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, completionist_reqs),
-    LocationName.QUEST_BALLOONS: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, (ItemName.WATERGUN, (FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT), (FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT), FullRegionName.BASTO_LILY_PAD_POND_RIGHT, (FullRegionName.BASTO_CAMP_DAY, FullRegionName.BASTO_CAMP_NIGHT), FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_BONFIRE_TOP, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT), FullRegionName.BASTO_JUNGLE, FullRegionName.BASTO_GHOST_HANGOUT, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
-    LocationName.QUEST_ARTHUR: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.PICKAXE, FullRegionName.BASTO_OUTSIDE_CASTLE, (FullRegionName.BASTO_BUS_STOP_TOP_DAY, FullRegionName.BASTO_BUS_STOP_TOP_NIGHT))),
+    LocationName.QUEST_BALLOONS: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.QUEST, (ItemName.WATERGUN, FullRegionName.BASTO_LILY_PAD_POND_LEFT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_CAMP, FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_CARNIVAL, FullRegionName.BASTO_JUNGLE, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_CASTLE)),
+    LocationName.QUEST_ARTHUR: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.PICKAXE, FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_BUS_STOP_TOP)),
     LocationName.QUEST_BAD_HAIR_DAY: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_TAKE_A_NAP: LocationData(FullRegionName.BASTO_TENT, LocationGroup.QUEST),
     LocationName.QUEST_SPOOKY_STORIES: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.WATERGUN, FullRegionName.BASTO_JUNGLE)),
     LocationName.QUEST_PORTRAITS: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.QUEST),
     LocationName.QUEST_CINEMA: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.WATERGUN,)),
     LocationName.QUEST_NIGHT_LIGHTS: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (LocationName.COMP_FIRE_FLY,)),
-    LocationName.QUEST_JET_SKI: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, ((FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT),)),
+    LocationName.QUEST_JET_SKI: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.QUEST),
     LocationName.QUEST_FRUITS: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.QUEST, (ItemName.BANAKIN, ItemName.MELONEAR, ItemName.BEANUT, ItemName.ORANGANAS)),
     LocationName.QUEST_BRAIN_FREEZE: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.QUEST, (ItemName.PICKAXE, ItemName.ICE_CREAM)),
-    LocationName.QUEST_SWEET_TOOTH: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, (ItemName.ICE_CREAM, LocationName.QUEST_BATS, (FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT))),
-    LocationName.QUEST_IN_YOUR_FACE: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, (ItemName.ICE_CREAM, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
-    LocationName.QUEST_BROKEN_DREAMS: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, LocationGroup.QUEST, (ItemName.ICE_CREAM,)),
-    LocationName.QUEST_DRY_SEASON: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, (ItemName.WATERGUN, (FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT), (FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT), (FullRegionName.BASTO_CAMP_DAY, FullRegionName.BASTO_CAMP_NIGHT), FullRegionName.BASTO_BONFIRE_TOP, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT), FullRegionName.BASTO_JUNGLE, (FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT), FullRegionName.BASTO_GHOST_HANGOUT, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT), FullRegionName.BASTO_GYM_HOUSE)),
+    LocationName.QUEST_SWEET_TOOTH: LocationData(FullRegionName.BASTO_CAVE, LocationGroup.QUEST, (ItemName.ICE_CREAM, LocationName.QUEST_BATS)),
+    LocationName.QUEST_IN_YOUR_FACE: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.QUEST, (ItemName.ICE_CREAM,)),
+    LocationName.QUEST_BROKEN_DREAMS: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.QUEST, (ItemName.ICE_CREAM, EventName.BASTO_LILY_PAD_POND_LEFT_DAY)),
+    LocationName.QUEST_DRY_SEASON: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.QUEST, (ItemName.WATERGUN, FullRegionName.BASTO_BUS_STOP_BOTTOM, FullRegionName.BASTO_CAMP, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_CARNIVAL, FullRegionName.BASTO_JUNGLE, FullRegionName.BASTO_CAVE, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_CASTLE, FullRegionName.BASTO_GYM_HOUSE)),
     LocationName.QUEST_MUSCLES: LocationData(FullRegionName.BASTO_GYM_HOUSE, LocationGroup.QUEST, (ItemName.EMPTY_BOTTLE, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_OUTSIDE_CASTLE)),
-    LocationName.QUEST_SAND_CASTLE: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, (LocationName.QUEST_IN_YOUR_FACE, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
-    LocationName.QUEST_CARNIVAL: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, ((ItemName.WATERGUN, ItemName.HONK_ATTACHMENT), (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
-    LocationName.QUEST_BATS: LocationData(FullRegionName.START_MENU, LocationGroup.QUEST, ((ItemName.HONK_ATTACHMENT, ItemName.WATERGUN), FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_OUTSIDE_CASTLE, (FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT))),
+    LocationName.QUEST_SAND_CASTLE: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.QUEST, (LocationName.QUEST_IN_YOUR_FACE,)),
+    LocationName.QUEST_CARNIVAL: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.QUEST, ((ItemName.WATERGUN, ItemName.HONK_ATTACHMENT),)),
+    LocationName.QUEST_BATS: LocationData(FullRegionName.BASTO_CAVE, LocationGroup.QUEST, ((ItemName.HONK_ATTACHMENT, ItemName.WATERGUN), FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_OUTSIDE_CASTLE)),
     LocationName.QUEST_BITLING: LocationData(FullRegionName.BASTO_JUNGLE, LocationGroup.QUEST, (LocationName.COMP_BITLING_FROG, LocationName.COMP_BITLING_MOUSE, LocationName.COMP_BITLING_SNAIL, LocationName.COMP_BITLING_TATO)),
-    LocationName.COMP_BAT: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_OUTSIDE_CASTLE),)),
-    LocationName.COMP_SNAKE: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_CAMP_DAY, FullRegionName.BASTO_CAMP_NIGHT),)),
-    LocationName.COMP_BEAK_BIRD: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, FullRegionName.BASTO_BUS_STOP_TOP_DAY, FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT),)),
-    LocationName.COMP_BITLING_FROG: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_BONFIRE_BOTTOM_DAY, FullRegionName.BASTO_BONFIRE_BOTTOM_NIGHT),)),
-    LocationName.COMP_BITLING_MOUSE: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, (LocationName.QUEST_IN_YOUR_FACE, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
+    LocationName.COMP_BAT: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_CAVE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_OUTSIDE_CASTLE),)),
+    LocationName.COMP_SNAKE: LocationData(FullRegionName.BASTO_CAMP, LocationGroup.COMPENDIUM),
+    LocationName.COMP_BEAK_BIRD: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_BUS_STOP_BOTTOM, FullRegionName.BASTO_BUS_STOP_TOP, FullRegionName.BASTO_LILY_PAD_POND_LEFT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT),)),
+    LocationName.COMP_BITLING_FROG: LocationData(FullRegionName.BASTO_BONFIRE_BOTTOM, LocationGroup.COMPENDIUM),
+    LocationName.COMP_BITLING_MOUSE: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.COMPENDIUM, (LocationName.QUEST_IN_YOUR_FACE,)),
     LocationName.COMP_BITLING_SNAIL: LocationData(FullRegionName.BASTO_JUNGLE, LocationGroup.COMPENDIUM),
-    LocationName.COMP_BITLING_TATO: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, FullRegionName.BASTO_BUS_STOP_TOP_DAY, FullRegionName.BASTO_BUS_STOP_TOP_NIGHT),)),
+    LocationName.COMP_BITLING_TATO: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_BUS_STOP_BOTTOM, FullRegionName.BASTO_BUS_STOP_TOP),)),
     LocationName.COMP_COCO_CRAB: LocationData(FullRegionName.BASTO_JUNGLE, LocationGroup.COMPENDIUM),
     LocationName.COMP_DAY_LIZARD: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_DRILL_MOLE: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_EGGERT: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_FIRE_FLY: LocationData(FullRegionName.BASTO_GHOST_HANGOUT, LocationGroup.COMPENDIUM),
-    LocationName.COMP_GLOW_WORM: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT),)),
-    LocationName.COMP_ITSY_BITSY: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_SECRET_CAVE_DAY, FullRegionName.BASTO_SECRET_CAVE_NIGHT),)),
-    LocationName.COMP_MUD_FROG: LocationData(FullRegionName.BASTO_CAMP_NIGHT, LocationGroup.COMPENDIUM),
+    LocationName.COMP_GLOW_WORM: LocationData(FullRegionName.BASTO_CAVE, LocationGroup.COMPENDIUM),
+    LocationName.COMP_ITSY_BITSY: LocationData(FullRegionName.BASTO_SECRET_CAVE, LocationGroup.COMPENDIUM),
+    LocationName.COMP_MUD_FROG: LocationData(FullRegionName.BASTO_CAMP, LocationGroup.COMPENDIUM, (EventName.BASTO_CAMP_NIGHT,)),
     LocationName.COMP_NIGHT_LIZARD: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_SNOUT_BUG: LocationData(FullRegionName.BASTO_JUNGLE, LocationGroup.COMPENDIUM),
     LocationName.COMP_TATO_COCO: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
-    LocationName.COMP_TATO_KING: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, (ItemName.WATERGUN, (FullRegionName.BASTO_SECRET_CAVE_DAY, FullRegionName.BASTO_SECRET_CAVE_NIGHT))),
-    LocationName.COMP_WATER_STRIDER: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, FullRegionName.BASTO_OUTSIDE_CASTLE),)),
+    LocationName.COMP_TATO_KING: LocationData(FullRegionName.BASTO_SECRET_CAVE, LocationGroup.COMPENDIUM, (ItemName.WATERGUN,)),
+    LocationName.COMP_WATER_STRIDER: LocationData(FullRegionName.START_MENU, LocationGroup.COMPENDIUM, ((FullRegionName.BASTO_LILY_PAD_POND_LEFT, FullRegionName.BASTO_OUTSIDE_CASTLE),)),
     LocationName.ITEM_BASTO_TICKET: LocationData(FullRegionName.HOMELANDA_LIVING_ROOM, LocationGroup.ITEM, (LocationName.QUEST_EXPERIENCE_TOEM,)),
-    LocationName.ITEM_WATERGUN: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, ((FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT),)),
+    LocationName.ITEM_WATERGUN: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.ITEM),
     LocationName.ITEM_SUN_HAT: LocationData(FullRegionName.BASTO_TENT, LocationGroup.ITEM),
     LocationName.ITEM_MELONEAR: LocationData(FullRegionName.BASTO_LILY_PAD_POND_RIGHT, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_BANAKIN: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (ItemName.WATERGUN,)),
     LocationName.ITEM_ORANGANAS: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.ITEM, (ItemName.WATERGUN,)),
-    LocationName.ITEM_BEANUT: LocationData(FullRegionName.BASTO_CAMP_DAY, LocationGroup.ITEM, (ItemName.WATERGUN,)),
+    LocationName.ITEM_BEANUT: LocationData(FullRegionName.BASTO_CAMP, LocationGroup.ITEM, (ItemName.WATERGUN, EventName.BASTO_CAMP_DAY)),
     LocationName.ITEM_PICKAXE: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.ITEM),
-    LocationName.ITEM_SUN_CAP: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (ItemName.PICKAXE, (FullRegionName.BASTO_CAVE_DAY, FullRegionName.BASTO_CAVE_NIGHT))),
+    LocationName.ITEM_SUN_CAP: LocationData(FullRegionName.BASTO_CAVE, LocationGroup.ITEM, (ItemName.PICKAXE,)),
     LocationName.ITEM_FLIP_FLOPS: LocationData(FullRegionName.BASTO_GHOST_HANGOUT, LocationGroup.ITEM, (ItemName.PICKAXE,)),
     LocationName.ITEM_ICE_CREAM_BANAKIN: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (ItemName.BANAKIN,)),
     LocationName.ITEM_ICE_CREAM_MELONEAR: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (ItemName.MELONEAR,)),
     LocationName.ITEM_ICE_CREAM_BEANUT: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (ItemName.BEANUT,)),
     LocationName.ITEM_ICE_CREAM_ORANGANAS: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (ItemName.ORANGANAS,)),
-    LocationName.ITEM_ROYAL_CAPE: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (LocationName.QUEST_SAND_CASTLE, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
-    LocationName.ITEM_MINIGAME_TICKET: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, ((ItemName.WATERGUN, ItemName.HONK_ATTACHMENT), (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
-    LocationName.ITEM_LEI: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
-    LocationName.ITEM_VACATION_SHIRT: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
-    LocationName.ITEM_ROYAL_CANE: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
+    LocationName.ITEM_ROYAL_CAPE: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.ITEM, (LocationName.QUEST_SAND_CASTLE,)),
+    LocationName.ITEM_MINIGAME_TICKET: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.ITEM, ((ItemName.WATERGUN, ItemName.HONK_ATTACHMENT),)),
+    LocationName.ITEM_LEI: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET,)),
+    LocationName.ITEM_VACATION_SHIRT: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET,)),
+    LocationName.ITEM_ROYAL_CANE: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.ITEM, (ItemName.MINIGAME_TICKET,)),
     LocationName.ITEM_EMPTY_BOTTLE: LocationData(FullRegionName.BASTO_GHOST_HANGOUT, LocationGroup.ITEM),
     LocationName.ITEM_VIKING_HELMET: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.ITEM, (LocationName.QUEST_BRAIN_FREEZE,)),
-    LocationName.ITEM_FOOT_CAST: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, LocationGroup.ITEM, (LocationName.QUEST_BROKEN_DREAMS,)),
+    LocationName.ITEM_FOOT_CAST: LocationData(FullRegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.ITEM, (LocationName.QUEST_BROKEN_DREAMS,)),
     LocationName.ITEM_BERET: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ITEM, (LocationName.CHEEVO_CALMED_DOWN, LocationName.CHEEVO_JUST_A_SOCK, LocationName.CHEEVO_SPARKLING_JUMP, LocationName.CHEEVO_FLIGHT_READY, LocationName.CHEEVO_FOLLOWERS, LocationName.CHEEVO_NEW_JOB, LocationName.CHEEVO_YOUTH, LocationName.CHEEVO_STORY, LocationName.CHEEVO_MOONLIT_BEAUTY, LocationName.CHEEVO_KINGS_SHIRT)),
-    LocationName.ITEM_ROYAL_CROWN: LocationData(FullRegionName.START_MENU, LocationGroup.ITEM, (ItemName.PICKAXE, LocationName.COMP_TATO_KING, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))), 
-    LocationName.TAPE_NIGHT_JAM: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
-    LocationName.TAPE_WARM_DAYS_NIGHT: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
-    LocationName.TAPE_ONE_BY_ONE: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
-    LocationName.TAPE_HAMMOCK_DAYS: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
-    LocationName.TAPE_SAILORS_TUNE: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)), # Basto stamp requirement handled as special case
-    LocationName.TAPE_SONG_OF_THE_SEA: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.ITEM_ROYAL_CROWN: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.ITEM, (ItemName.PICKAXE, LocationName.COMP_TATO_KING)), 
+    LocationName.TAPE_NIGHT_JAM: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_WARM_DAYS_NIGHT: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_ONE_BY_ONE: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_HAMMOCK_DAYS: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
+    LocationName.TAPE_SAILORS_TUNE: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)), # Basto stamp requirement handled as special case
+    LocationName.TAPE_SONG_OF_THE_SEA: LocationData(FullRegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE, (ItemName.WATERGUN,)),
     LocationName.CHEEVO_TOPICAL_PARADISE: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (basto_regions,)),
-    LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.VACATION_SHIRT, ItemName.FLIP_FLOPS, ItemName.SUN_HAT, (FullRegionName.BASTO_LILY_PAD_POND_LEFT_DAY, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_GHOST_HANGOUT))),
-    LocationName.CHEEVO_KINGS_SHIRT: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.ROYAL_CAPE, (FullRegionName.BASTO_CASTLE_DAY, FullRegionName.BASTO_CASTLE_NIGHT))),
+    LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.VACATION_SHIRT, ItemName.FLIP_FLOPS, ItemName.SUN_HAT, (FullRegionName.BASTO_LILY_PAD_POND_LEFT, FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_CARNIVAL, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_GHOST_HANGOUT))),
+    LocationName.CHEEVO_KINGS_SHIRT: LocationData(FullRegionName.BASTO_CASTLE, LocationGroup.ACHIEVEMENT, (ItemName.ROYAL_CAPE,)),
     LocationName.CHEEVO_MOONLIT_BEAUTY: LocationData(FullRegionName.BASTO_BONFIRE_TOP, LocationGroup.ACHIEVEMENT, (LocationName.QUEST_BAD_HAIR_DAY,)),
     LocationName.CHEEVO_SELF_PORTRAIT: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ACHIEVEMENT),
-    LocationName.CHEEVO_WAZZUUPPP: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.FRAMES_FILTERS, (FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_LEFT_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_CAMP_NIGHT, FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_BONFIRE_BOTTOM_NIGHT, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE))),
-    LocationName.CHEEVO_PRO_GAMER: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.HONK_ATTACHMENT, (FullRegionName.BASTO_CARNIVAL_DAY, FullRegionName.BASTO_CARNIVAL_NIGHT))),
+    LocationName.CHEEVO_WAZZUUPPP: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, (ItemName.FRAMES_FILTERS, (EventName.BASTO_LILY_PAD_POND_LEFT_NIGHT, FullRegionName.BASTO_LILY_PAD_POND_RIGHT, EventName.BASTO_CAMP_NIGHT, FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE))), # FullRegionName.BASTO_BUS_STOP_TOP_NIGHT, FullRegionName.BASTO_BUS_STOP_BOTTOM_NIGHT, EventName.BASTO_BONFIRE_BOTTOM_NIGHT
+    LocationName.CHEEVO_PRO_GAMER: LocationData(FullRegionName.BASTO_CARNIVAL, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, ItemName.HONK_ATTACHMENT)),
     LocationName.CHEEVO_SPLISH_SPLASH: LocationData(FullRegionName.BASTO_GHOST_HANGOUT, LocationGroup.ACHIEVEMENT, (ItemName.WATERGUN, LocationName.QUEST_TAKE_A_BATH)),
     LocationName.CHEEVO_ROYAL_CASTLE: LocationData(FullRegionName.BASTO_OUTSIDE_CASTLE, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_SOME_MORE: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, basto_animals),

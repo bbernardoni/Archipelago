@@ -1,22 +1,17 @@
 from collections.abc import Callable
+from collections import deque
 from typing import TYPE_CHECKING, final
 
 from BaseClasses import CollectionState, Region
 from worlds.generic.Rules import set_rule, add_rule
 
 from .items import ItemName, ItemGroup, item_table
-from .locations import LocationName, LocationGroup, location_table, item_to_location_name
+from .locations import LocationName, LocationGroup, EventName, EventData, event_table, location_table, item_to_location_name
 from .regions import FullRegionName, RegionName
 from .connections import region_connections
 
 if TYPE_CHECKING:
     from . import ToemWorld
-
-
-@final
-class EventName:
-    TOEM_EXPERIENCED = "TOEM Experienced"
-    BASTO_BONFIRE = "Basto Bonfire"
 
 
 CollectionRule = Callable[[CollectionState], bool]
@@ -64,6 +59,8 @@ def collect_requirements_regions(requirments: tuple[str | tuple[str]], world: "T
                 item_table[requirment].group == ItemGroup.CASSETTE and not world.options.include_cassettes):
                 return collect_requirement_regions(item_to_location_name[requirment])
             return set()
+        elif requirment in event_table:
+            return set()
         else:
             return {world.get_region(requirment)}
     
@@ -99,6 +96,8 @@ def check_requirements(state: CollectionState, requirments: tuple[str | tuple[st
                 item_table[requirment].group == ItemGroup.CASSETTE and not world.options.include_cassettes):
                 return check_requirements(state, location_table[item_to_location_name[requirment]].requirements, world)
             return state.has(requirment, world.player)
+        elif requirment in event_table:
+            return state.has(requirment, world.player)
         return state.can_reach_region(requirment, world.player)
     
     for req in requirments:
@@ -111,6 +110,35 @@ def check_requirements(state: CollectionState, requirments: tuple[str | tuple[st
         elif not check_requirement(req):
             return False
     return True
+
+basto_bed_regions = {FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_TENT, FullRegionName.BASTO_OUTSIDE_CASTLE, 
+        FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE}
+
+def basto_day_night_rule(state: CollectionState, event_data: EventData, world: "ToemWorld") -> bool:
+    event_region = world.get_region(event_data.region)
+    q: deque[Region] = deque()
+    q.append(event_region)
+    seen = {event_region}
+    while q:
+        region = q.popleft()
+        for entrance in region.entrances:
+            if entrance.parent_region and entrance.parent_region not in seen:
+                if entrance.name == "Lily pad pond night bridge from right":
+                    if not event_data.is_day:
+                        return True
+                elif entrance.name == "Bonfire day bridge from top":
+                    if event_data.is_day:
+                        return True
+                elif entrance.can_reach(state):
+                    if not entrance.parent_region.name.startswith(RegionName.BASTO):
+                        if event_data.is_day:
+                            return True
+                    elif entrance.parent_region.name in basto_bed_regions:
+                        return True
+                    else:
+                        seen.add(entrance.parent_region)
+                        q.append(entrance.parent_region)
+    return False
 
 def set_location_rules(world: "ToemWorld") -> None:
     for location in world.get_locations():
@@ -128,6 +156,9 @@ def set_location_rules(world: "ToemWorld") -> None:
         if len(requirements) == 0:
             continue
         add_rule(location, lambda state, reqs=requirements: check_requirements(state, reqs, world))
+    if world.options.include_basto:
+        for event_name, event_data in event_table.items():
+            add_rule(world.get_location(event_name), lambda state, event_data=event_data: basto_day_night_rule(state, event_data, world))
 
 
 def set_entrance_rules(world: "ToemWorld") -> None:
@@ -156,7 +187,7 @@ def set_entrance_rules(world: "ToemWorld") -> None:
             continue
         for _, connections in sub_regions.items():
             for connection in connections:
-                if not world.options.include_basto and connection.dst_region_name == FullRegionName.BASTO_BUS_STOP_BOTTOM_DAY:
+                if not world.options.include_basto and connection.dst_region_name == FullRegionName.BASTO_BUS_STOP_BOTTOM:
                     continue
                 requirements = connection.requirements
                 if len(requirements) == 0:
