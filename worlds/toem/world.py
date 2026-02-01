@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from typing_extensions import override
 
-from BaseClasses import Item, ItemClassification, Tutorial, CollectionState
+from BaseClasses import Item, ItemClassification, Tutorial, EntranceType, Region, Entrance
 from Options import Accessibility
 from worlds.AutoWorld import WebWorld, World
 from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
@@ -21,7 +21,7 @@ from .locations import (
 )
 from .options import ToemOptions, EntranceRandomization
 from .regions import RegionName, FullRegionName, ToemRegion
-from .connections import ERGroups, region_connections, within_region_groups, generate_entrance_pair
+from .connections import ERGroups, region_connections, within_region_groups
 from .rules import EventName, init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
@@ -177,7 +177,7 @@ class ToemWorld(World):
                         dst_region = self.get_region(connection.dst_region_name)
                         src_region.connect(dst_region, connection.name)
                     else:
-                        generate_entrance_pair(src_region, connection.name, connection.group)
+                        self.generate_entrance_pair(src_region, connection.name, connection.group)
         set_entrance_rules(self)
         
         if self.options.entrance_randomization != EntranceRandomization.option_disabled:
