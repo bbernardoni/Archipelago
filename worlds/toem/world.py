@@ -208,16 +208,14 @@ class ToemWorld(World):
                             disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
 
             self.transitions = {from_: to_ for from_, to_ in er_state.pairings}
-        
-        def visualize_world(state: CollectionState | None = None):
-            from Utils import visualize_regions
-            if not state:
-                state = CollectionState(self.multiworld, True)
-                for item in self.multiworld.itempool:
-                    state.collect(item, True)
-                state.sweep_for_advancements()
-            visualize_regions(self.get_region(FullRegionName.START_MENU), "toem.puml")#, regions_to_highlight=state.reachable_regions[self.player])
-        visualize_world()
+
+    def generate_entrance_pair(self, region: Region, name: str, group: int):
+        exit = region.create_exit(name)
+        exit.randomization_group = group
+        exit.randomization_type = EntranceType.TWO_WAY
+        er_target = region.create_er_target(name)
+        er_target.randomization_group = group
+        er_target.randomization_type = EntranceType.TWO_WAY
 
     @override
     def fill_slot_data(self) -> dict[str, Any]:
