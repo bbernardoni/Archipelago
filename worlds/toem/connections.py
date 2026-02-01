@@ -340,17 +340,17 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
         SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT: [
             Connection(FullRegionName.KIIRUBERG_CLIFFS_MIDDLE, "Blizzard bridge left", ERGroups.KIIRUBERG),
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from lower left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)), # check warm clothes?
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge break ice from bottom", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from lower left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SCARF, ItemName.SKI_GOGGLES)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge break ice from bottom", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT, ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SCARF, ItemName.SKI_GOGGLES)),
         ],
         SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT: [
-            Connection(FullRegionName.KIIRUBERG_MAN_CAVE, "Man cave entrance", ERGroups.KIIRUBERG, (LocationName.QUEST_EXPERIENCE_TOEM,)), # not sure if best req, also check if ice reforms on exit
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from upper left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_MAN_CAVE, "Man cave entrance", ERGroups.KIIRUBERG, (LocationName.QUEST_EXPERIENCE_TOEM,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, "Blizzard bridge rope from upper left", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SCARF, ItemName.SKI_GOGGLES)),
             Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT, "Blizzard bridge break ice from top", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
         ],
         SubRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT: [
             Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_LOWER_LEFT, "Blizzard bridge rope from lower right", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
-            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge rope from upper right", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS,)),
+            Connection(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_UPPER_LEFT, "Blizzard bridge rope from upper right", ERGroups.EXCLUDED, (ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SCARF, ItemName.SKI_GOGGLES)),
             Connection(FullRegionName.KIIRUBERG_BLIZZARD_MONSTER, "Blizzard bridge right", ERGroups.KIIRUBERG, (ItemName.HONK_ATTACHMENT,)),
         ],
         SubRegionName.KIIRUBERG_MAN_CAVE: [
