@@ -54,15 +54,30 @@ class ToemWorld(World):
     origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
     transitions: dict[str, str]
+    is_ut: bool
+    ut_can_gen_without_yaml = True
+    deferred_entrances: dict[str, tuple[Entrance, Region]]
+    found_entrances_datastorage_key = "Slot:{player}:TraversedEntrances"
 
     @override
     def generate_early(self) -> None:
+        self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
+        re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
+        if re_gen_passthrough and self.game in re_gen_passthrough:
+            slot_data: dict[str, Any] = re_gen_passthrough[self.game]
+            for key, value in slot_data["options"].items():
+                opt = getattr(self.options, key, None)
+                if opt is not None:
+                    setattr(self.options, key, opt.from_any(value))
+            self.transitions = slot_data["transitions"]
+        else:
+            self.transitions = {}
+
         if self.options.homelanda_stamp_requirement > 0:
             homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
             self.multiworld.local_early_items[self.player][homelanda_stamp] = int(self.options.homelanda_stamp_requirement)
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
-        self.transitions = {}
 
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
@@ -181,33 +196,44 @@ class ToemWorld(World):
         set_entrance_rules(self)
         
         if self.options.entrance_randomization != EntranceRandomization.option_disabled:
-            if self.options.entrance_randomization == EntranceRandomization.option_within_region:
-                group_lookup = within_region_groups
-            TOEM_MAX_GER_ATTEMPTS = 10
-            for i in range(TOEM_MAX_GER_ATTEMPTS):
-                failed = False
-                try:
-                    er_state = randomize_entrances(self, True, group_lookup)
-                    # Check if all basto day/night regions are reachable
-                    if self.options.include_basto and self.options.accessibility != Accessibility.option_minimal:
-                        for event_name in event_table:
-                            if not self.get_location(event_name).can_reach(er_state.collection_state):
-                                failed = True
-                                break
-                except EntranceRandomizationError as err:
-                    if i >= TOEM_MAX_GER_ATTEMPTS - 1:
-                        raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps. Final error:\n\n{err}")
-                    failed = True
-                if not failed:
-                    break
-                for region in self.get_regions():
-                    for _exit in region.get_exits():
-                        if (_exit.randomization_group != ERGroups.EXCLUDED
-                                and _exit.parent_region
-                                and _exit.connected_region):
-                            disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
+            if self.is_ut:
+                er_targets = {entrance.name: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
+                er_exits = {_exit.name: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
+                self.deferred_entrances = {entrance_name: (er_exits[exit_name], er_targets[entrance_name].connected_region) for entrance_name, exit_name in self.transitions.items()}
+                for er_target in er_targets.values():
+                    er_target.connected_region.entrances.remove(er_target)
+                if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
+                    for _, (_exit, entrance_region) in self.deferred_entrances:
+                        _exit.connect(entrance_region)
+                    self.deferred_entrances = {}
+            else:
+                if self.options.entrance_randomization == EntranceRandomization.option_within_region:
+                    group_lookup = within_region_groups
+                TOEM_MAX_GER_ATTEMPTS = 10
+                for i in range(TOEM_MAX_GER_ATTEMPTS):
+                    failed = False
+                    try:
+                        er_state = randomize_entrances(self, True, group_lookup)
+                        # Check if all basto day/night regions are reachable
+                        if self.options.include_basto and self.options.accessibility != Accessibility.option_minimal:
+                            for event_name in event_table:
+                                if not self.get_location(event_name).can_reach(er_state.collection_state):
+                                    failed = True
+                                    break
+                    except EntranceRandomizationError as err:
+                        if i >= TOEM_MAX_GER_ATTEMPTS - 1:
+                            raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps. Final error:\n\n{err}")
+                        failed = True
+                    if not failed:
+                        break
+                    for region in self.get_regions():
+                        for _exit in region.get_exits():
+                            if (_exit.randomization_group != ERGroups.EXCLUDED
+                                    and _exit.parent_region
+                                    and _exit.connected_region):
+                                disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
 
-            self.transitions = {from_: to_ for from_, to_ in er_state.pairings}
+                self.transitions = {from_: to_ for from_, to_ in er_state.pairings}
 
     def generate_entrance_pair(self, region: Region, name: str, group: int):
         exit = region.create_exit(name)
@@ -238,3 +264,19 @@ class ToemWorld(World):
             ),
             "transitions": self.transitions
         }
+
+    # UT Integration
+    @staticmethod
+    def interpret_slot_data(slot_data: dict[str, any]):
+        return slot_data
+    
+    def reconnect_found_entrances(self, key: str, value: Any):
+        if value:
+            new_entrances = set(self.deferred_entrances) & set(value)
+            for entrance_name in new_entrances:
+                _exit, entrance_region = self.deferred_entrances[entrance_name]
+                _exit.connect(entrance_region)
+                reverse_exit, reverse_entrance_region = self.deferred_entrances[_exit.name]
+                reverse_exit.connect(reverse_entrance_region)
+                del self.deferred_entrances[entrance_name]
+                del self.deferred_entrances[_exit.name]
