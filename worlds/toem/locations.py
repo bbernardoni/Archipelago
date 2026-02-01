@@ -382,7 +382,9 @@ class ToemLocation(Location):
 class LocationData:
     region: str
     group: str
-    requirements: Tuple[str] = ()
+    # requirements are formatted such that everything in the outer tuple are combined with
+    # an and condition and everything in a nested tuple are combined with an or condition
+    requirements: Tuple[str | Tuple[str]] = ()
 
 oaklaville_quests = (
     LocationName.QUEST_SUS_FOREST, LocationName.QUEST_MONSTERS, LocationName.QUEST_SOCKS, LocationName.QUEST_SCOUTS, 
@@ -459,6 +461,10 @@ base_animals = (
     LocationName.COMP_COSMO_DEER, LocationName.COMP_TEDDY, LocationName.COMP_FLUFF, LocationName.COMP_HEDGEHOG, 
     LocationName.COMP_METEOPAL, LocationName.COMP_GOAT, LocationName.COMP_OWL, LocationName.COMP_SNOW_BIRD, 
     LocationName.COMP_TATO_ALIEN, LocationName.COMP_TATO_SKI
+)
+fashionable_hats = ( # does not accept reporter hat, diving helmet, or space helmet
+    ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.HARD_HAT, ItemName.PIRATE_HAT, ItemName.PAPER_HAT, 
+    ItemName.HOTBEAN_HAT, ItemName.PUFFER_HAT, ItemName.SUN_HAT,  ItemName.SUN_CAP,  ItemName.BERET,  ItemName.ROYAL_CROWN
 )
 clothing_items = (
     ItemName.CLOGS, ItemName.FINGER, ItemName.GHOST_GLASSES, ItemName.SOAKED_SOCK, ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, 
@@ -616,9 +622,9 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_SEAWORTHY: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, stanhamn_quests),
     LocationName.CHEEVO_FLIGHT_READY: LocationData(FullRegionName.STANHAMN_FISHING_TOWER, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_SPARKLING_JUMP: LocationData(FullRegionName.STANHAMN_BUS_STOP, LocationGroup.ACHIEVEMENT, (ItemName.HONK_ATTACHMENT,)),
-    LocationName.CHEEVO_GOOD_BOY: LocationData(FullRegionName.STANHAMN_HIPPO_BEACH, LocationGroup.ACHIEVEMENT, (LocationName.QUEST_LOST_DOG,)),
+    LocationName.CHEEVO_GOOD_BOY: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT, ((FullRegionName.OAKLAVILLE_OUTSIDE_HOTEL, FullRegionName.OAKLAVILLE_HOTEL, FullRegionName.OAKLAVILLE_GRAVEYARD, FullRegionName.OAKLAVILLE_CAMP, FullRegionName.STANHAMN_DOCKS_RIGHT, FullRegionName.STANHAMN_DOCKS_LEFT, FullRegionName.STANHAMN_KING_FISH_BEACH, FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.KIIRUBERG_BALLOON_HOUSE, FullRegionName.KIIRUBERG_MECKS_HOUSE),)),
     LocationName.QUEST_SUS_CITY: LocationData(FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, LocationGroup.QUEST, (FullRegionName.LOGCITY_CROSSWALK,)),
-    LocationName.QUEST_RATSKULLZ: LocationData(FullRegionName.LOGCITY_RATSKULLZ_ALLEY, LocationGroup.QUEST),
+    LocationName.QUEST_RATSKULLZ: LocationData(FullRegionName.LOGCITY_RATSKULLZ_ALLEY, LocationGroup.QUEST), # Graffiti locations requirement handled as special case
     LocationName.QUEST_PUNK_ROCKER: LocationData(FullRegionName.LOGCITY_CLOCK_TOWER, LocationGroup.QUEST, (ItemName.CINNAMON_BUN,)),
     LocationName.QUEST_CHALLENGE_5: LocationData(FullRegionName.LOGCITY_OVERPASS, LocationGroup.QUEST, (LocationName.QUEST_GRANNY, FullRegionName.LOGCITY_SKATE_PARK)),
     LocationName.QUEST_CHALLENGE_6: LocationData(FullRegionName.LOGCITY_OUTSIDE_GALLERY, LocationGroup.QUEST, (FullRegionName.LOGCITY_CROSSWALK,)),
@@ -630,7 +636,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_DATE: LocationData(FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, LocationGroup.QUEST, (ItemName.GHOST_GLASSES, FullRegionName.LOGCITY_OUTSIDE_GALLERY)),
     LocationName.QUEST_ART: LocationData(FullRegionName.LOGCITY_GALLERY, LocationGroup.QUEST, ((ItemName.FRAMES_FILTERS, FullRegionName.LOGCITY_RATSKULLZ_ALLEY),)),
     LocationName.QUEST_INFLUENCER: LocationData(FullRegionName.LOGCITY_CLOCK_TOWER, LocationGroup.QUEST, (FullRegionName.LOGCITY_OUTSIDE_CAFE,)),
-    LocationName.QUEST_FASHION: LocationData(FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, LocationGroup.QUEST, (ItemName.HOTBEAN_HAT,)), # TODO second hat is assumed to be hotbean since that's already needed
+    LocationName.QUEST_FASHION: LocationData(FullRegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, LocationGroup.QUEST, (fashionable_hats,)),
     LocationName.QUEST_CLEANING: LocationData(FullRegionName.LOGCITY_BUS_STOP, LocationGroup.QUEST, (FullRegionName.LOGCITY_RATSKULLZ_ALLEY,)),
     LocationName.QUEST_GRANNY: LocationData(FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, LocationGroup.QUEST),
     LocationName.QUEST_MICE: LocationData(FullRegionName.LOGCITY_CAFE, LocationGroup.QUEST, (ItemName.HONK_ATTACHMENT,)),
