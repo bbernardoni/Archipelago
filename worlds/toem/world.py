@@ -7,7 +7,7 @@ from Options import Accessibility
 from worlds.AutoWorld import WebWorld, World
 from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
 
-from .constants import GAME_NAME
+from .constants import GAME_NAME, WORLD_VERSION
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
@@ -246,7 +246,7 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": "1.1.1",
+            "version": WORLD_VERSION,
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
