@@ -2,21 +2,27 @@ from typing import TYPE_CHECKING, Any, ClassVar
 
 from typing_extensions import override
 
-from BaseClasses import Item, ItemClassification, Region, Tutorial
+from BaseClasses import Item, ItemClassification, Tutorial, EntranceType, Region, Entrance
+from Options import Accessibility
 from worlds.AutoWorld import WebWorld, World
+from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
 
-from .constants import GAME_NAME
+from .constants import GAME_NAME, WORLD_VERSION
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
+    LocationName,
     ToemLocation,
+    EventName,
+    event_table,
     location_name_groups,
     location_name_to_id,
     location_table,
 )
-from .options import ToemOptions
-from .regions import RegionName, toem_regions
-from .rules import EventName, init_stamp_requirements, set_item_rules, set_entrance_rules, set_location_rules, set_victory_rule
+from .options import ToemOptions, EntranceRandomization
+from .regions import RegionName, FullRegionName, ToemRegion
+from .connections import ERGroups, region_connections, within_region_groups
+from .rules import EventName, init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
     from Options import PerGameCommonOptions
@@ -45,19 +51,39 @@ class ToemWorld(World):
     location_name_groups: ClassVar[dict[str, set[str]]] = location_name_groups
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
-    origin_region_name: str = RegionName.HOMELANDA
+    origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
+    transitions: dict[str, str]
+    is_ut: bool
+    ut_can_gen_without_yaml = True
+    deferred_entrances: dict[str, tuple[Entrance, Region]]
+    found_entrances_datastorage_key = "Slot:{player}:TraversedEntrances"
 
     @override
     def generate_early(self) -> None:
-        homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
-        self.multiworld.local_early_items[self.player][homelanda_stamp] = 1
+        self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
+        re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
+        if re_gen_passthrough and self.game in re_gen_passthrough:
+            slot_data: dict[str, Any] = re_gen_passthrough[self.game]
+            for key, value in slot_data["options"].items():
+                opt = getattr(self.options, key, None)
+                if opt is not None:
+                    setattr(self.options, key, opt.from_any(value))
+            self.transitions = slot_data["transitions"]
+        else:
+            self.transitions = {}
+
+        from .options import IncludeCassettes
+        self.options.include_cassettes = IncludeCassettes(0)
+        if self.options.homelanda_stamp_requirement > 0:
+            homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
+            self.multiworld.local_early_items[self.player][homelanda_stamp] = int(self.options.homelanda_stamp_requirement)
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
-        if not self.options.include_basto and data.region == RegionName.BASTO:
+        if not self.options.include_basto and location_name_to_id[name] >= location_name_to_id[LocationName.QUEST_BALLOONS]:
             return
 
         region = self.get_region(data.region)
@@ -67,23 +93,12 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        for region_name, region_data in toem_regions.items():
-            if not self.options.include_basto and region_data.region == RegionName.BASTO:
+        for parent, sub_regions in region_connections.items():
+            if not self.options.include_basto and parent == RegionName.BASTO:
                 continue
-            region = Region(region_name, self.player, self.multiworld)
-            self.multiworld.regions.append(region)
-
-        for region_name, region_data in toem_regions.items():
-            try:
-                region = self.get_region(region_name)
-            except KeyError:
-                continue
-            for exit_region_name in region_data.exits:
-                try:
-                    exit_region = self.get_region(exit_region_name)
-                except KeyError:
-                    continue
-                region.connect(exit_region)
+            for reg_name in sub_regions:
+                region = ToemRegion(f"{parent} - {reg_name}", self.player, self.multiworld)
+                self.multiworld.regions.append(region)
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
@@ -101,9 +116,11 @@ class ToemWorld(World):
                 self.create_location(location_name)
 
         if self.options.include_basto:
-            self.create_event(EventName.BASTO_BONFIRE, RegionName.BASTO)
+            self.create_event(EventName.BASTO_BONFIRE, FullRegionName.BASTO_BUS_STOP_BOTTOM)
+            for event_name, event_data in event_table.items():
+                self.create_event(event_name, event_data.region)
         else:
-            self.create_event(EventName.TOEM_EXPERIENCED, RegionName.MOUNTAIN_TOP)
+            self.create_event(EventName.TOEM_EXPERIENCED, FullRegionName.MOUNTAIN_TOP_TOEM)
 
     def create_event(self, event_name: str, region_name: str) -> None:
         item = ToemItem(event_name, ItemClassification.progression_skip_balancing, None, self.player)
@@ -134,7 +151,7 @@ class ToemWorld(World):
             for item_name in item_names:
                 data = item_table[item_name]
                 quantity = data.quantity
-                if not self.options.include_basto and data.region == RegionName.BASTO:
+                if not self.options.include_basto and data.parent_region == RegionName.BASTO:
                     continue
                 if data.group == ItemGroup.STAMP:
                     if self.options.progressive_stamps and item_name != ItemName.PROGRESSIVE_STAMP:
@@ -159,15 +176,79 @@ class ToemWorld(World):
     @override
     def set_rules(self) -> None:
         init_stamp_requirements(self)
-        set_item_rules(self)
-        set_entrance_rules(self)
         set_location_rules(self)
         set_victory_rule(self)
 
     @override
+    def connect_entrances(self) -> None:
+        for src_parent_name, sub_regions in region_connections.items():
+            if not self.options.include_basto and src_parent_name == RegionName.BASTO:
+                continue
+            for src_sub_region_name, connections in sub_regions.items():
+                src_region_name = f"{src_parent_name} - {src_sub_region_name}"
+                src_region = self.get_region(src_region_name)
+                for connection in connections:
+                    if not self.options.include_basto and connection.dst_region_name.startswith(RegionName.BASTO):
+                        continue
+                    if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
+                        dst_region = self.get_region(connection.dst_region_name)
+                        src_region.connect(dst_region, connection.name)
+                    else:
+                        self.generate_entrance_pair(src_region, connection.name, connection.group)
+        set_entrance_rules(self)
+        
+        if self.options.entrance_randomization != EntranceRandomization.option_disabled:
+            if self.is_ut:
+                er_targets = {entrance.name: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
+                er_exits = {_exit.name: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
+                self.deferred_entrances = {entrance_name: (er_exits[exit_name], er_targets[entrance_name].connected_region) for entrance_name, exit_name in self.transitions.items()}
+                for er_target in er_targets.values():
+                    er_target.connected_region.entrances.remove(er_target)
+                if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
+                    for _, (_exit, entrance_region) in self.deferred_entrances:
+                        _exit.connect(entrance_region)
+                    self.deferred_entrances = {}
+            else:
+                if self.options.entrance_randomization == EntranceRandomization.option_within_region:
+                    group_lookup = within_region_groups
+                TOEM_MAX_GER_ATTEMPTS = 10
+                for i in range(TOEM_MAX_GER_ATTEMPTS):
+                    failed = False
+                    try:
+                        er_state = randomize_entrances(self, True, group_lookup)
+                        # Check if all basto day/night regions are reachable
+                        if self.options.include_basto and self.options.accessibility != Accessibility.option_minimal:
+                            for event_name in event_table:
+                                if not self.get_location(event_name).can_reach(er_state.collection_state):
+                                    failed = True
+                                    break
+                    except EntranceRandomizationError as err:
+                        if i >= TOEM_MAX_GER_ATTEMPTS - 1:
+                            raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps. Final error:\n\n{err}")
+                        failed = True
+                    if not failed:
+                        break
+                    for region in self.get_regions():
+                        for _exit in region.get_exits():
+                            if (_exit.randomization_group != ERGroups.EXCLUDED
+                                    and _exit.parent_region
+                                    and _exit.connected_region):
+                                disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
+
+                self.transitions = {from_: to_ for from_, to_ in er_state.pairings}
+
+    def generate_entrance_pair(self, region: Region, name: str, group: int):
+        exit = region.create_exit(name)
+        exit.randomization_group = group
+        exit.randomization_type = EntranceType.TWO_WAY
+        er_target = region.create_er_target(name)
+        er_target.randomization_group = group
+        er_target.randomization_type = EntranceType.TWO_WAY
+
+    @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": "1.1.1",
+            "version": WORLD_VERSION,
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
@@ -181,5 +262,23 @@ class ToemWorld(World):
                 "kiiruberg_stamp_requirement",
                 "basto_stamp_requirement",
                 "honk_attachment_early",
+                "entrance_randomization",
             ),
+            "transitions": self.transitions
         }
+
+    # UT Integration
+    @staticmethod
+    def interpret_slot_data(slot_data: dict[str, any]):
+        return slot_data
+    
+    def reconnect_found_entrances(self, key: str, value: Any):
+        if value:
+            new_entrances = set(self.deferred_entrances) & set(value)
+            for entrance_name in new_entrances:
+                _exit, entrance_region = self.deferred_entrances[entrance_name]
+                _exit.connect(entrance_region)
+                reverse_exit, reverse_entrance_region = self.deferred_entrances[_exit.name]
+                reverse_exit.connect(reverse_entrance_region)
+                del self.deferred_entrances[entrance_name]
+                del self.deferred_entrances[_exit.name]

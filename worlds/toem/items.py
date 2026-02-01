@@ -133,6 +133,7 @@ class ItemName:
     SCARF = "Scarf"
     SKI_GOGGLES = "Ski goggles"
     SPACE_HELMET = "Space helmet"
+    BASTO_TICKET = "Viking Express Ticket"
     WATERGUN = "Water popper attachment"
     SUN_HAT = "Sun hat"
     MELONEAR = "Melonear"
@@ -190,7 +191,7 @@ class ItemData:
     classification: ItemClassification
     quantity: int
     group: str
-    region: str
+    parent_region: str
 
 progression_useful = ItemClassification.progression | ItemClassification.useful
 
@@ -201,6 +202,7 @@ item_table: dict[str, ItemData] = {
     ItemName.LOGCITY_STAMP: ItemData(ItemClassification.progression, 18, ItemGroup.STAMP, RegionName.LOGCITY),
     ItemName.KIIRUBERG_STAMP: ItemData(ItemClassification.progression, 13, ItemGroup.STAMP, RegionName.KIIRUBERG),
     ItemName.BASTO_STAMP: ItemData(ItemClassification.progression, 20, ItemGroup.STAMP, RegionName.BASTO),
+    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.MENU),
     ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
     ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
     ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
@@ -283,7 +285,7 @@ item_table: dict[str, ItemData] = {
     ItemName.WET_SOCKS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
     ItemName.FJALLBJORN_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
     ItemName.GHOST_GLASSES: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
-    ItemName.SOAKED_SOCK: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
+    ItemName.SOAKED_SOCK: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
     ItemName.MONSTER_MASK: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.OAKLAVILLE),
     ItemName.FRAMES_FILTERS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.STANHAMN),
     ItemName.FISHING_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.STANHAMN),
@@ -303,10 +305,11 @@ item_table: dict[str, ItemData] = {
     ItemName.CINNAMON_BUN: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
     ItemName.FRISBEE: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.LOGCITY),
     ItemName.CLIMBING_BOOTS: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
-    ItemName.PUFFER_HAT: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
-    ItemName.SCARF: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
-    ItemName.SKI_GOGGLES: ItemData(ItemClassification.progression_deprioritized_skip_balancing, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.PUFFER_HAT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.SCARF: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.SKI_GOGGLES: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
     ItemName.SPACE_HELMET: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.KIIRUBERG),
+    ItemName.BASTO_TICKET: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.BASTO),
     ItemName.WATERGUN: ItemData(progression_useful, 1, ItemGroup.ITEM, RegionName.BASTO),
     ItemName.SUN_HAT: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
     ItemName.MELONEAR: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, RegionName.BASTO),
@@ -352,7 +355,6 @@ item_table: dict[str, ItemData] = {
     ItemName.HAMMOCK_DAYS_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SAILORS_TUNE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
     ItemName.SONG_OF_THE_SEA_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, RegionName.BASTO),
-    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.HOMELANDA),
 }
 
 item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}
@@ -363,7 +365,7 @@ def get_item_group(item_name: str) -> str:
 
 
 def get_item_area(location_name: str) -> str:
-    return item_table[location_name].region
+    return item_table[location_name].parent_region
 
 
 item_name_groups: dict[str, set[str]] = {
@@ -371,7 +373,4 @@ item_name_groups: dict[str, set[str]] = {
     for group, item_names in groupby(sorted(item_table, key=get_item_group), get_item_group)
     if group != ""
 }
-item_name_groups.update(
-    {group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)}
-)
 
