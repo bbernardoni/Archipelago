@@ -73,6 +73,8 @@ class ToemWorld(World):
         else:
             self.transitions = {}
 
+        from .options import IncludeCassettes
+        self.options.include_cassettes = IncludeCassettes(0)
         if self.options.homelanda_stamp_requirement > 0:
             homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
             self.multiworld.local_early_items[self.player][homelanda_stamp] = int(self.options.homelanda_stamp_requirement)

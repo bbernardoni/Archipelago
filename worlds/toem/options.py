@@ -17,7 +17,7 @@ class IncludeItems(Toggle):
 
 
 class IncludeCassettes(Toggle):
-    """Include cassette tapes as locations."""
+    """Include cassette tapes as locations. Option currently forced disabled for the ER beta."""
     display_name: ClassVar[str] = "Include Cassettes"
     default: ClassVar[int] = 0
 
