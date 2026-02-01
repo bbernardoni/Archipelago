@@ -53,7 +53,7 @@ class ToemWorld(World):
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
-    transitions: list[tuple[str, str]] = []
+    transitions: dict[str, str]
 
     @override
     def generate_early(self) -> None:
@@ -62,6 +62,7 @@ class ToemWorld(World):
             self.multiworld.local_early_items[self.player][homelanda_stamp] = int(self.options.homelanda_stamp_requirement)
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
+        self.transitions = {}
 
     def create_location(self, name: str) -> ToemLocation | None:
         data = location_table[name]
