@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Tuple
 from enum import IntEnum
-from BaseClasses import Entrance, EntranceType, Region
-from entrance_rando import ERPlacementState
 from .regions import FullRegionName, RegionName, SubRegionName
 from .items import ItemName
 from .locations import LocationName, EventName
@@ -461,12 +459,3 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
         ],
     },
 }
-
-def generate_entrance_pair(region: Region, name: str, group: int):
-    exit = region.create_exit(name)
-    exit.randomization_group = group
-    exit.randomization_type = EntranceType.TWO_WAY
-    er_target = region.create_er_target(name)
-    er_target.randomization_group = group
-    er_target.randomization_type = EntranceType.TWO_WAY
-    return [exit, er_target]
