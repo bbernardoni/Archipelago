@@ -140,7 +140,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
             Connection(FullRegionName.STANHAMN_PHOTO_GUILD_HUT, "Photo guild hut entrance", ERGroups.STANHAMN),
             Connection(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, "Stanhamn bus stop left", ERGroups.STANHAMN),
             Connection(FullRegionName.STANHAMN_DOCKS_LEFT, "Stanhamn bus stop right", ERGroups.STANHAMN),
-            Connection(FullRegionName.STANHAMN_OUTSIDE_HYDROPLANT, "Raft up", ERGroups.EXCLUDED, (ItemName.HONK_ATTACHMENT,)),
+            Connection(FullRegionName.STANHAMN_OUTSIDE_HYDROPLANT, "Raft up", ERGroups.EXCLUDED, ((ItemName.HONK_ATTACHMENT, LocationName.QUEST_POWER),)),
         ],
         SubRegionName.STANHAMN_PHOTO_GUILD_HUT: [
             Connection(FullRegionName.STANHAMN_BUS_STOP, "Photo guild hut exit", ERGroups.STANHAMN),
@@ -194,7 +194,7 @@ region_connections: dict[str, dict[str, list[Connection]]] = {
             Connection(FullRegionName.STANHAMN_GHOST_DRAWBRIDGE_TOP, "Docks drawbridge from bottom", ERGroups.EXCLUDED, (LocationName.QUEST_POWER,)),
         ],
         SubRegionName.STANHAMN_OUTSIDE_HYDROPLANT: [
-            Connection(FullRegionName.STANHAMN_BUS_STOP, "Raft down", ERGroups.EXCLUDED),
+            Connection(FullRegionName.STANHAMN_BUS_STOP, "Raft down", ERGroups.EXCLUDED, ((ItemName.HONK_ATTACHMENT, LocationName.QUEST_POWER),)),
             Connection(FullRegionName.STANHAMN_HYDROPLANT, "Hydroplant entrance", ERGroups.STANHAMN),
             Connection(FullRegionName.STANHAMN_GHOST_DRAWBRIDGE_TOP, "Outside hydroplant right", ERGroups.STANHAMN),
         ],
