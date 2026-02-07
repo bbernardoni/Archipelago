@@ -149,6 +149,8 @@ def set_location_rules(world: "ToemWorld") -> None:
                 add_rule(location, lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.BASTO]))
             else:
                 add_rule(location, lambda state: state.has(ItemName.BASTO_STAMP, world.player, world.options.basto_stamp_requirement))
+        elif location.name == LocationName.TAPE_PLACE_IN_SUN:
+            add_rule(location, lambda state: check_requirements(state, (FullRegionName.STANHAMN_HIPPO_BEACH, LocationName.QUEST_CHAOS), world) or check_requirements(state, (FullRegionName.STANHAMN_DOCKS_LEFT, LocationName.QUEST_POWER), world))
         elif location.name == LocationName.QUEST_RATSKULLZ:
             add_rule(location, lambda state: sum(state.can_reach_region(loc, world.player) for loc in ratskullz_locations) >= 5)
 
