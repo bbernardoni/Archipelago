@@ -65,6 +65,8 @@ class ToemWorld(World):
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
+            if slot_data["version"] != WORLD_VERSION:
+                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({WORLD_VERSION})")
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
                 if opt is not None:
@@ -263,10 +265,6 @@ class ToemWorld(World):
         }
 
     # UT Integration
-    @staticmethod
-    def interpret_slot_data(slot_data: dict[str, any]):
-        return slot_data
-    
     def reconnect_found_entrances(self, key: str, value: Any):
         if value:
             new_entrances = set(self.deferred_entrances) & set(value)
