@@ -91,12 +91,11 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        for parent, sub_regions in region_connections.items():
-            if not self.options.include_basto and parent == RegionName.BASTO:
+        for reg_name in region_connections:
+            if not self.options.include_basto and reg_name.startswith(RegionName.BASTO):
                 continue
-            for reg_name in sub_regions:
-                region = ToemRegion(f"{parent} - {reg_name}", self.player, self.multiworld)
-                self.multiworld.regions.append(region)
+            region = ToemRegion(reg_name, self.player, self.multiworld)
+            self.multiworld.regions.append(region)
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
@@ -179,20 +178,18 @@ class ToemWorld(World):
 
     @override
     def connect_entrances(self) -> None:
-        for src_parent_name, sub_regions in region_connections.items():
-            if not self.options.include_basto and src_parent_name == RegionName.BASTO:
+        for src_region_name, connections in region_connections.items():
+            if not self.options.include_basto and src_region_name.startswith(RegionName.BASTO):
                 continue
-            for src_sub_region_name, connections in sub_regions.items():
-                src_region_name = f"{src_parent_name} - {src_sub_region_name}"
-                src_region = self.get_region(src_region_name)
-                for connection in connections:
-                    if not self.options.include_basto and connection.dst_region_name.startswith(RegionName.BASTO):
-                        continue
-                    if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
-                        dst_region = self.get_region(connection.dst_region_name)
-                        src_region.connect(dst_region, connection.name)
-                    else:
-                        self.generate_entrance_pair(src_region, connection.name, connection.group)
+            src_region = self.get_region(src_region_name)
+            for connection in connections:
+                if not self.options.include_basto and connection.dst_region_name.startswith(RegionName.BASTO):
+                    continue
+                if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
+                    dst_region = self.get_region(connection.dst_region_name)
+                    src_region.connect(dst_region, connection.name)
+                else:
+                    self.generate_entrance_pair(src_region, connection.name, connection.group)
         set_entrance_rules(self)
         
         if self.options.entrance_randomization != EntranceRandomization.option_disabled:
