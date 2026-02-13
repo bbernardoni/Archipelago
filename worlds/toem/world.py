@@ -21,7 +21,7 @@ from .locations import (
 )
 from .options import ToemOptions, EntranceRandomization
 from .regions import RegionName, FullRegionName, ToemRegion
-from .connections import ERGroups, region_connections, within_region_groups
+from .connections import ERGroups, region_connections, within_region_groups, connection_name_to_id
 from .rules import EventName, init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
@@ -53,7 +53,7 @@ class ToemWorld(World):
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
-    transitions: dict[str, str]
+    transitions: dict[int, int]
     is_ut: bool
     ut_can_gen_without_yaml = True
     deferred_entrances: dict[str, tuple[Entrance, Region]]
@@ -71,7 +71,7 @@ class ToemWorld(World):
                 opt = getattr(self.options, key, None)
                 if opt is not None:
                     setattr(self.options, key, opt.from_any(value))
-            self.transitions = slot_data["transitions"]
+            self.transitions = {int(from_): to_ for from_, to_ in slot_data["transitions"].items()}
         else:
             self.transitions = {}
 
@@ -93,11 +93,9 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        for reg_name in region_connections:
-            if not self.options.include_basto and reg_name.startswith(RegionName.BASTO):
-                continue
-            region = ToemRegion(reg_name, self.player, self.multiworld)
-            self.multiworld.regions.append(region)
+        regions = {connection.src_region_name for connection in region_connections if self.options.include_basto or connection.src_region_name.startswith(RegionName.BASTO)}
+        for region in regions:
+            self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
@@ -180,25 +178,23 @@ class ToemWorld(World):
 
     @override
     def connect_entrances(self) -> None:
-        for src_region_name, connections in region_connections.items():
-            if not self.options.include_basto and src_region_name.startswith(RegionName.BASTO):
+        for connection in region_connections:
+            if not self.options.include_basto and (connection.src_region_name.startswith(RegionName.BASTO)
+                                                or connection.dst_region_name.startswith(RegionName.BASTO)):
                 continue
-            src_region = self.get_region(src_region_name)
-            for connection in connections:
-                if not self.options.include_basto and connection.dst_region_name.startswith(RegionName.BASTO):
-                    continue
-                if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
-                    dst_region = self.get_region(connection.dst_region_name)
-                    src_region.connect(dst_region, connection.name)
-                else:
-                    self.generate_entrance_pair(src_region, connection.name, connection.group)
+            src_region = self.get_region(connection.src_region_name)
+            if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
+                dst_region = self.get_region(connection.dst_region_name)
+                src_region.connect(dst_region, connection.name)
+            else:
+                self.generate_entrance_pair(src_region, connection.name, connection.group)
         set_entrance_rules(self)
         
         if self.options.entrance_randomization != EntranceRandomization.option_disabled:
             if self.is_ut:
-                er_targets = {entrance.name: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
-                er_exits = {_exit.name: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
-                self.deferred_entrances = {entrance_name: (er_exits[exit_name], er_targets[entrance_name].connected_region) for entrance_name, exit_name in self.transitions.items()}
+                er_targets = {connection_name_to_id[entrance.name]: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
+                er_exits = {connection_name_to_id[_exit.name]: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
+                self.deferred_entrances = {entrance_id: (er_exits[exit_id], er_targets[entrance_id].connected_region) for entrance_id, exit_id in self.transitions.items()}
                 for er_target in er_targets.values():
                     er_target.connected_region.entrances.remove(er_target)
                 if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
@@ -232,7 +228,7 @@ class ToemWorld(World):
                                     and _exit.connected_region):
                                 disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
 
-                self.transitions = {from_: to_ for from_, to_ in er_state.pairings}
+                self.transitions = {connection_name_to_id[from_]: connection_name_to_id[to_] for from_, to_ in er_state.pairings}
 
     def generate_entrance_pair(self, region: Region, name: str, group: int):
         exit = region.create_exit(name)
@@ -268,10 +264,11 @@ class ToemWorld(World):
     def reconnect_found_entrances(self, key: str, value: Any):
         if value:
             new_entrances = set(self.deferred_entrances) & set(value)
-            for entrance_name in new_entrances:
-                _exit, entrance_region = self.deferred_entrances[entrance_name]
+            for entrance_id in new_entrances:
+                _exit, entrance_region = self.deferred_entrances[entrance_id]
                 _exit.connect(entrance_region)
-                reverse_exit, reverse_entrance_region = self.deferred_entrances[_exit.name]
+                reverse_id = connection_name_to_id[_exit.name]
+                reverse_exit, reverse_entrance_region = self.deferred_entrances[reverse_id]
                 reverse_exit.connect(reverse_entrance_region)
-                del self.deferred_entrances[entrance_name]
-                del self.deferred_entrances[_exit.name]
+                del self.deferred_entrances[entrance_id]
+                del self.deferred_entrances[reverse_id]
