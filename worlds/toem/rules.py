@@ -184,21 +184,19 @@ def set_entrance_rules(world: "ToemWorld") -> None:
     for entrance, rule in stamp_entrance_rules.items():
         set_rule(world.get_entrance(entrance), rule)
 
-    for region, connections in region_connections.items():
-        if not world.options.include_basto and region.startswith(RegionName.BASTO):
+    for connection in region_connections:
+        if not world.options.include_basto and (connection.src_region_name.startswith(RegionName.BASTO)
+                                             or connection.dst_region_name.startswith(RegionName.BASTO)):
             continue
-        for connection in connections:
-            if not world.options.include_basto and connection.dst_region_name == FullRegionName.BASTO_BUS_STOP_BOTTOM:
-                continue
-            requirements = connection.requirements
-            if len(requirements) == 0:
-                continue
-            rule = lambda state, reqs=requirements: check_requirements(state, reqs, world)
-            entrance = world.get_entrance(connection.name)
-            add_rule(entrance, rule)
-            regions = collect_requirements_regions(requirements, world)
-            for region in regions:
-                world.multiworld.register_indirect_condition(region, entrance)
+        requirements = connection.requirements
+        if len(requirements) == 0:
+            continue
+        rule = lambda state, reqs=requirements: check_requirements(state, reqs, world)
+        entrance = world.get_entrance(connection.name)
+        add_rule(entrance, rule)
+        regions = collect_requirements_regions(requirements, world)
+        for region in regions:
+            world.multiworld.register_indirect_condition(region, entrance)
 
 def set_victory_rule(world: "ToemWorld") -> None:
     if world.options.include_basto:
