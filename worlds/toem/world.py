@@ -53,7 +53,7 @@ class ToemWorld(World):
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
     origin_region_name: str = FullRegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
-    transitions: dict[int, int]
+    transitions: dict[str, int] # has to be a str key as that's all json supports
     is_ut: bool
     ut_can_gen_without_yaml = True
     deferred_entrances: dict[str, tuple[Entrance, Region]]
@@ -71,7 +71,7 @@ class ToemWorld(World):
                 opt = getattr(self.options, key, None)
                 if opt is not None:
                     setattr(self.options, key, opt.from_any(value))
-            self.transitions = {int(from_): to_ for from_, to_ in slot_data["transitions"].items()}
+            self.transitions = {from_: to_ for from_, to_ in slot_data["transitions"].items()}
         else:
             self.transitions = {}
 
@@ -194,7 +194,7 @@ class ToemWorld(World):
             if self.is_ut:
                 er_targets = {connection_name_to_id[entrance.name]: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
                 er_exits = {connection_name_to_id[_exit.name]: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
-                self.deferred_entrances = {entrance_id: (er_exits[exit_id], er_targets[entrance_id].connected_region) for entrance_id, exit_id in self.transitions.items()}
+                self.deferred_entrances = {int(entrance_id): (er_exits[exit_id], er_targets[int(entrance_id)].connected_region) for entrance_id, exit_id in self.transitions.items()}
                 for er_target in er_targets.values():
                     er_target.connected_region.entrances.remove(er_target)
                 if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
@@ -228,7 +228,7 @@ class ToemWorld(World):
                                     and _exit.connected_region):
                                 disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
 
-                self.transitions = {connection_name_to_id[from_]: connection_name_to_id[to_] for from_, to_ in er_state.pairings}
+                self.transitions = {str(connection_name_to_id[from_]): connection_name_to_id[to_] for from_, to_ in er_state.pairings}
 
     def generate_entrance_pair(self, region: Region, name: str, group: int):
         exit = region.create_exit(name)
