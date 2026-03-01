@@ -93,7 +93,7 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        regions = {connection.src_region_name for connection in region_connections if self.options.include_basto or connection.src_region_name.startswith(RegionName.BASTO)}
+        regions = {connection.src_region_name for connection in region_connections if self.options.include_basto or not connection.src_region_name.startswith(RegionName.BASTO)}
         for region in regions:
             self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
 
