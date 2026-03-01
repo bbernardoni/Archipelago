@@ -173,12 +173,17 @@ def set_entrance_rules(world: "ToemWorld") -> None:
             "Mountain top bus stop": lambda state: state.has(ItemName.PROGRESSIVE_STAMP, world.player, world.progressive_stamp_requirements[RegionName.KIIRUBERG]),
         }
     else:
+        homelanda_exit_rule = lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement)
+        oaklaville_exit_rule = lambda state: state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement) and homelanda_exit_rule(state)
+        stanhamn_exit_rule = lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement) and oaklaville_exit_rule(state)
+        logcity_exit_rule = lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement) and stanhamn_exit_rule(state)
+        kiiruberg_exit_rule = lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement) and logcity_exit_rule(state)
         stamp_entrance_rules: dict[str, CollectionRule] = {
-            "Oaklaville bus stop": lambda state: state.has(ItemName.HOMELANDA_STAMP, world.player, world.options.homelanda_stamp_requirement),
-            "Stanhamn bus stop": lambda state: state.has(ItemName.OAKLAVILLE_STAMP, world.player, world.options.oaklaville_stamp_requirement),
-            "Logcity bus stop": lambda state: state.has(ItemName.STANHAMN_STAMP, world.player, world.options.stanhamn_stamp_requirement),
-            "Kiiruberg bus stop": lambda state: state.has(ItemName.LOGCITY_STAMP, world.player, world.options.logcity_stamp_requirement),
-            "Mountain top bus stop": lambda state: state.has(ItemName.KIIRUBERG_STAMP, world.player, world.options.kiiruberg_stamp_requirement),
+            "Oaklaville bus stop": homelanda_exit_rule,
+            "Stanhamn bus stop": oaklaville_exit_rule,
+            "Logcity bus stop": stanhamn_exit_rule,
+            "Kiiruberg bus stop": logcity_exit_rule,
+            "Mountain top bus stop": kiiruberg_exit_rule,
         }
 
     for entrance, rule in stamp_entrance_rules.items():
