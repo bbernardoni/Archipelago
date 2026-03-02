@@ -198,7 +198,7 @@ class ToemWorld(World):
                 for er_target in er_targets.values():
                     er_target.connected_region.entrances.remove(er_target)
                 if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
-                    for _, (_exit, entrance_region) in self.deferred_entrances:
+                    for (_exit, entrance_region) in self.deferred_entrances.values():
                         _exit.connect(entrance_region)
                     self.deferred_entrances = {}
             else:
@@ -265,6 +265,9 @@ class ToemWorld(World):
         if value:
             new_entrances = set(self.deferred_entrances) & set(value)
             for entrance_id in new_entrances:
+                # check if we just removed the this entrance from it's reverse
+                if entrance_id not in self.deferred_entrances:
+                    continue
                 _exit, entrance_region = self.deferred_entrances[entrance_id]
                 _exit.connect(entrance_region)
                 reverse_id = connection_name_to_id[_exit.name]
