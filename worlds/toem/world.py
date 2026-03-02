@@ -65,7 +65,9 @@ class ToemWorld(World):
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
-            if slot_data["version"] != WORLD_VERSION:
+            minor_gen_version = slot_data["version"][:slot_data["version"].rfind(".")]
+            minor_installed_version = WORLD_VERSION[:WORLD_VERSION.rfind(".")]
+            if minor_gen_version != minor_installed_version:
                 raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({WORLD_VERSION})")
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
