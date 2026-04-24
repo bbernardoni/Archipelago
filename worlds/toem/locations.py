@@ -606,7 +606,7 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_HARD_HAT: LocationData(FullRegionName.STANHAMN_HYDROPLANT, LocationGroup.ITEM),
     LocationName.ITEM_DIVING_HELMET: LocationData(FullRegionName.STANHAMN_FISHING_TOWER, LocationGroup.ITEM),
     LocationName.ITEM_RUBBER_BOOTS: LocationData(FullRegionName.STANHAMN_DOCKS_RIGHT, LocationGroup.ITEM),
-    LocationName.ITEM_SANDWICH: LocationData(FullRegionName.STANHAMN_HIPPO_BEACH, LocationGroup.ITEM, (ItemName.GHOST_GLASSES, FullRegionName.STANHAMN_OUTSIDE_HYDROPLANT)),
+    LocationName.ITEM_SANDWICH: LocationData(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, LocationGroup.ITEM, (ItemName.GHOST_GLASSES, FullRegionName.STANHAMN_OUTSIDE_HYDROPLANT)),
     LocationName.ITEM_PIRATE_HAT: LocationData(FullRegionName.STANHAMN_UNDERWATER, LocationGroup.ITEM, (ItemName.OLD_KEY,)),
     LocationName.ITEM_PAPER_HAT: LocationData(FullRegionName.STANHAMN_PIRATE_DRAWBRIDGE, LocationGroup.ITEM, (ItemName.HONK_ATTACHMENT, ItemName.PIRATE_HAT)),
     LocationName.ITEM_FLAG: LocationData(FullRegionName.STANHAMN_PHOTO_GUILD_HUT, LocationGroup.ITEM, photo_challenges),
