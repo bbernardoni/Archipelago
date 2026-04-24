@@ -7,7 +7,7 @@ from Options import Accessibility
 from worlds.AutoWorld import WebWorld, World
 from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
 
-from .constants import GAME_NAME, WORLD_VERSION
+from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
 from .locations import (
     LocationGroup,
@@ -22,7 +22,7 @@ from .locations import (
 from .options import ToemOptions, EntranceRandomization
 from .regions import RegionName, FullRegionName, ToemRegion
 from .connections import ERGroups, region_connections, within_region_groups, connection_name_to_id
-from .rules import EventName, init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
+from .rules import init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
     from Options import PerGameCommonOptions
@@ -66,9 +66,9 @@ class ToemWorld(World):
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
             minor_gen_version = slot_data["version"][:slot_data["version"].rfind(".")]
-            minor_installed_version = WORLD_VERSION[:WORLD_VERSION.rfind(".")]
+            minor_installed_version = self.world_version[:self.world_version.rfind(".")]
             if minor_gen_version != minor_installed_version:
-                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({WORLD_VERSION})")
+                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({self.world_version})")
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
                 if opt is not None:
@@ -243,7 +243,7 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": WORLD_VERSION,
+            "version": self.world_version,
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
