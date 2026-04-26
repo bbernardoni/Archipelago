@@ -122,22 +122,21 @@ def basto_day_night_rule(state: CollectionState, event_data: EventData, world: "
     while q:
         region = q.popleft()
         for entrance in region.entrances:
-            if entrance.parent_region and entrance.parent_region not in seen:
+            if entrance.parent_region and entrance.parent_region not in seen and entrance.can_reach(state):
                 if entrance.name == "Lily pad pond night bridge from right":
                     if not event_data.is_day:
                         return True
                 elif entrance.name == "Bonfire day bridge from top":
                     if event_data.is_day:
                         return True
-                elif entrance.can_reach(state):
-                    if not entrance.parent_region.name.startswith(RegionName.BASTO):
-                        if event_data.is_day:
-                            return True
-                    elif entrance.parent_region.name in basto_bed_regions:
+                elif not entrance.parent_region.name.startswith(RegionName.BASTO):
+                    if event_data.is_day:
                         return True
-                    else:
-                        seen.add(entrance.parent_region)
-                        q.append(entrance.parent_region)
+                elif entrance.parent_region.name in basto_bed_regions:
+                    return True
+                else:
+                    seen.add(entrance.parent_region)
+                    q.append(entrance.parent_region)
     return False
 
 def set_location_rules(world: "ToemWorld") -> None:
