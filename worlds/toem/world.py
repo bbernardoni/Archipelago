@@ -6,6 +6,7 @@ from BaseClasses import Item, ItemClassification, Tutorial, EntranceType, Region
 from Options import Accessibility
 from worlds.AutoWorld import WebWorld, World
 from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
+from Utils import Version
 
 from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
@@ -65,10 +66,9 @@ class ToemWorld(World):
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
-            minor_gen_version = slot_data["version"][:slot_data["version"].rfind(".")]
-            minor_installed_version = self.world_version[:self.world_version.rfind(".")]
-            if minor_gen_version != minor_installed_version:
-                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({self.world_version})")
+            gen_version = Version(*map(int, slot_data["version"].split('.')))
+            if gen_version[:2] != self.world_version[:2]:
+                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({self.world_version.as_simple_string()})")
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
                 if opt is not None:
@@ -243,7 +243,7 @@ class ToemWorld(World):
     @override
     def fill_slot_data(self) -> dict[str, Any]:
         return {
-            "version": self.world_version,
+            "version": self.world_version.as_simple_string(),
             "options": self.options.as_dict(
                 "include_basto",
                 "include_items",
