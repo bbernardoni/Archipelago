@@ -263,7 +263,7 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
 
         self.finished_level_scaling = Event()
 
-        self.is_universal_tracker = hasattr(self.multiworld, "generation_is_fake")
+        self.is_universal_tracker = getattr(self.multiworld, "generation_is_fake", False)
 
     def generate_early(self) -> None:
         if not self.is_universal_tracker:
