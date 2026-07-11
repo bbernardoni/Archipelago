@@ -572,7 +572,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         for i in range(10):
             gyms = min(i, mom_available_gyms)
             set_rule(get_location(f"MOM_SAVINGS_{i + 1}"),
-                     Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM")
+                     (Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM") | CanReachRegion("REGION_ROUTE_31"))
                      & HasFromListUnique(*world.logic.gym_events.values(), count=gyms))
 
     can_surf_and_whirlpool = world.logic.can_surf() & world.logic.can_whirlpool()
