@@ -5,6 +5,9 @@ from ..client import (
     PokemonCrystalClient,
     SYNC_EVENT_FLAGS,
     SYNC_EVENTS_FLAG_MAP,
+    SYNC_EVENT_FLAGS_WITH_E4,
+    SYNC_EVENTS_FLAG_MAP_WITH_E4,
+    E4_DOOR_SYNC_EVENT_FLAGS,
     SYNC_GOAL_FLAGS,
     SYNC_GOAL_FLAG_MAP,
     EVENT_BYTES,
@@ -266,6 +269,46 @@ class TestClientSyncEventInit(unittest.TestCase):
         client.initialize_client()
         self.assertEqual(client.remote_sync_events, 0)
         self.assertEqual(client.local_sync_events, {})
+
+
+class TestE4DoorSyncFlags(unittest.TestCase):
+
+    def test_all_exist_in_data(self):
+        for event_name in E4_DOOR_SYNC_EVENT_FLAGS:
+            self.assertIn(event_name, data.event_flags)
+
+    def test_extended_list_prefix_is_base_list(self):
+        """E4 flags must append after the base list so existing bit positions are stable."""
+        self.assertEqual(SYNC_EVENT_FLAGS_WITH_E4[:len(SYNC_EVENT_FLAGS)], SYNC_EVENT_FLAGS)
+        self.assertEqual(SYNC_EVENT_FLAGS_WITH_E4[len(SYNC_EVENT_FLAGS):], E4_DOOR_SYNC_EVENT_FLAGS)
+
+    def test_no_overlap_with_base_list(self):
+        self.assertEqual(set(SYNC_EVENT_FLAGS) & set(E4_DOOR_SYNC_EVENT_FLAGS), set())
+
+    def test_no_duplicates(self):
+        self.assertEqual(len(SYNC_EVENT_FLAGS_WITH_E4), len(set(SYNC_EVENT_FLAGS_WITH_E4)))
+
+    def test_round_trip(self):
+        fb = flag_bytes_with_events(E4_DOOR_SYNC_EVENT_FLAGS)
+        detected = detect_sync_events(fb, SYNC_EVENTS_FLAG_MAP_WITH_E4)
+        bitfield = encode_sync_bitfield(detected, SYNC_EVENT_FLAGS_WITH_E4)
+        decoded = apply_remote_sync_events(bytearray(EVENT_BYTES), bitfield, SYNC_EVENT_FLAGS_WITH_E4)
+        re_detected = detect_sync_events(decoded, SYNC_EVENTS_FLAG_MAP_WITH_E4)
+        for event in SYNC_EVENT_FLAGS_WITH_E4:
+            self.assertEqual(re_detected[event], event in E4_DOOR_SYNC_EVENT_FLAGS,
+                             f"Round-trip mismatch for {event}")
+
+    def test_base_bitfield_decodes_identically_with_extended_list(self):
+        """A bitfield produced by a base-list client must decode the same under the extended list."""
+        fb = flag_bytes_with_events(SYNC_EVENT_FLAGS)
+        bitfield = encode_sync_bitfield(detect_sync_events(fb), SYNC_EVENT_FLAGS)
+        decoded = apply_remote_sync_events(bytearray(EVENT_BYTES), bitfield, SYNC_EVENT_FLAGS_WITH_E4)
+        for event in SYNC_EVENT_FLAGS:
+            eid = data.event_flags[event]
+            self.assertTrue(decoded[eid // 8] & (1 << (eid % 8)), f"{event} not set")
+        for event in E4_DOOR_SYNC_EVENT_FLAGS:
+            eid = data.event_flags[event]
+            self.assertFalse(decoded[eid // 8] & (1 << (eid % 8)), f"{event} wrongly set")
 
 
 class TestSyncGoalFlagData(unittest.TestCase):

@@ -340,6 +340,21 @@ SYNC_EVENT_FLAGS = [
 
 SYNC_EVENTS_FLAG_MAP = {data.event_flags[event]: event for event in SYNC_EVENT_FLAGS}
 
+# Must stay appended after SYNC_EVENT_FLAGS; stored bitfield positions depend on list order.
+E4_DOOR_SYNC_EVENT_FLAGS = [
+    "EVENT_BEAT_ELITE_4_WILL",
+    "EVENT_BEAT_ELITE_4_KOGA",
+    "EVENT_BEAT_ELITE_4_BRUNO",
+    "EVENT_BEAT_ELITE_4_KAREN",
+    "EVENT_WILLS_ROOM_EXIT_OPEN",
+    "EVENT_KOGAS_ROOM_EXIT_OPEN",
+    "EVENT_BRUNOS_ROOM_EXIT_OPEN",
+    "EVENT_KARENS_ROOM_EXIT_OPEN",
+]
+
+SYNC_EVENT_FLAGS_WITH_E4 = SYNC_EVENT_FLAGS + E4_DOOR_SYNC_EVENT_FLAGS
+SYNC_EVENTS_FLAG_MAP_WITH_E4 = {data.event_flags[event]: event for event in SYNC_EVENT_FLAGS_WITH_E4}
+
 SYNC_GOAL_FLAGS = [
     "EVENT_BEAT_ELITE_FOUR",
     "EVENT_BEAT_RED",
@@ -362,31 +377,32 @@ SYNC_GOAL_FLAGS = [
 SYNC_GOAL_FLAG_MAP = {data.event_flags[event]: event for event in SYNC_GOAL_FLAGS}
 
 
-def detect_sync_events(flag_bytes: bytes) -> dict[str, bool]:
+def detect_sync_events(flag_bytes: bytes, flag_map: dict[int, str] = SYNC_EVENTS_FLAG_MAP) -> dict[str, bool]:
     """Parse event flag bytes from game RAM into a sync events dict."""
-    local_sync_events = {flag_name: False for flag_name in SYNC_EVENT_FLAGS}
+    local_sync_events = {flag_name: False for flag_name in flag_map.values()}
     for byte_i, byte in enumerate(flag_bytes):
         for i in range(8):
             location_id = byte_i * 8 + i
             if byte & (1 << i):
-                if location_id in SYNC_EVENTS_FLAG_MAP:
-                    local_sync_events[SYNC_EVENTS_FLAG_MAP[location_id]] = True
+                if location_id in flag_map:
+                    local_sync_events[flag_map[location_id]] = True
     return local_sync_events
 
 
-def encode_sync_bitfield(local_sync_events: dict[str, bool]) -> int:
+def encode_sync_bitfield(local_sync_events: dict[str, bool], sync_flags: list[str] = SYNC_EVENT_FLAGS) -> int:
     """Convert a sync events dict to a bitfield for server upload."""
     bitfield = 0
-    for i, flag_name in enumerate(SYNC_EVENT_FLAGS):
+    for i, flag_name in enumerate(sync_flags):
         if local_sync_events[flag_name]:
             bitfield |= 1 << i
     return bitfield
 
 
-def apply_remote_sync_events(flag_bytes: bytes, remote_sync_events: int) -> bytearray:
+def apply_remote_sync_events(flag_bytes: bytes, remote_sync_events: int,
+                             sync_flags: list[str] = SYNC_EVENT_FLAGS) -> bytearray:
     """Apply a remote sync events bitfield onto a copy of the event flag bytes."""
     synced = bytearray(flag_bytes)
-    for index, event in enumerate(SYNC_EVENT_FLAGS):
+    for index, event in enumerate(sync_flags):
         if remote_sync_events & (1 << index):
             event_id = data.event_flags[event]
             synced[event_id // 8] |= 1 << (event_id % 8)
@@ -395,23 +411,12 @@ def apply_remote_sync_events(flag_bytes: bytes, remote_sync_events: int) -> byte
 
 def detect_sync_goal_events(flag_bytes: bytes) -> dict[str, bool]:
     """Parse event flag bytes from game RAM into a sync goal events dict."""
-    local = {flag_name: False for flag_name in SYNC_GOAL_FLAGS}
-    for byte_i, byte in enumerate(flag_bytes):
-        for i in range(8):
-            location_id = byte_i * 8 + i
-            if byte & (1 << i):
-                if location_id in SYNC_GOAL_FLAG_MAP:
-                    local[SYNC_GOAL_FLAG_MAP[location_id]] = True
-    return local
+    return detect_sync_events(flag_bytes, SYNC_GOAL_FLAG_MAP)
 
 
 def encode_sync_goal_bitfield(events: dict[str, bool]) -> int:
     """Convert a sync goal events dict to a bitfield for server upload."""
-    bitfield = 0
-    for i, flag_name in enumerate(SYNC_GOAL_FLAGS):
-        if events[flag_name]:
-            bitfield |= 1 << i
-    return bitfield
+    return encode_sync_bitfield(events, SYNC_GOAL_FLAGS)
 
 
 
@@ -642,6 +647,14 @@ class PokemonCrystalClient(BizHawkClient):
 
         self.grass_location_mapping = ctx.slot_data["grass_location_mapping"]
 
+        if (ctx.slot_data["lance_requires_elite_four"]
+                and "Pokemon League" in ctx.slot_data["randomize_entrances"]):
+            sync_event_flags = SYNC_EVENT_FLAGS_WITH_E4
+            sync_events_flag_map = SYNC_EVENTS_FLAG_MAP_WITH_E4
+        else:
+            sync_event_flags = SYNC_EVENT_FLAGS
+            sync_events_flag_map = SYNC_EVENTS_FLAG_MAP
+
         if not self.commands_enabled:
             self.commands_enabled = True
 
@@ -864,7 +877,7 @@ class PokemonCrystalClient(BizHawkClient):
                         if event_id in goal_flags_cleared:
                             goal_flags_cleared[event_id] = True
 
-            local_sync_events = detect_sync_events(flag_bytes)
+            local_sync_events = detect_sync_events(flag_bytes, sync_events_flag_map)
 
             for byte_i, byte in enumerate(pokedex_caught_bytes):
                 for i in range(8):
@@ -1099,7 +1112,7 @@ class PokemonCrystalClient(BizHawkClient):
                     setattr(self, attr_name, local_dict)
 
             if local_sync_events != self.local_sync_events and ctx.items_handling & 0b010:
-                event_bitfield = encode_sync_bitfield(local_sync_events)
+                event_bitfield = encode_sync_bitfield(local_sync_events, sync_event_flags)
 
                 await ctx.send_msgs([{
                     "cmd": "Set",
@@ -1248,7 +1261,7 @@ class PokemonCrystalClient(BizHawkClient):
                      (data.ram_addresses["wUnownDex"], unown_dex_bytes, "WRAM")]
                 )
 
-                synced_event_bytes = apply_remote_sync_events(flag_bytes, self.remote_sync_events)
+                synced_event_bytes = apply_remote_sync_events(flag_bytes, self.remote_sync_events, sync_event_flags)
 
                 sync_event_writes = []
                 sync_event_guards = []
