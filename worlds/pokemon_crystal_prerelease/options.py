@@ -1425,13 +1425,16 @@ class UniqueStaticPokemon(Choice):
     Does nothing if static Pokemon are not randomized.
 
     Legendaries Only: only applies to the four legendary static slots (Suicune, Lugia, Ho-Oh, Celebi)
+    Legendaries and Uniques: the legendary slots plus the unique overworld encounters
+    (Sudowoodo, Red Gyarados, Snorlax, Lapras)
     All: applies to every static slot
     """
     display_name = "Unique Static Pokemon"
     default = 0
     option_disabled = 0
     option_legendaries_only = 1
-    option_all = 2
+    option_legendaries_and_uniques = 2
+    option_all = 3
 
 
 class RandomizeTrades(Choice):

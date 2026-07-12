@@ -2,7 +2,7 @@ from collections import Counter
 
 from .bases import PokemonCrystalTestBase
 from ..data import data as crystal_data
-from ..wild import LEGENDARY_STATIC_SLOTS
+from ..wild import LEGENDARY_STATIC_SLOTS, UNIQUE_STATIC_SLOTS
 
 
 def _wild_species(world) -> set[str]:
@@ -130,6 +130,45 @@ class UniqueStaticsLegendariesOnlyTest(PokemonCrystalTestBase):
         unexpectedly_blocked = (non_legendary_picks - legendary_picks) & block
         self.assertEqual(unexpectedly_blocked, set(),
                          f"non-legendary static species were blocked: {sorted(unexpectedly_blocked)}")
+
+
+class UniqueStaticsLegendariesAndUniquesTest(PokemonCrystalTestBase):
+    options = {
+        **COMMON_OPTS,
+        "unique_static_pokemon": "legendaries_and_uniques",
+        "evolution_methods_required": [],
+        "breeding_methods_required": "none",
+    }
+
+    def test_block_only_from_unique_slots(self):
+        vanilla = _vanilla_static_species()
+        unique_picks = {slot.pokemon for key, slot in self.world.generated_static.items()
+                        if vanilla.get(key.region_id) in UNIQUE_STATIC_SLOTS}
+        block = self.world.unique_static_wild_block
+        self.assertEqual(block, unique_picks,
+                         f"block {sorted(block)} differs from unique slot picks {sorted(unique_picks)}")
+
+    def test_unique_picks_absent_from_wilds(self):
+        vanilla = _vanilla_static_species()
+        unique_picks = {slot.pokemon for key, slot in self.world.generated_static.items()
+                        if vanilla.get(key.region_id) in UNIQUE_STATIC_SLOTS}
+        wild = _wild_species(self.world)
+        self.assertTrue(wild, "no wild species generated; test would pass vacuously")
+        collisions = unique_picks & wild
+        collisions.discard("DITTO")
+        self.assertEqual(collisions, set(),
+                         f"unique slot picks appeared in wilds: {sorted(collisions)}")
+
+    def test_other_static_picks_not_blocked(self):
+        vanilla = _vanilla_static_species()
+        unique_picks = {slot.pokemon for key, slot in self.world.generated_static.items()
+                        if vanilla.get(key.region_id) in UNIQUE_STATIC_SLOTS}
+        other_picks = {slot.pokemon for key, slot in self.world.generated_static.items()
+                       if vanilla.get(key.region_id) not in UNIQUE_STATIC_SLOTS}
+        block = self.world.unique_static_wild_block
+        unexpectedly_blocked = (other_picks - unique_picks) & block
+        self.assertEqual(unexpectedly_blocked, set(),
+                         f"non-unique static species were blocked: {sorted(unexpectedly_blocked)}")
 
 
 class UniqueStaticsEvolutionInLogicTest(PokemonCrystalTestBase):

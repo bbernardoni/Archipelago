@@ -8,7 +8,7 @@ from .options import RandomizeWilds, EncounterGrouping, RandomizePokemonRequests
     UniqueStaticPokemon, BreedingMethodsRequired
 from .evolution import evolution_in_logic
 from .pokemon import get_random_pokemon, get_priority_dexsanity
-from .pokemon_data import LEGENDARY_STATIC_SLOTS, ODD_EGG_SPECIES
+from .pokemon_data import LEGENDARY_STATIC_SLOTS, ODD_EGG_SPECIES, UNIQUE_STATIC_SLOTS
 
 
 def _build_egg_producers(generated_pokemon) -> dict[str, list[str]]:
@@ -263,6 +263,8 @@ def randomize_static_pokemon(world: "PokemonCrystalWorld"):
                     unique_mode == UniqueStaticPokemon.option_all
                     or (unique_mode == UniqueStaticPokemon.option_legendaries_only
                         and vanilla in LEGENDARY_STATIC_SLOTS)
+                    or (unique_mode == UniqueStaticPokemon.option_legendaries_and_uniques
+                        and vanilla in UNIQUE_STATIC_SLOTS)
                 )
 
                 match_types = None
