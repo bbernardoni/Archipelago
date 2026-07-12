@@ -738,9 +738,9 @@ class Rematchsanity(Toggle):
 
     Rematches unlock in order as you hit story milestones (visiting Goldenrod / Olivine /
     etc., clearing the Radio Tower, beating the Elite Four, restoring power to Kanto).
-    All rematches need a Pokegear and a Phone Card.
+    All rematches need the Pokegear and a Phone Card.
 
-    Picnicker Tiffany's rematches only appear if Randomize Pokemon Requests is also on.
+    Picnicker Tiffany's rematches only count if Randomize Pokemon Requests is also on.
 
     Joey's HP Up is given after his last rematch.
     """
