@@ -10782,6 +10782,34 @@
       "Route23RestoredHiddenStick"
     ]
   },
+  "EAST_WEST_UNDERGROUND_HIDDEN_NUGGET": {
+    "label": "East-West Underground Path - Hidden Nugget",
+    "flag": "EVENT_EAST_WEST_UNDERGROUND_PATH_HIDDEN_NUGGET",
+    "default_item": "NUGGET",
+    "type": "hiddenitem",
+    "tags": [
+      "Hidden",
+      "Hidden Items",
+      "East West Underground"
+    ],
+    "scripts": [
+      "EastWestUndergroundPathHiddenNugget"
+    ]
+  },
+  "EAST_WEST_UNDERGROUND_HIDDEN_MAX_REVIVE": {
+    "label": "East-West Underground Path - Hidden Max Revive",
+    "flag": "EVENT_EAST_WEST_UNDERGROUND_PATH_HIDDEN_MAX_REVIVE",
+    "default_item": "MAX_REVIVE",
+    "type": "hiddenitem",
+    "tags": [
+      "Hidden",
+      "Hidden Items",
+      "East West Underground"
+    ],
+    "scripts": [
+      "EastWestUndergroundPathHiddenMaxRevive"
+    ]
+  },
   "FLOODED_MINE_HIDDEN_CHARCOAL_1": {
     "label": "Flooded Mine - Hidden Item Near Cherrygrove Entrance",
     "flag": "EVENT_FLOODED_MINE_CHARCOAL_1",
