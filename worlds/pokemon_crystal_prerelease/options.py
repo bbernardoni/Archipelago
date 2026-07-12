@@ -115,7 +115,7 @@ class Goal(EnhancedOptionSet):
 
 class VanillaEventChains(EnhancedOptionSet):
     """
-    Restore the vanilla event chain for the selected gyms instead of the streamlined Archipelago behaviour.
+    Restores the selected vanilla event chains instead of the streamlined Archipelago behaviour.
 
     Misty: Misty is not in her gym at the start. You must meet the Power Plant manager, witness the Rocket
      flee the Cerulean Gym, then find Misty on her date on Route 25 before she returns to her gym. The Cerulean Gym
@@ -130,6 +130,9 @@ class VanillaEventChains(EnhancedOptionSet):
 
     Copycat: the guy in the Vermilion Pokemon Fan Club only gives you the Lost Item after you've spoken to
      the Copycat in Saffron and learned she lost it.
+
+    - _All includes all event chains
+    - _Random has a 50% chance to include each event chain that is not already included
     """
     display_name = "Vanilla Event Chains"
 
