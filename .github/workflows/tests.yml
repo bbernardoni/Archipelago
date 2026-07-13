@@ -9,9 +9,22 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    env:
+      AP_TEST_WORLDS: pokemon_crystal_prerelease
     steps:
-      - uses: Eijebong/ap-actions/ap-tests@main
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          apworld-path: worlds/pokemon_crystal_prerelease
-          ap-version: '0.6.7'
           python-version: '3.13'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python ModuleUpdate.py --yes --force --append WebHostLib/requirements.txt
+          python -m pip install pytest pytest-subtests
+
+      - name: Run tests
+        run: pytest
