@@ -1285,7 +1285,7 @@
     "classification": "PROGRESSION",
     "price": 0,
     "tags": [
-      "TimeOfDay"
+      "Time of Day"
     ]
   },
   "DAY_ITEM": {
@@ -1293,7 +1293,7 @@
     "classification": "PROGRESSION",
     "price": 0,
     "tags": [
-      "TimeOfDay"
+      "Time of Day"
     ]
   },
   "NITE_ITEM": {
@@ -1301,7 +1301,7 @@
     "classification": "PROGRESSION",
     "price": 0,
     "tags": [
-      "TimeOfDay"
+      "Time of Day"
     ]
   },
   "KABUTO_TILE": {
