@@ -1507,6 +1507,8 @@ def _init() -> None:
     for region, tile_data in data_json["grasssanity"].items():
         region_name = region.split(":")[0][7:]  # delete REGION_
         region_name = region_name.lower().replace("_", " ").title()
+        if region_name == "Route 23 Restored":
+            region_name = "Route 23"
         region_name_regular = f"{region_name} - Grass"
         region_name_long = f"{region_name} - Long Grass"
         tiles = []

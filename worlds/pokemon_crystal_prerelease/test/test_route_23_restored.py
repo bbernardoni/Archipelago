@@ -122,5 +122,5 @@ class Route23RestoredGrasssanityTest(PokemonCrystalTestBase):
 
     def test_grass_locations_created(self):
         location_names = {loc.name for loc in self.multiworld.get_locations(self.player)}
-        r23r_grass = {name for name in location_names if name.startswith("Route 23 Restored - Grass")}
+        r23r_grass = {name for name in location_names if name.startswith("Route 23 - Grass")}
         self.assertEqual(len(r23r_grass), 64)
