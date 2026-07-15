@@ -241,6 +241,36 @@ TRACKER_KEY_ITEM_FLAGS = [
 ]
 KEY_ITEM_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_KEY_ITEM_FLAGS}
 
+TRACKER_EVENT_FLAGS_3 = [
+    "EVENT_BOULDER_IN_BLACKTHORN_GYM_1",
+    "EVENT_BOULDER_IN_BLACKTHORN_GYM_2",
+    "EVENT_BOULDER_IN_ICE_PATH_1A",
+    "EVENT_BOULDER_IN_ICE_PATH_2A",
+    "EVENT_BOULDER_IN_ICE_PATH_3A",
+    "EVENT_BOULDER_IN_ICE_PATH_4A",
+    "EVENT_BEAT_ROCKET_GRUNTF_5",
+    "EVENT_BEAT_ROCKET_GRUNTM_28",
+    "EVENT_BURNED_TOWER_MORTY",
+    "EVENT_HEALED_MOOMOO",
+    "EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS",
+    "EVENT_LEARNED_HAIL_GIOVANNI",
+    "EVENT_MET_COPYCAT_FOUND_OUT_ABOUT_LOST_ITEM",
+    "EVENT_MET_KURT",
+    "EVENT_MET_MANAGER_AT_POWER_PLANT",
+    "EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM",
+    "EVENT_MISTY_RETURNED_TO_GYM",
+    "EVENT_USED_THE_CARD_KEY_IN_THE_RADIO_TOWER",
+]
+EVENT_FLAG_MAP_3 = {data.event_flags[event]: event for event in TRACKER_EVENT_FLAGS_3}
+
+# Flags set at new-game and cleared once on completion; send bit=1 when the flag is clear.
+INVERTED_TRACKER_FLAGS = {
+    "EVENT_BOULDER_IN_ICE_PATH_1A",
+    "EVENT_BOULDER_IN_ICE_PATH_2A",
+    "EVENT_BOULDER_IN_ICE_PATH_3A",
+    "EVENT_BOULDER_IN_ICE_PATH_4A",
+}
+
 DEATH_LINK_MASK = 0b00010000
 DEATH_LINK_SETTING_ADDR = data.ram_addresses["wArchipelagoOptions"] + 4
 TRAP_LINK_MASK = 0b00001000
@@ -429,6 +459,7 @@ BITFLAG_STORAGES = [
     (TRACKER_SEEN_KANTO_MART_FLAGS, SEEN_KANTO_MART_FLAG_MAP, "local_set_seen_kanto_mart_events", "seen_kanto_marts"),
     (TRACKER_SEEN_JOHTO_MART_FLAGS, SEEN_JOHTO_MART_FLAG_MAP, "local_set_seen_johto_mart_events", "seen_johto_marts"),
     (TRACKER_KEY_ITEM_FLAGS, KEY_ITEM_FLAG_MAP, "local_found_key_items", "keys"),
+    (TRACKER_EVENT_FLAGS_3, EVENT_FLAG_MAP_3, "local_set_events_3", "events_3"),
 ]
 
 class PokemonCrystalClient(BizHawkClient):
@@ -440,6 +471,7 @@ class PokemonCrystalClient(BizHawkClient):
     goal_flags: list[int]
     local_set_events: dict[str, bool]
     local_set_events_2: dict[str, bool]
+    local_set_events_3: dict[str, bool]
     local_set_static_events: dict[str, bool]
     local_set_rocket_trap_events: dict[str, bool]
     local_set_seen_kanto_mart_events: dict[str, bool]
@@ -1100,7 +1132,10 @@ class PokemonCrystalClient(BizHawkClient):
                 if local_dict != getattr(self, attr_name) and ctx.slot is not None:
                     bitfield = 0
                     for i, flag_name in enumerate(flag_list):
-                        if local_dict[flag_name]:
+                        flag_set = local_dict[flag_name]
+                        if flag_name in INVERTED_TRACKER_FLAGS:
+                            flag_set = not flag_set
+                        if flag_set:
                             bitfield |= 1 << i
                     await ctx.send_msgs([{
                         "cmd": "Set",
