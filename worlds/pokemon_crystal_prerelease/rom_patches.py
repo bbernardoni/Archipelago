@@ -21,6 +21,24 @@ class RomPatch:
 
 
 ROM_PATCHES: list[RomPatch] = [
+    # wUnlockedTimeOfDay is game data, only populated by NewGame or loading a save, so the
+    # title-screen options menu reads 0 from cleared WRAM and shows Time of Day as LOCKED on
+    # every seed. Hook GameInit to seed it with the ROM-patched initial bitmask (the immediate
+    # at AP_Setting_UnlockableTimeOfDay + 1); NewGame/Continue overwrite it as before.
+    RomPatch(
+        name="unlocked_time_of_day_boot_init",
+        entries=[
+            # GameInit (01:6917): call ClearWindowData (01:691d) -> call $7f80
+            RomPatchEntry(bank=0x01, address=0x691d, data=[0xCD, 0x80, 0x7F]),
+            # Stub in bank 1 end-of-bank free space ($7f70-$7fff)
+            RomPatchEntry(bank=0x01, address=0x7f80, data=[
+                0xCD, 0xFA, 0x1F,  # call ClearWindowData
+                0xFA, 0x7E, 0x5D,  # ld a, [AP_Setting_UnlockableTimeOfDay + 1]
+                0xEA, 0xEB, 0xD6,  # ld [wUnlockedTimeOfDay], a
+                0xC9,              # ret
+            ]),
+        ],
+    ),
     # CheckRockets keys the radio tower takeover off EVENT_TEAM_ROCKET_DISBANDED, which is not
     # co-op synced. A save rolled back past the tower clear gets EVENT_CLEARED_RADIO_TOWER synced
     # back without any of the takeover/post-clear object state, forcing a full takeover replay
