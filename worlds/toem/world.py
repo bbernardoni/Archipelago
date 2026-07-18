@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, Any, ClassVar
-
 from typing_extensions import override
 
 from BaseClasses import Item, ItemClassification, Tutorial, EntranceType, Region, Entrance
@@ -11,18 +10,21 @@ from Utils import Version
 from .constants import GAME_NAME
 from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
 from .locations import (
+    LocationData,
     LocationGroup,
     LocationName,
     ToemLocation,
     EventName,
     event_table,
-    location_name_groups,
-    location_name_to_id,
     location_table,
+    location_name_to_id,
+    location_name_groups,
+    location_to_item_name,
+    portrait_locations
 )
 from .options import ToemOptions, EntranceRandomization
-from .regions import RegionName, FullRegionName, ToemRegion
-from .connections import ERGroups, region_connections, within_region_groups, connection_name_to_id
+from .regions import RegionName, FullRegionName
+from .connections import ERGroups, region_connections, within_region_groups, connection_name_to_id, ToemRegion
 from .rules import init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
@@ -47,7 +49,7 @@ class ToemWorld(World):
     game: ClassVar[str] = GAME_NAME
     web: ClassVar[WebWorld] = ToemWebWorld()
     options_dataclass: ClassVar[type["PerGameCommonOptions"]] = ToemOptions
-    options: ToemOptions  # pyright: ignore[reportIncompatibleVariableOverride]
+    options: ToemOptions
     item_name_groups: ClassVar[dict[str, set[str]]] = item_name_groups
     location_name_groups: ClassVar[dict[str, set[str]]] = location_name_groups
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
@@ -83,21 +85,28 @@ class ToemWorld(World):
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
-    def create_location(self, name: str) -> ToemLocation | None:
-        data = location_table[name]
-        if not self.options.include_basto and location_name_to_id[name] >= location_name_to_id[LocationName.QUEST_BALLOONS]:
-            return
-
+    def create_location(self, name: str, data: LocationData) -> ToemLocation | None:
         region = self.get_region(data.region)
         location = ToemLocation(self.player, name, location_name_to_id[name], region)
         region.locations.append(location)
         return location
 
+    def create_event(self, event_name: str, region_name: str, item_name: str | None = None) -> None:
+        if item_name is None:
+            item_name = event_name
+        item = ToemItem(item_name, ItemClassification.progression, None, self.player)
+        region = self.get_region(region_name)
+        location = ToemLocation(self.player, event_name, None, region)
+        location.place_locked_item(item)
+        region.locations.append(location)
+
     @override
     def create_regions(self) -> None:
-        regions = {connection.src_region_name for connection in region_connections if self.options.include_basto or not connection.src_region_name.startswith(RegionName.BASTO)}
+        regions = {connection.src_region_name for connection in region_connections}
+        regions |= {connection.dst_region_name for connection in region_connections}
         for region in regions:
-            self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
+            if self.options.include_basto or not region.startswith(RegionName.BASTO):
+                self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
         if self.options.include_items:
@@ -107,12 +116,11 @@ class ToemWorld(World):
         if self.options.include_achievements:
             logic_groups.add(LocationGroup.ACHIEVEMENT)
 
-        for group, location_names in location_name_groups.items():
-            if group not in logic_groups:
+        for location_name, location_data in location_table.items():
+            if not self.options.include_basto and location_name_to_id[location_name] >= location_name_to_id[LocationName.QUEST_BALLOONS]:
                 continue
-
-            for location_name in location_names:
-                self.create_location(location_name)
+            if location_data.group in logic_groups:
+                self.create_location(location_name, location_data)
 
         if self.options.include_basto:
             self.create_event(EventName.BASTO_BONFIRE, FullRegionName.BASTO_BUS_STOP_BOTTOM)
@@ -121,17 +129,9 @@ class ToemWorld(World):
         else:
             self.create_event(EventName.TOEM_EXPERIENCED, FullRegionName.MOUNTAIN_TOP_TOEM)
 
-    def create_event(self, event_name: str, region_name: str) -> None:
-        item = ToemItem(event_name, ItemClassification.progression_skip_balancing, None, self.player)
-        region = self.get_region(region_name)
-        location = ToemLocation(self.player, event_name, None, region)
-        location.place_locked_item(item)
-        region.locations.append(location)
-
     @override
     def create_item(self, name: str) -> ToemItem:
-        data = item_table[name]
-        return ToemItem(name, data.classification, self.item_name_to_id[name], self.player)
+        return ToemItem(name, item_table[name].classification, self.item_name_to_id[name], self.player)
 
     @override
     def create_items(self) -> None:
@@ -143,24 +143,20 @@ class ToemWorld(World):
         if self.options.include_cassettes:
             logic_groups.add(ItemGroup.CASSETTE)
 
-        for group, item_names in item_name_groups.items():
-            if group not in logic_groups:
+        for item_name, item_data in item_table.items():
+            if item_data.group not in logic_groups or not self.options.include_basto and item_data.parent_region == RegionName.BASTO:
                 continue
 
-            for item_name in item_names:
-                data = item_table[item_name]
-                quantity = data.quantity
-                if not self.options.include_basto and data.parent_region == RegionName.BASTO:
+            quantity = item_data.quantity
+            if item_data.group == ItemGroup.STAMP:
+                if self.options.progressive_stamps and item_name != ItemName.PROGRESSIVE_STAMP:
                     continue
-                if data.group == ItemGroup.STAMP:
-                    if self.options.progressive_stamps and item_name != ItemName.PROGRESSIVE_STAMP:
-                        continue
-                    if not self.options.progressive_stamps and item_name == ItemName.PROGRESSIVE_STAMP:
-                        continue
-                    if not self.options.include_basto and item_name == ItemName.PROGRESSIVE_STAMP:
-                        quantity -= 20 
+                if not self.options.progressive_stamps and item_name == ItemName.PROGRESSIVE_STAMP:
+                    continue
+                if not self.options.include_basto and item_name == ItemName.PROGRESSIVE_STAMP:
+                    quantity -= item_table[ItemName.BASTO_STAMP].quantity 
 
-                itempool.extend(self.create_item(item_name) for _ in range(quantity))
+            itempool.extend(self.create_item(item_name) for _ in range(quantity))
 
         total_locations = len(self.multiworld.get_unfilled_locations(self.player))
         while len(itempool) < total_locations:
@@ -277,3 +273,56 @@ class ToemWorld(World):
                 reverse_exit.connect(reverse_entrance_region)
                 del self.deferred_entrances[entrance_id]
                 del self.deferred_entrances[reverse_id]
+                
+    # visualize_regions helpers
+    def visualize_regions(self, region_filter = None, entrance_filter = None):
+        from Utils import visualize_regions
+        root_region = self.get_region(FullRegionName.START_MENU)
+        
+        if region_filter:
+            saved_region_cache = self.multiworld.regions.region_cache[self.player]
+            new_region_cache = {region_name: region for region_name, region in saved_region_cache.items() if region_filter(region)}
+            self.multiworld.regions.region_cache[self.player] = new_region_cache
+            if root_region.name not in new_region_cache:
+                root_region = next(region for region in new_region_cache.values() if "Bus stop" in region.name or "Harbor bottom" in region.name)
+        if entrance_filter:
+            saved_exits: dict[Region, list[Entrance]] = {}
+            for region in self.get_regions():
+                saved_exits[region] = region.exits
+                region.exits = [_exit for _exit in region.exits if entrance_filter(_exit)]
+        
+        state = self.multiworld.get_all_state(allow_partial_entrances=True)
+        state.update_reachable_regions(self.player)
+        visualize_regions(root_region, f"toem.puml", show_entrance_names=True, regions_to_highlight=state.reachable_regions[self.player],
+                          detail_other_regions=True)
+        
+        if entrance_filter:
+            for region, exits in saved_exits.items():
+                region.exits = exits
+        if region_filter:
+            self.multiworld.regions.region_cache[self.player] = saved_region_cache
+        
+    def no_helpers_filter(self):
+        from .connections import ConnectionName
+        last_non_helper = next(i for i, connection in enumerate(region_connections) if connection.name == ConnectionName.JUNGLE_LEFT)
+        helper_connections = {connection.name for connection in region_connections[last_non_helper+1:]}
+        return lambda _exit: not _exit.name in helper_connections
+
+    def visualize_ger(self, placeable_entrance_regions: set[Region]):
+        from collections import deque
+        root_region = self.get_region(FullRegionName.START_MENU)
+        seen: set[Region] = set()
+        regions: deque[Region] = deque((root_region,))
+        while regions:
+            if (current_region := regions.popleft()) not in seen:
+                seen.add(current_region)
+                regions.extend(exit_.connected_region for exit_ in current_region.exits if exit_.connected_region)
+        unconnected_regions = {region for region in self.get_regions() if region not in seen}
+        ignored_regions = unconnected_regions - placeable_entrance_regions
+
+        region_filter = lambda region: region not in ignored_regions
+        self.visualize_regions(region_filter, self.no_helpers_filter())
+    
+    def visualize_super_region(self, parent_region: str):
+        region_filter = lambda region: region.name.startswith(f"{parent_region} - ")
+        self.visualize_regions(region_filter, self.no_helpers_filter())

@@ -18,6 +18,7 @@ class ItemGroup:
 
 @final
 class ItemName:
+    # Stamps
     HOMELANDA_STAMP = "Homelanda stamp"
     OAKLAVILLE_STAMP = "Oaklaville stamp"
     STANHAMN_STAMP = "Stanhamn stamp"
@@ -26,6 +27,7 @@ class ItemName:
     BASTO_STAMP = "Basto stamp"
     PROGRESSIVE_STAMP = "Progressive stamp"
 
+    # Compendium photos
     COW_PHOTO = "Cow photo"
     FLIES_PHOTO = "Flies photo"
     HOME_BIRD_PHOTO = "Home bird photo"
@@ -101,6 +103,7 @@ class ItemName:
     TATO_KING_PHOTO = "Tato king photo"
     WATER_STRIDER_PHOTO = "Water strider photo"
 
+    # Items
     CLOGS = "Clogs"
     AWARD_MASK = "Award Mask"
     FINGER = "Foam finger"
@@ -155,6 +158,7 @@ class ItemName:
     BERET = "Beret"
     ROYAL_CROWN = "Royal crown"
 
+    # Cassettes
     PHOTO_OF_HOME_TAPE = "Jamal Green - Photo of Home"
     SUMMER_BREEZE_TAPE = "Jamal Green - Summer Breeze"
     SQUIRREL_HOTEL_TAPE = "Jamal Green - The Grand Squirrel Hotel"
@@ -202,7 +206,7 @@ item_table: dict[str, ItemData] = {
     ItemName.LOGCITY_STAMP: ItemData(ItemClassification.progression, 18, ItemGroup.STAMP, RegionName.LOGCITY),
     ItemName.KIIRUBERG_STAMP: ItemData(ItemClassification.progression, 13, ItemGroup.STAMP, RegionName.KIIRUBERG),
     ItemName.BASTO_STAMP: ItemData(ItemClassification.progression, 20, ItemGroup.STAMP, RegionName.BASTO),
-    ItemName.PROGRESSIVE_STAMP: ItemData(progression_useful, 85, ItemGroup.STAMP, RegionName.MENU),
+    ItemName.PROGRESSIVE_STAMP: ItemData(ItemClassification.progression, 85, ItemGroup.STAMP, RegionName.MENU),
     ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
     ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
     ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, RegionName.HOMELANDA),
