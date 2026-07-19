@@ -2403,9 +2403,6 @@
       "TM02_HEADBUTT",
       "ITEM_FROM_BUG_CATCHER_WAYNE"
     ],
-    "events": [
-      "EVENT_HERDED_FARFETCHD"
-    ],
     "signs": [
       "IlexForest"
     ],
@@ -2428,6 +2425,9 @@
     "locations": [
       "HM01_CUT",
       "ILEX_FOREST_REVIVE"
+    ],
+    "events": [
+      "EVENT_HERDED_FARFETCHD"
     ],
     "wild_encounters": {
       "grass": "ILEX_FOREST",
