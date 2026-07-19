@@ -1285,11 +1285,11 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     # Blackthorn
     set_rule(get_entrance("REGION_BLACKTHORN_CITY -> REGION_BLACKTHORN_GYM_1F"), Has("EVENT_CLEARED_RADIO_TOWER"))
     set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"), world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_2"), world.logic.can_strength())
+    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_3"), world.logic.can_strength())
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_1F:MIDDLE -> REGION_BLACKTHORN_GYM_1F:LOLA"),
-             Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"))
+             Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_3"))
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_1F:LOLA -> REGION_BLACKTHORN_GYM_1F:CLAIR"),
-             Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_2"))
+             Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"))
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_2F -> REGION_BLACKTHORN_GYM_1F:HOLE_3"), world.logic.can_strength())
 
     set_rule(get_entrance("REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE -> REGION_DRAGONS_DEN_1F:UPPER"),
