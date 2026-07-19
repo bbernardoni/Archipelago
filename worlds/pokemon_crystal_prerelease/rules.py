@@ -1469,7 +1469,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
         # Cerulean
         set_rule(get_entrance("REGION_ROUTE_24 -> REGION_CERULEAN_CITY:SURF"), world.logic.can_surf(kanto=True))
-        safe_set_location_rule("Route 24 - Grunt", Has("EVENT_CERULEAN_GYM_ROCKET"))
+        if VanillaEventChains.MISTY in world.options.vanilla_event_chains.value:
+            safe_set_location_rule("Route 24 - Grunt", Has("EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM"))
 
         set_rule(get_entrance("REGION_CERULEAN_CITY -> REGION_ROUTE_9"), world.logic.can_cut(kanto=True))
 
