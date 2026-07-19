@@ -1979,9 +1979,9 @@ def generate_output(world: "PokemonCrystalWorld", output_directory: str, patch: 
         write_bytes([right], data.rom_addresses["AP_Setting_Route30Battle_JoeyTurn"] + 2)
         write_bytes([left], data.rom_addresses["AP_Setting_Route30Battle_MikeyTurn"] + 2)
 
-    if world.options.all_pokemon_seen:
-        write_bytes([1], data.rom_addresses["AP_Setting_AllPokemonSeen_1"] + 1)
-        write_bytes([1], data.rom_addresses["AP_Setting_AllPokemonSeen_2"] + 1)
+    all_pokemon_seen = 1 if world.options.all_pokemon_seen else 0
+    write_bytes([all_pokemon_seen], data.rom_addresses["AP_Setting_AllPokemonSeen_1"] + 1)
+    write_bytes([all_pokemon_seen], data.rom_addresses["AP_Setting_AllPokemonSeen_2"] + 1)
 
     def write_item_flag(location: LocationData):
         event = location.flag
