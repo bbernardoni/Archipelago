@@ -76,6 +76,7 @@
     "signs": [
       "AzaleaTown",
       "AzaleaGym",
+      "SlowpokeWell",
       "AzaleaTownIlexForest",
       "AzaleaTownPokecenter",
       "AzaleaTownMart",
@@ -2688,6 +2689,14 @@
     ],
     "events": [
       "EVENT_VISITED_LAVENDER"
+    ],
+    "signs": [
+      "LavenderTown",
+      "LavenderTownRadioStation",
+      "LavenderTownVolunteerPokemonHouse",
+      "LavenderTownSoulHouse",
+      "LavenderTownPokecenter",
+      "LavenderTownMart"
     ]
   },
   "REGION_MAHOGANY_GYM": {
@@ -6189,6 +6198,9 @@
       "ITEM_FROM_POKEFANM_REX",
       "ITEM_FROM_POKEFANM_ALLAN"
     ],
+    "signs": [
+      "Route6UndergroundPath"
+    ],
     "wild_encounters": {
       "grass": "ROUTE_6",
       "surfing": "ROUTE_6",
@@ -8068,6 +8080,7 @@
     "signs": [
       "VioletCity",
       "VioletGym",
+      "SproutTower",
       "VioletCityPokecenter",
       "VioletCityMart",
       "EarlsPokemonAcademy"
