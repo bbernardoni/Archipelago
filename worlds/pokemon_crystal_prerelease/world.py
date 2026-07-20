@@ -30,7 +30,7 @@ from .options import PokemonCrystalOptions, JohtoOnly, RandomizeBadges, HMBadgeR
     VictoryRoadRequirement, EliteFourRequirement, MtSilverRequirement, RedRequirement, \
     Route44AccessRequirement, RadioTowerRequirement, RequireItemfinder, \
     OPTION_GROUPS, RandomizeFlyUnlocks, Shopsanity, Grasssanity, Goal, RandomizePokedex, BreedingMethodsRequired, \
-    WildEncounterMethodsRequired, EvolutionMethodsRequired, RemoveBadgeRequirement, SaffronGatehouseTea, ExpShareType
+    RemoveBadgeRequirement, SaffronGatehouseTea, ExpShareType
 from .phone import generate_phone_traps
 from .phone_data import PhoneScript
 from .pokemon import randomize_pokemon_data, randomize_starters, fill_wild_encounter_locations, fill_trade_locations, \
@@ -1277,9 +1277,6 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
 
         slot_data["contest_encounters"] = [self.generated_pokemon[slot.pokemon].id for slot in self.generated_contest]
 
-        for hm in [key for key in self.options.remove_badge_requirement.valid_keys if key not in ("_All", "_Random")]:
-            slot_data["free_" + hm.lower()] = 1 if hm in self.options.remove_badge_requirement.value else 0
-
         slot_data["free_fly_location_option"] = self.options.free_fly_location.value
         slot_data["free_fly_location"] = 0
         slot_data["map_card_fly_location"] = 0
@@ -1305,27 +1302,6 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
         slot_data["dexcountsanity_option"] = self.options.dexcountsanity.value
         slot_data["dexcountsanity_checks"] = len(self.generated_dexcountsanity)
         slot_data["dexcountsanity_counts"] = self.generated_dexcountsanity
-
-        ool_encounter_method = 1 if self.options.enforce_wild_encounter_methods_logic else 0
-
-        slot_data["encmethod_land"] = 2 if WildEncounterMethodsRequired.LAND in self.options.wild_encounter_methods_required \
-            else ool_encounter_method
-        slot_data["encmethod_water"] = 2 if WildEncounterMethodsRequired.SURFING in self.options.wild_encounter_methods_required \
-            else ool_encounter_method
-        slot_data["encmethod_fishing"] = 2 if WildEncounterMethodsRequired.FISHING in self.options.wild_encounter_methods_required \
-            else ool_encounter_method
-        slot_data["encmethod_headbutt"] = 2 if WildEncounterMethodsRequired.HEADBUTT in self.options.wild_encounter_methods_required \
-            else ool_encounter_method
-        slot_data["encmethod_rocksmash"] = 2 if WildEncounterMethodsRequired.ROCK_SMASH in self.options.wild_encounter_methods_required \
-            else ool_encounter_method
-        slot_data["encmethod_contest"] = 2 if WildEncounterMethodsRequired.BUG_CATCHING_CONTEST in self.options.wild_encounter_methods_required \
-            else 0
-
-        slot_data["evomethod_happiness"] = 1 if EvolutionMethodsRequired.HAPPINESS in self.options.evolution_methods_required else 0
-        slot_data["evomethod_level"] = 1 if EvolutionMethodsRequired.LEVEL in self.options.evolution_methods_required else 0
-        slot_data["evomethod_tyrogue"] = 1 if EvolutionMethodsRequired.LEVEL_TYROGUE in self.options.evolution_methods_required else 0
-        slot_data["evomethod_useitem"] = 1 if EvolutionMethodsRequired.USE_ITEM in self.options.evolution_methods_required else 0
-        slot_data["evomethod_helditem"] = 1 if EvolutionMethodsRequired.HELD_ITEM in self.options.evolution_methods_required else 0
 
         if self.options.breeding_methods_required == BreedingMethodsRequired.option_any:
             breeding_method = 4
@@ -1358,12 +1334,6 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
 
         slot_data["hiddenitem_logic"] = hidden_items_setting
         slot_data["trainersanity"] = [loc.address for loc in self.get_locations() if "Trainersanity" in loc.tags]
-
-        slot_data["shopsanity_apricorn"] = 1 if Shopsanity.APRICORNS in self.options.shopsanity.value else 0
-        slot_data["shopsanity_bluecard"] = 1 if Shopsanity.BLUE_CARD in self.options.shopsanity.value else 0
-        slot_data["shopsanity_gamecorners"] = 1 if Shopsanity.GAME_CORNERS in self.options.shopsanity.value else 0
-        slot_data["shopsanity_johtomarts"] = 1 if Shopsanity.JOHTO_MARTS in self.options.shopsanity.value else 0
-        slot_data["shopsanity_kantomarts"] = 1 if Shopsanity.KANTO_MARTS in self.options.shopsanity.value else 0
 
         evolution_data = dict[int, list[dict]]()
         for pokemon_id, pokemon_data in self.generated_pokemon.items():
