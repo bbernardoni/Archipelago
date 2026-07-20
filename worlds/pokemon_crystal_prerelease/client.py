@@ -1,11 +1,6 @@
-import asyncio
-import copy
 import math
-import random
 import time
-import uuid
-from collections.abc import Callable
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import Utils
 import worlds._bizhawk as bizhawk
@@ -14,13 +9,20 @@ from NetUtils import ClientStatus
 from worlds._bizhawk.client import BizHawkClient
 from .battle_tower_data import BATTLE_TOWER_TIER_OFFSET, BATTLE_TOWER_TRAINER_OFFSET, BATTLE_TOWER_NUM_TRAINERS, \
     BATTLE_TOWER_NUM_TIERS
+from .client_commands import register_commands
+from .client_energy_link import ENERGY_LINK_NONE, handle_energy_link
+from .client_tracker_events import BITFLAG_STORAGES, INVERTED_TRACKER_FLAGS
+from .client_trap_link import handle_trap_link_setting, send_trap_link, resolve_trap_link_id
+from .client_wonder_trade import WonderTradeMixin
+from .client_event_sync import (SYNC_EVENTS_FLAG_MAP, SYNC_EVENTS_FLAG_MAP_WITH_E4, SYNC_LAYOUT, SYNC_LAYOUT_WITH_E4,
+                                SYNC_GOAL_FLAGS, detect_sync_events, encode_sync_bitfield, apply_remote_sync_events,
+                                detect_sync_goal_events, encode_sync_goal_bitfield)
 from .data import data, load_json_data
 from .item_data import GRASS_OFFSET, POKEDEX_OFFSET, POKEDEX_COUNT_OFFSET, FLAG_ITEM_OFFSET
-from .items import item_const_name_to_id, EXTENDED_TRAPLINK_MAPPING
+from .items import item_const_name_to_id
 from .options import ProvideShopHints, JohtoOnly
 from .pokemon_data import ALL_UNOWN
 from .rematch_trainer_data import REMATCH_TRAINER_LOCATION_BASE, NUM_REMATCH_TRAINER_LOCATIONS
-from .util_wonder_trade import pokemon_data_to_json, json_to_pokemon_data, trade_is_eligible
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -35,275 +37,10 @@ BATTLE_TOWER_TRAINER_BYTES = math.ceil(BATTLE_TOWER_NUM_TRAINERS / 8)
 REMATCH_TRAINER_BYTES = math.ceil(NUM_REMATCH_TRAINER_LOCATIONS / 8)
 _WARP_IDS_JSON = load_json_data("warp_ids.json")
 WARP_BYTES = _WARP_IDS_JSON["flag_bytes"]
-WARP_ID_BY_BIT_POSITION = {
-    w["bit_byte"] * 8 + w["bit_index"]: w["id"] for w in _WARP_IDS_JSON["warps"]
-}
-
-TRACKER_EVENT_FLAGS = [
-    "EVENT_GOT_KENYA",
-    "EVENT_GAVE_KENYA",
-    "EVENT_JASMINE_RETURNED_TO_GYM",
-    "EVENT_DECIDED_TO_HELP_LANCE",
-    "EVENT_CLEARED_ROCKET_HIDEOUT",
-    "EVENT_CLEARED_RADIO_TOWER",
-    "EVENT_BEAT_ELITE_FOUR",
-    "EVENT_RESTORED_POWER_TO_KANTO",
-    "EVENT_BLUE_GYM_TRACKER",
-    "EVENT_BEAT_RED",
-    "EVENT_CLEARED_SLOWPOKE_WELL",
-    "EVENT_HERDED_FARFETCHD",
-    "EVENT_RELEASED_THE_BEASTS",
-    "EVENT_BEAT_FALKNER",
-    "EVENT_BEAT_BUGSY",
-    "EVENT_BEAT_WHITNEY",
-    "EVENT_BEAT_MORTY",
-    "EVENT_BEAT_JASMINE",
-    "EVENT_BEAT_CHUCK",
-    "EVENT_BEAT_PRYCE",
-    "EVENT_BEAT_CLAIR",
-    "EVENT_BEAT_BROCK",
-    "EVENT_BEAT_MISTY",
-    "EVENT_BEAT_LTSURGE",
-    "EVENT_BEAT_ERIKA",
-    "EVENT_BEAT_JANINE",
-    "EVENT_BEAT_SABRINA",
-    "EVENT_BEAT_BLAINE",
-    "EVENT_BEAT_BLUE",
-    "EVENT_FAST_SHIP_FOUND_GIRL",
-    "EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON",
-    "EVENT_BILL_ACTIVATED_TIME_CAPSULE",
-]
-
-EVENT_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_EVENT_FLAGS}
-
-TRACKER_EVENT_FLAGS_2 = [
-    "EVENT_SAW_SUICUNE_AT_CIANWOOD_CITY",
-    "EVENT_SAW_SUICUNE_ON_ROUTE_42",
-    "EVENT_SAW_SUICUNE_ON_ROUTE_36",
-    "EVENT_BEAT_RIVAL_IN_MT_MOON",
-    "EVENT_GOT_EON_MAIL_FROM_EUSINE",
-    "EVENT_BEAT_CHERRYGROVE_RIVAL",
-    "EVENT_BEAT_AZALEA_RIVAL",
-    "EVENT_RIVAL_BURNED_TOWER",
-    "EVENT_BEAT_GOLDENROD_UNDERGROUND_RIVAL",
-    "EVENT_BEAT_VICTORY_ROAD_RIVAL",
-    "EVENT_BEAT_RIVAL_IN_INDIGO_PLATEAU",
-    "EVENT_DEFEATED_ROUTE_24_ROCKET",
-    "EVENT_GOT_ALL_UNOWN",
-    "EVENT_OBTAINED_DIPLOMA",
-    "EVENT_BEAT_ROCKET_EXECUTIVEM_3",
-    "EVENT_SOLVED_KABUTO_PUZZLE",
-    "EVENT_SOLVED_OMANYTE_PUZZLE",
-    "EVENT_SOLVED_AERODACTYL_PUZZLE",
-    "EVENT_SOLVED_HO_OH_PUZZLE",
-    "EVENT_GAVE_MYSTERY_EGG_TO_ELM",
-    "EVENT_USED_TELEPORT_ABRA",
-]
-
-EVENT_FLAG_MAP_2 = {data.event_flags[event]: event for event in TRACKER_EVENT_FLAGS_2}
-
-TRACKER_STATIC_EVENT_FLAGS = [
-    "EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE",
-    "EVENT_FOUGHT_SUDOWOODO",
-    "EVENT_LAKE_OF_RAGE_RED_GYARADOS",
-    "EVENT_FOUGHT_HO_OH",
-    "EVENT_FOUGHT_LUGIA",
-    "EVENT_FOUGHT_SUICUNE",
-    "EVENT_TEAM_ROCKET_BASE_B2F_ELECTRODE_1",
-    "EVENT_TEAM_ROCKET_BASE_B2F_ELECTRODE_2",
-    "EVENT_TEAM_ROCKET_BASE_B2F_ELECTRODE_3",
-    "EVENT_GOT_SHUCKIE",
-    "EVENT_GOT_EEVEE",
-    "EVENT_GOT_DRATINI",
-    "EVENT_TOGEPI_HATCHED",
-    "EVENT_GOT_TYROGUE_FROM_KIYO",
-    "EVENT_UNION_CAVE_B2F_LAPRAS",
-    "EVENT_FOUGHT_CELEBI",
-    "EVENT_GOT_ODD_EGG",
-    "EVENT_STATIC_GOLDENROD_GAME_CORNER_1",
-    "EVENT_STATIC_GOLDENROD_GAME_CORNER_2",
-    "EVENT_STATIC_GOLDENROD_GAME_CORNER_3",
-    "EVENT_STATIC_CELADON_GAME_CORNER_PRIZE_ROOM_1",
-    "EVENT_STATIC_CELADON_GAME_CORNER_PRIZE_ROOM_2",
-    "EVENT_STATIC_CELADON_GAME_CORNER_PRIZE_ROOM_3",
-    "EVENT_FOUGHT_SNORLAX",
-]
-
-STATIC_EVENT_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_STATIC_EVENT_FLAGS}
-
-TRACKER_ROCKET_TRAP_EVENTS = [
-    "EVENT_EXPLODING_TRAP_1",
-    "EVENT_EXPLODING_TRAP_2",
-    "EVENT_EXPLODING_TRAP_3",
-    "EVENT_EXPLODING_TRAP_4",
-    "EVENT_EXPLODING_TRAP_5",
-    "EVENT_EXPLODING_TRAP_6",
-    "EVENT_EXPLODING_TRAP_7",
-    "EVENT_EXPLODING_TRAP_8",
-    "EVENT_EXPLODING_TRAP_9",
-    "EVENT_EXPLODING_TRAP_10",
-    "EVENT_EXPLODING_TRAP_11",
-    "EVENT_EXPLODING_TRAP_12",
-    "EVENT_EXPLODING_TRAP_13",
-    "EVENT_EXPLODING_TRAP_14",
-    "EVENT_EXPLODING_TRAP_15",
-    "EVENT_EXPLODING_TRAP_16",
-    "EVENT_EXPLODING_TRAP_17",
-    "EVENT_EXPLODING_TRAP_18",
-    "EVENT_EXPLODING_TRAP_19",
-    "EVENT_EXPLODING_TRAP_20",
-    "EVENT_EXPLODING_TRAP_21",
-    "EVENT_EXPLODING_TRAP_22",
-]
-
-ROCKET_TRAP_EVENT_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_ROCKET_TRAP_EVENTS}
-
-TRACKER_SEEN_KANTO_MART_FLAGS = [
-    "EVENT_SEEN_MART_VIRIDIAN",
-    "EVENT_SEEN_MART_PEWTER",
-    "EVENT_SEEN_MART_MT_MOON",
-    "EVENT_SEEN_MART_CERULEAN",
-    "EVENT_SEEN_MART_VERMILION",
-    "EVENT_SEEN_MART_LAVENDER",
-    "EVENT_SEEN_MART_SAFFRON",
-    "EVENT_SEEN_MART_CELADON_2F_1",
-    "EVENT_SEEN_MART_CELADON_2F_2",
-    "EVENT_SEEN_MART_CELADON_3F",
-    "EVENT_SEEN_MART_CELADON_4F",
-    "EVENT_SEEN_MART_CELADON_5F_1",
-    "EVENT_SEEN_MART_CELADON_5F_2",
-    "EVENT_SEEN_MART_CELADON_VENDING_MACHINE",
-    "EVENT_SEEN_MART_FUCHSIA",
-    "EVENT_SEEN_MART_INDIGO_PLATEAU",
-]
-
-TRACKER_SEEN_JOHTO_MART_FLAGS = [
-    "EVENT_SEEN_MART_CHERRYGROVE",
-    "EVENT_SEEN_MART_VIOLET",
-    "EVENT_SEEN_MART_AZALEA",
-    "EVENT_SEEN_MART_KURTS_BALLS",
-    "EVENT_SEEN_MART_CIANWOOD",
-    "EVENT_SEEN_MART_GOLDENROD_2F_1",
-    "EVENT_SEEN_MART_GOLDENROD_2F_2",
-    "EVENT_SEEN_MART_GOLDENROD_3F",
-    "EVENT_SEEN_MART_GOLDENROD_4F",
-    "EVENT_SEEN_MART_GOLDENROD_5F",
-    "EVENT_SEEN_MART_GOLDENROD_VENDING_MACHINE",
-    "EVENT_SEEN_MART_ROOFTOP_SALE",
-    "EVENT_SEEN_MART_UNDERGROUND",
-    "EVENT_SEEN_MART_BARGAIN_SHOP",
-    "EVENT_SEEN_MART_BLUE_CARD",
-    "EVENT_SEEN_MART_OLIVINE",
-    "EVENT_SEEN_MART_ECRUTEAK",
-    "EVENT_SEEN_MART_MAHOGANY_1",
-    "EVENT_SEEN_MART_MAHOGANY_2",
-    "EVENT_SEEN_MART_BLACKTHORN",
-]
-
-SEEN_KANTO_MART_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_SEEN_KANTO_MART_FLAGS}
-SEEN_JOHTO_MART_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_SEEN_JOHTO_MART_FLAGS}
-
-TRACKER_KEY_ITEM_FLAGS = [
-    "EVENT_ZEPHYR_BADGE_FROM_FALKNER",
-    "EVENT_HIVE_BADGE_FROM_BUGSY",
-    "EVENT_PLAIN_BADGE_FROM_WHITNEY",
-    "EVENT_FOG_BADGE_FROM_MORTY",
-    "EVENT_STORM_BADGE_FROM_CHUCK",
-    "EVENT_MINERAL_BADGE_FROM_JASMINE",
-    "EVENT_GLACIER_BADGE_FROM_PRYCE",
-    "EVENT_RISING_BADGE_FROM_CLAIR",
-    "EVENT_BOULDER_BADGE_FROM_BROCK",
-    "EVENT_CASCADE_BADGE_FROM_MISTY",
-    "EVENT_THUNDER_BADGE_FROM_LTSURGE",
-    "EVENT_RAINBOW_BADGE_FROM_ERIKA",
-    "EVENT_SOUL_BADGE_FROM_JANINE",
-    "EVENT_MARSH_BADGE_FROM_SABRINA",
-    "EVENT_VOLCANO_BADGE_FROM_BLAINE",
-    "EVENT_EARTH_BADGE_FROM_BLUE",
-
-    "EVENT_GOT_RADIO_CARD",
-    "EVENT_GOT_MAP_CARD",
-    "EVENT_GOT_PHONE_CARD",
-    "EVENT_GOT_EXPN_CARD",
-    "EVENT_GOT_POKEGEAR",
-    "EVENT_GOT_POKEDEX",
-    "EVENT_MART_ESCAPE_ROPE",
-
-    "EVENT_RISING_BADGE_FROM_CLAIR_GYM",
-
-    "EVENT_GOT_RED_APRICORN",
-    "EVENT_GOT_BLU_APRICORN",
-    "EVENT_GOT_YLW_APRICORN",
-    "EVENT_GOT_GRN_APRICORN",
-    "EVENT_GOT_WHT_APRICORN",
-    "EVENT_GOT_BLK_APRICORN",
-    "EVENT_GOT_PNK_APRICORN",
-]
-KEY_ITEM_FLAG_MAP = {data.event_flags[event]: event for event in TRACKER_KEY_ITEM_FLAGS}
-
-TRACKER_EVENT_FLAGS_3 = [
-    "EVENT_BOULDER_IN_BLACKTHORN_GYM_1",
-    "EVENT_BOULDER_IN_BLACKTHORN_GYM_3",
-    "EVENT_BOULDER_IN_ICE_PATH_1A",
-    "EVENT_BOULDER_IN_ICE_PATH_2A",
-    "EVENT_BOULDER_IN_ICE_PATH_3A",
-    "EVENT_BOULDER_IN_ICE_PATH_4A",
-    "EVENT_BEAT_ROCKET_GRUNTF_5",
-    "EVENT_BEAT_ROCKET_GRUNTM_28",
-    "EVENT_BURNED_TOWER_MORTY",
-    "EVENT_HEALED_MOOMOO",
-    "EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS",
-    "EVENT_LEARNED_HAIL_GIOVANNI",
-    "EVENT_MET_COPYCAT_FOUND_OUT_ABOUT_LOST_ITEM",
-    "EVENT_MET_KURT",
-    "EVENT_MET_MANAGER_AT_POWER_PLANT",
-    "EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM",
-    "EVENT_MISTY_RETURNED_TO_GYM",
-    "EVENT_USED_THE_CARD_KEY_IN_THE_RADIO_TOWER",
-    "EVENT_BEAT_ELITE_4_WILL",
-    "EVENT_BEAT_ELITE_4_KOGA",
-    "EVENT_BEAT_ELITE_4_BRUNO",
-    "EVENT_BEAT_ELITE_4_KAREN",
-    "EVENT_TALKED_TO_MOM_AFTER_MYSTERY_EGG_QUEST",
-    "EVENT_KURT_RETURNED_GS_BALL",
-]
-EVENT_FLAG_MAP_3 = {data.event_flags[event]: event for event in TRACKER_EVENT_FLAGS_3}
-
-# Flags set at new-game and cleared once on completion; send bit=1 when the flag is clear.
-INVERTED_TRACKER_FLAGS = {
-    "EVENT_BOULDER_IN_ICE_PATH_1A",
-    "EVENT_BOULDER_IN_ICE_PATH_2A",
-    "EVENT_BOULDER_IN_ICE_PATH_3A",
-    "EVENT_BOULDER_IN_ICE_PATH_4A",
-}
-
+WARP_ID_BY_BIT_POSITION = {w["bit_byte"] * 8 + w["bit_index"]: w["id"] for w in _WARP_IDS_JSON["warps"]}
 DEATH_LINK_MASK = 0b00010000
 DEATH_LINK_SETTING_ADDR = data.ram_addresses["wArchipelagoOptions"] + 4
-TRAP_LINK_MASK = 0b00001000
-TRAP_LINK_SETTING_ADDR = data.ram_addresses["wArchipelagoOptions"] + 5
 COUNT_ALL_POKEMON = len(data.pokemon)
-
-ENERGY_LINK_NONE = 0
-ENERGY_LINK_REQUEST_DEPOSIT = 1
-ENERGY_LINK_REQUEST_WITHDRAW = 2
-ENERGY_LINK_DONE = 3
-ENERGY_LINK_ERROR_INSUFFICIENT = 4
-ENERGY_LINK_ERROR_DISCONNECTED = 5
-
-ENERGY_LINK_EXCHANGE_RATE = 50_000_000  # energy units per in-game dollar
-ENERGY_LINK_DEPOSIT_TAX_NUM = 1         # 1/4 = 25% deposit tax
-ENERGY_LINK_DEPOSIT_TAX_DEN = 4
-ENERGY_LINK_MAX_DOLLARS = 999_999       # MaxMoney in Crystal
-
-
-def money3_to_int(bs) -> int:
-    # wMoney is a 24-bit big-endian binary integer, not BCD.
-    return (bs[0] << 16) | (bs[1] << 8) | bs[2]
-
-
-def int_to_money3(n: int) -> bytes:
-    n = max(0, min(ENERGY_LINK_MAX_DOLLARS, int(n)))
-    return bytes([(n >> 16) & 0xFF, (n >> 8) & 0xFF, n & 0xFF])
 
 
 HINT_FLAGS = {f"EVENT_SEEN_{mart_name}": [item.flag for item in mart_data.items if item.flag] for mart_name, mart_data
@@ -311,166 +48,11 @@ HINT_FLAGS = {f"EVENT_SEEN_{mart_name}": [item.flag for item in mart_data.items 
 
 HINT_FLAG_MAP = {data.event_flags[flag_name]: flag_name for flag_name in HINT_FLAGS.keys()}
 
-TRAP_ID_TO_NAME = {item.item_id: item.label for item in data.items.values() if "Trap" in item.tags}
-TRAP_NAME_TO_ID = {item_name: item_id for item_id, item_name in TRAP_ID_TO_NAME.items()} | EXTENDED_TRAPLINK_MAPPING
-
 SIGN_ID_TO_NAME = {sign.id: sign.name for sign in data.unown_signs.values()}
 NUM_UNOWN = len(ALL_UNOWN)
 
-SYNC_EVENT_FLAGS = [
-    "EVENT_BEAT_FALKNER",
-    "EVENT_BEAT_BUGSY",
-    "EVENT_BEAT_WHITNEY",
-    "EVENT_BEAT_MORTY",
-    "EVENT_BEAT_JASMINE",
-    "EVENT_BEAT_CHUCK",
-    "EVENT_BEAT_PRYCE",
-    "EVENT_BEAT_CLAIR",
-    "EVENT_BEAT_BROCK",
-    "EVENT_BEAT_MISTY",
-    "EVENT_BEAT_LTSURGE",
-    "EVENT_BEAT_ERIKA",
-    "EVENT_BEAT_JANINE",
-    "EVENT_BEAT_SABRINA",
-    "EVENT_BEAT_BLAINE",
-    "EVENT_BEAT_BLUE",
 
-    "EVENT_CLEARED_SLOWPOKE_WELL",
-    "EVENT_HERDED_FARFETCHD",
-    "EVENT_RESTORED_POWER_TO_KANTO",
-    "EVENT_JASMINE_RETURNED_TO_GYM",
-    "EVENT_CLEARED_ROCKET_HIDEOUT",
-    "EVENT_CLEARED_RADIO_TOWER",
-    "EVENT_BLUE_GYM_TRACKER",
-    "EVENT_SAW_SUICUNE_AT_CIANWOOD_CITY",
-    "EVENT_SAW_SUICUNE_ON_ROUTE_42",
-    "EVENT_SAW_SUICUNE_ON_ROUTE_36",
-    "EVENT_RELEASED_THE_BEASTS",
-    "EVENT_GAVE_KENYA",
-    "EVENT_BILL_ACTIVATED_TIME_CAPSULE",
-    "EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE",
-    "EVENT_RETURNED_MACHINE_PART",
-    "EVENT_EAST_WEST_UNDERGROUND_OPEN",
-    "EVENT_ROUTE_5_6_POKEFAN_M_BLOCKS_UNDERGROUND_PATH",
-    "EVENT_HEALED_MOOMOO",
-
-    "EVENT_BEAT_RIVAL_IN_MT_MOON",
-    "EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON",
-    "EVENT_ROUTE_30_BATTLE",
-    "EVENT_BEAT_ELITE_FOUR",
-
-    "EVENT_KURT_RETURNED_GS_BALL",
-    "EVENT_MISTY_RETURNED_TO_GYM",
-    "EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM",
-    "EVENT_MET_MANAGER_AT_POWER_PLANT",
-
-    # Visited-region flags used as rematch tier gates.
-    "EVENT_VISITED_GOLDENROD",
-    "EVENT_VISITED_OLIVINE",
-    "EVENT_VISITED_ECRUTEAK",
-    "EVENT_VISITED_MAHOGANY",
-    "EVENT_VISITED_LAKE_OF_RAGE",
-    "EVENT_VISITED_CIANWOOD",
-    "EVENT_VISITED_BLACKTHORN",
-
-    "EVENT_CINNABAR_ROCKS_CLEARED",
-]
-
-SYNC_EVENTS_FLAG_MAP = {data.event_flags[event]: event for event in SYNC_EVENT_FLAGS}
-
-# Must stay appended after SYNC_EVENT_FLAGS; stored bitfield positions depend on list order.
-E4_DOOR_SYNC_EVENT_FLAGS = [
-    "EVENT_BEAT_ELITE_4_WILL",
-    "EVENT_BEAT_ELITE_4_KOGA",
-    "EVENT_BEAT_ELITE_4_BRUNO",
-    "EVENT_BEAT_ELITE_4_KAREN",
-    "EVENT_WILLS_ROOM_EXIT_OPEN",
-    "EVENT_KOGAS_ROOM_EXIT_OPEN",
-    "EVENT_BRUNOS_ROOM_EXIT_OPEN",
-    "EVENT_KARENS_ROOM_EXIT_OPEN",
-]
-
-SYNC_EVENT_FLAGS_WITH_E4 = SYNC_EVENT_FLAGS + E4_DOOR_SYNC_EVENT_FLAGS
-SYNC_EVENTS_FLAG_MAP_WITH_E4 = {data.event_flags[event]: event for event in SYNC_EVENT_FLAGS_WITH_E4}
-
-SYNC_GOAL_FLAGS = [
-    "EVENT_BEAT_ELITE_FOUR",
-    "EVENT_BEAT_RED",
-    "EVENT_OBTAINED_DIPLOMA",
-    "EVENT_BEAT_CHERRYGROVE_RIVAL",
-    "EVENT_BEAT_AZALEA_RIVAL",
-    "EVENT_RIVAL_BURNED_TOWER",
-    "EVENT_BEAT_GOLDENROD_UNDERGROUND_RIVAL",
-    "EVENT_BEAT_VICTORY_ROAD_RIVAL",
-    "EVENT_BEAT_RIVAL_IN_MT_MOON",
-    "EVENT_BEAT_RIVAL_IN_INDIGO_PLATEAU",
-    "EVENT_CLEARED_SLOWPOKE_WELL",
-    "EVENT_CLEARED_ROCKET_HIDEOUT",
-    "EVENT_BEAT_ROCKET_EXECUTIVEM_3",
-    "EVENT_CLEARED_RADIO_TOWER",
-    "EVENT_DEFEATED_ROUTE_24_ROCKET",
-    "EVENT_GOT_ALL_UNOWN",
-]
-
-SYNC_GOAL_FLAG_MAP = {data.event_flags[event]: event for event in SYNC_GOAL_FLAGS}
-
-
-def detect_sync_events(flag_bytes: bytes, flag_map: dict[int, str] = SYNC_EVENTS_FLAG_MAP) -> dict[str, bool]:
-    """Parse event flag bytes from game RAM into a sync events dict."""
-    local_sync_events = {flag_name: False for flag_name in flag_map.values()}
-    for byte_i, byte in enumerate(flag_bytes):
-        for i in range(8):
-            location_id = byte_i * 8 + i
-            if byte & (1 << i):
-                if location_id in flag_map:
-                    local_sync_events[flag_map[location_id]] = True
-    return local_sync_events
-
-
-def encode_sync_bitfield(local_sync_events: dict[str, bool], sync_flags: list[str] = SYNC_EVENT_FLAGS) -> int:
-    """Convert a sync events dict to a bitfield for server upload."""
-    bitfield = 0
-    for i, flag_name in enumerate(sync_flags):
-        if local_sync_events[flag_name]:
-            bitfield |= 1 << i
-    return bitfield
-
-
-def apply_remote_sync_events(flag_bytes: bytes, remote_sync_events: int,
-                             sync_flags: list[str] = SYNC_EVENT_FLAGS) -> bytearray:
-    """Apply a remote sync events bitfield onto a copy of the event flag bytes."""
-    synced = bytearray(flag_bytes)
-    for index, event in enumerate(sync_flags):
-        if remote_sync_events & (1 << index):
-            event_id = data.event_flags[event]
-            synced[event_id // 8] |= 1 << (event_id % 8)
-    return synced
-
-
-def detect_sync_goal_events(flag_bytes: bytes) -> dict[str, bool]:
-    """Parse event flag bytes from game RAM into a sync goal events dict."""
-    return detect_sync_events(flag_bytes, SYNC_GOAL_FLAG_MAP)
-
-
-def encode_sync_goal_bitfield(events: dict[str, bool]) -> int:
-    """Convert a sync goal events dict to a bitfield for server upload."""
-    return encode_sync_bitfield(events, SYNC_GOAL_FLAGS)
-
-
-
-# (flag_list, flag_map, instance_attr_name, storage_key_suffix)
-BITFLAG_STORAGES = [
-    (TRACKER_EVENT_FLAGS, EVENT_FLAG_MAP, "local_set_events", "events"),
-    (TRACKER_EVENT_FLAGS_2, EVENT_FLAG_MAP_2, "local_set_events_2", "events_2"),
-    (TRACKER_STATIC_EVENT_FLAGS, STATIC_EVENT_FLAG_MAP, "local_set_static_events", "statics"),
-    (TRACKER_ROCKET_TRAP_EVENTS, ROCKET_TRAP_EVENT_FLAG_MAP, "local_set_rocket_trap_events", "rockettraps"),
-    (TRACKER_SEEN_KANTO_MART_FLAGS, SEEN_KANTO_MART_FLAG_MAP, "local_set_seen_kanto_mart_events", "seen_kanto_marts"),
-    (TRACKER_SEEN_JOHTO_MART_FLAGS, SEEN_JOHTO_MART_FLAG_MAP, "local_set_seen_johto_mart_events", "seen_johto_marts"),
-    (TRACKER_KEY_ITEM_FLAGS, KEY_ITEM_FLAG_MAP, "local_found_key_items", "keys"),
-    (TRACKER_EVENT_FLAGS_3, EVENT_FLAG_MAP_3, "local_set_events_3", "events_3"),
-]
-
-class PokemonCrystalClient(BizHawkClient):
+class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
     game = data.manifest.game
     system = ("GB", "GBC")
     patch_suffix = ".apcrystalpre"
@@ -511,13 +93,6 @@ class PokemonCrystalClient(BizHawkClient):
     has_tracker_slot: bool
     commands_enabled: bool
 
-    wonder_trade_update_event: asyncio.Event
-    latest_wonder_trade_reply: dict
-    wonder_trade_cooldown: int
-    wonder_trade_cooldown_timer: int
-    queued_received_trade: Optional[str]
-    wonder_trade_in_flight: bool
-
     def initialize_client(self) -> None:
         self.local_checked_locations = set()
         self.goal_flags = []
@@ -548,12 +123,7 @@ class PokemonCrystalClient(BizHawkClient):
         self.remote_unlocked_unowns = 0
         self.has_tracker_slot = False
         self.commands_enabled = False
-        self.wonder_trade_update_event = asyncio.Event()
-        self.latest_wonder_trade_reply = {}
-        self.wonder_trade_cooldown = 5000
-        self.wonder_trade_cooldown_timer = 0
-        self.queued_received_trade = None
-        self.wonder_trade_in_flight = False
+        self.initialize_wonder_trade()
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         from CommonClient import logger
@@ -689,81 +259,15 @@ class PokemonCrystalClient(BizHawkClient):
 
         if (ctx.slot_data["lance_requires_elite_four"]
                 and "Pokemon League" in ctx.slot_data["randomize_entrances"]):
-            sync_event_flags = SYNC_EVENT_FLAGS_WITH_E4
+            sync_layout = SYNC_LAYOUT_WITH_E4
             sync_events_flag_map = SYNC_EVENTS_FLAG_MAP_WITH_E4
         else:
-            sync_event_flags = SYNC_EVENT_FLAGS
+            sync_layout = SYNC_LAYOUT
             sync_events_flag_map = SYNC_EVENTS_FLAG_MAP
 
         if not self.commands_enabled:
             self.commands_enabled = True
-
-            def gen_group_cmd(title: str, data: dict[str, tuple[list[str], list[int]]]) -> Callable[[], None]:
-                from CommonClient import logger
-                genned_str = f"{title.title()} Groups:\n\n"
-                group_strs = []
-                for group_name, group_data in data.items():
-                    locations = group_data[0]
-                    routes = sorted(group_data[1])
-                    if len(locations + routes) == 0: continue
-                    if len(routes) == 1:
-                        routes[0] = f"Route {routes[0]}"
-                    elif len(routes) > 1:
-                        routes[0] = f"Routes {routes[0]}"
-                    group_strs.append(f"{group_name}: " + ", ".join(locations + [str(r) for r in routes]))
-
-                if len(group_strs) == 0:
-                    group_strs = ["None?"]
-                genned_str += "\n".join(group_strs)
-
-                func = lambda self: logger.info(genned_str)
-                func.__doc__ = f"Show the in-game areas corresponding to each {title.title()} group."
-                return func
-
-            headbutt_data = {
-                "Canyon": ([], [44]),
-                "Town": (["Azalea Town"], [33, 42]),
-                "Route": ([], [29, 30, 31, 34, 35, 36, 37, 38, 39]),
-                "Border": ([], [26, 27, 32]),
-                "Lake": (["Lake of Rage"], [43]),
-                "Forest": (["Ilex Forest"], [])
-            }
-            fishing_data = {
-                "Shore": (["Cherrygrove City", "Olivine City", "Cianwood City"],
-                          [34, 40]),
-                "Ocean": (["New Bark Town", "Olivine City Port"],
-                          [26, 27, 41]),
-                "Lake":  (["Dark Cave", "Union Cave", "Slowpoke Well", "Mount Mortar", "Tohjo Falls", "Silver Cave"],
-                          [42]),
-                "Pond":  (["Violet City", "Ruins of Alph", "Ilex Forest", "Ecruteak City", "Blackthorn City"],
-                          [30, 31, 35, 43, 44]),
-                "Gyarados/Lake of Rage": (["Lake of Rage"], []),
-                "Dratini/Dragon's Den":  (["Dragon's Den"], []),
-                "Dratini_2/Route 45": ([], [45]),
-                "Qwilfish/Routes 12, 13, 32": ([], [32]),
-                "Whirl Islands": (["Whirl Islands (inside)"], [])
-            }
-
-            if ctx.slot_data["johto_only"] == JohtoOnly.option_off:
-                fishing_data["Shore"][1].append(19)
-                fishing_data["Ocean"][0].extend(["Vermilion City", "Vermilion City Port", "Pallet Town", "Cinnabar Island"])
-                fishing_data["Ocean"][1].extend([20, 21])
-                fishing_data["Lake"][1].extend([9, 10, 24, 25])
-                fishing_data["Pond"][0].append("Viridian City")
-                fishing_data["Pond"][1].extend([6, 22])
-                fishing_data["Gyarados/Lake of Rage"][0].append("Fuchsia City")
-                fishing_data["Qwilfish/Routes 12, 13, 32"][1].extend([12, 13])
-            if ctx.slot_data["johto_only"] != JohtoOnly.option_on:
-                fishing_data["Lake"][0].append("Silver Cave")
-                fishing_data["Pond"][0].append("Silver Cave Outside")
-                fishing_data["Pond"][1].append(28)
-            if ctx.slot_data["route_23_restored"]:
-                fishing_data["Dratini_2/Route 45"][1].append(23)
-            if ctx.slot_data.get("flooded_mine"):
-                fishing_data["Ocean"][0].append("Flooded Mine")
-
-            ctx.command_processor.commands["headbutt"] = gen_group_cmd("Headbutt", headbutt_data)
-            ctx.command_processor.commands["fishing"] = gen_group_cmd("Fishing", fishing_data)
+            register_commands(ctx)
 
         try:
 
@@ -787,7 +291,7 @@ class PokemonCrystalClient(BizHawkClient):
             if read_result is None:  # Not in overworld
                 return
 
-            await self.handle_trap_link_setting(ctx, overworld_guard)
+            await handle_trap_link_setting(ctx, overworld_guard)
 
             await self.handle_wonder_trade(ctx)
 
@@ -817,7 +321,7 @@ class PokemonCrystalClient(BizHawkClient):
                     )
 
                     await bizhawk.write(ctx.bizhawk_ctx, writes)
-                    await self.send_trap_link(ctx, original_item)
+                    await send_trap_link(ctx, original_item)
                 elif self.trap_link_queue and not read_result[0][6]:
                     trap_id = self.trap_link_queue.pop(0) - FLAG_ITEM_OFFSET
                     await bizhawk.write(ctx.bizhawk_ctx, [(data.ram_addresses["wArchipelagoTrapReceived"],
@@ -1090,7 +594,7 @@ class PokemonCrystalClient(BizHawkClient):
                     for location in local_checked_locations - self.local_checked_locations:
                         if location not in ctx.checked_locations:
                             if str(location) in ctx.slot_data["trap_locations"]:
-                                await self.send_trap_link(ctx, ctx.slot_data["trap_locations"][str(location)])
+                                await send_trap_link(ctx, ctx.slot_data["trap_locations"][str(location)])
 
                 self.local_checked_locations = local_checked_locations
 
@@ -1155,7 +659,7 @@ class PokemonCrystalClient(BizHawkClient):
                     setattr(self, attr_name, local_dict)
 
             if local_sync_events != self.local_sync_events and ctx.items_handling & 0b010:
-                event_bitfield = encode_sync_bitfield(local_sync_events, sync_event_flags)
+                event_bitfield = encode_sync_bitfield(local_sync_events, sync_layout)
 
                 await ctx.send_msgs([{
                     "cmd": "Set",
@@ -1260,7 +764,7 @@ class PokemonCrystalClient(BizHawkClient):
 
             await self.handle_death_link(ctx, overworld_guard)
 
-            await self.handle_energy_link(ctx, overworld_guard)
+            await handle_energy_link(ctx, overworld_guard)
 
             if tracker_slot_bytes[0] and not self.has_tracker_slot:
                 await ctx.send_msgs([{
@@ -1304,7 +808,7 @@ class PokemonCrystalClient(BizHawkClient):
                      (data.ram_addresses["wUnownDex"], unown_dex_bytes, "WRAM")]
                 )
 
-                synced_event_bytes = apply_remote_sync_events(flag_bytes, self.remote_sync_events, sync_event_flags)
+                synced_event_bytes = apply_remote_sync_events(flag_bytes, self.remote_sync_events, sync_layout)
 
                 sync_event_writes = []
                 sync_event_guards = []
@@ -1327,204 +831,6 @@ class PokemonCrystalClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
-
-    async def handle_wonder_trade(self, ctx: "BizHawkClientContext") -> None:
-        from CommonClient import logger
-
-        magic_addr = data.sram_addresses["sArchipelagoWonderTradeMagic"]
-        status_addr = data.sram_addresses["sArchipelagoWonderTradeStatus"]
-        send_addr = data.sram_addresses["sArchipelagoWonderTradeSendBuffer"]
-        player_id_addr = data.ram_addresses["wPlayerID"]
-
-        try:
-            read_result = await bizhawk.read(
-                ctx.bizhawk_ctx,
-                [
-                    (magic_addr, 3, "CartRAM"),
-                    (status_addr, 1, "CartRAM"),
-                    (send_addr, 48 + 11 + 11, "CartRAM"),
-                    (player_id_addr, 2, "WRAM"),
-                ],
-            )
-        except bizhawk.RequestFailedError:
-            return
-
-        # Skip until the ROM script has initialized the SRAM section — fresh
-        # cartridges may have undefined SRAM contents and we mustn't act on
-        # garbage status bytes.
-        if read_result[0] != b"\xa5\x5a\xc3":
-            return
-
-        status = read_result[1][0]
-        send_blob = read_result[2]
-        # Trade identity is the player's trainer ID, not ctx.slot — this lets
-        # two saves with different TIDs on the same AP slot still trade, and
-        # prevents a save from claiming its own offerings.
-        own_tid = int.from_bytes(read_result[3], "big")
-
-        # Status stays at READY (1) until we deliver a partner mon and flip to
-        # INCOMING (3); the IN_FLIGHT distinction is purely client-side. The
-        # ROM script's .Waiting branch handles both transient states.
-        if status != 1:
-            return
-
-        if not self.wonder_trade_in_flight:
-            party_mon = bytes(send_blob[0:48])
-            nickname = bytes(send_blob[48:48 + 11])
-            ot = bytes(send_blob[48 + 11:48 + 22])
-            trainer_id = int.from_bytes(party_mon[6:8], "big")
-            player_female = False
-            try:
-                gender_read = await bizhawk.read(
-                    ctx.bizhawk_ctx, [(data.ram_addresses["wPlayerGender"], 1, "WRAM")]
-                )
-                player_female = bool(gender_read[0][0] & 1)
-            except (KeyError, bizhawk.RequestFailedError):
-                pass
-
-            json_blob = pokemon_data_to_json(party_mon, nickname, ot, trainer_id, player_female)
-            self.wonder_trade_in_flight = True
-            Utils.async_start(self.wonder_trade_send(ctx, json_blob, own_tid))
-            return
-
-        if self.queued_received_trade is not None:
-            decoded = json_to_pokemon_data(self.queued_received_trade)
-            await bizhawk.write(ctx.bizhawk_ctx, [
-                (data.sram_addresses["sArchipelagoWonderTradeRecvBuffer"], decoded["party_mon"], "CartRAM"),
-                (data.sram_addresses["sArchipelagoWonderTradeRecvNick"], decoded["nickname"], "CartRAM"),
-                (data.sram_addresses["sArchipelagoWonderTradeRecvOT"], decoded["ot"], "CartRAM"),
-                (status_addr, [3], "CartRAM"),
-            ])
-            logger.info("Wonder trade received!")
-            self.queued_received_trade = None
-            self.wonder_trade_in_flight = False
-            return
-
-        pool_key = f"pokemon_wonder_trades_{ctx.team}"
-        if self.wonder_trade_cooldown_timer <= 0 and pool_key in ctx.stored_data:
-            pool = ctx.stored_data.get(pool_key, {}) or {}
-            eligible = any(
-                trade_is_eligible(item, own_tid)
-                for key, item in pool.items()
-                if key != "_lock"
-            )
-            if eligible:
-                self.queued_received_trade = await self.wonder_trade_receive(ctx, own_tid)
-                if self.queued_received_trade is None:
-                    self.wonder_trade_cooldown_timer = self.wonder_trade_cooldown
-                    self.wonder_trade_cooldown = min(self.wonder_trade_cooldown * 2, 60000)
-                    self.wonder_trade_cooldown += random.randrange(0, 500)
-                else:
-                    self.wonder_trade_cooldown = 5000
-        else:
-            self.wonder_trade_cooldown_timer -= int(ctx.watcher_timeout * 1000)
-
-    async def wonder_trade_acquire(self, ctx: "BizHawkClientContext", keep_trying: bool = False) -> Optional[dict]:
-        while not ctx.exit_event.is_set():
-            lock = int(time.time_ns() / 1000000)
-            message_uuid = str(uuid.uuid4())
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": f"pokemon_wonder_trades_{ctx.team}",
-                "default": {"_lock": 0},
-                "want_reply": True,
-                "operations": [{"operation": "update", "value": {"_lock": lock}}],
-                "uuid": message_uuid,
-            }])
-
-            self.wonder_trade_update_event.clear()
-            try:
-                await asyncio.wait_for(self.wonder_trade_update_event.wait(), 5)
-            except asyncio.TimeoutError:
-                if not keep_trying:
-                    return None
-                continue
-
-            reply = copy.deepcopy(self.latest_wonder_trade_reply)
-
-            if reply.get("uuid", None) != message_uuid:
-                if not keep_trying:
-                    return None
-                await asyncio.sleep(self.wonder_trade_cooldown / 1000)
-                continue
-
-            if reply["value"]["_lock"] != lock:
-                if not keep_trying:
-                    return None
-                await asyncio.sleep(self.wonder_trade_cooldown / 1000)
-                continue
-
-            if lock - reply["original_value"]["_lock"] < 5000:
-                self.wonder_trade_cooldown = min(self.wonder_trade_cooldown * 2, 60000)
-                self.wonder_trade_cooldown += random.randrange(0, 500)
-                if not keep_trying:
-                    self.wonder_trade_cooldown_timer = self.wonder_trade_cooldown
-                    return None
-                await asyncio.sleep(self.wonder_trade_cooldown / 1000)
-                continue
-
-            self.wonder_trade_cooldown = 5000
-            return reply
-
-    async def wonder_trade_send(self, ctx: "BizHawkClientContext", blob: str, own_tid: int) -> None:
-        from CommonClient import logger
-
-        posted = False
-        try:
-            reply = await self.wonder_trade_acquire(ctx, keep_trying=True)
-            if reply is None:
-                return
-
-            slot = 0
-            while str(slot) in reply["value"]:
-                slot += 1
-
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": f"pokemon_wonder_trades_{ctx.team}",
-                "default": {"_lock": 0},
-                "operations": [{"operation": "update", "value": {
-                    "_lock": 0,
-                    str(slot): (own_tid, blob),
-                }}],
-            }])
-            posted = True
-            logger.info("Wonder trade sent! Waiting for a partner.")
-        finally:
-            if not posted:
-                # Pool didn't accept the offer — let the next watcher tick retry.
-                self.wonder_trade_in_flight = False
-
-    async def wonder_trade_receive(self, ctx: "BizHawkClientContext", own_tid: int) -> Optional[str]:
-        reply = await self.wonder_trade_acquire(ctx)
-        if reply is None:
-            return None
-
-        candidate_slots = [
-            int(slot)
-            for slot, item in reply["value"].items()
-            if slot != "_lock" and trade_is_eligible(item, own_tid)
-        ]
-        if not candidate_slots:
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": f"pokemon_wonder_trades_{ctx.team}",
-                "default": {"_lock": 0},
-                "operations": [{"operation": "update", "value": {"_lock": 0}}],
-            }])
-            return None
-
-        chosen = random.choice(candidate_slots)
-        await ctx.send_msgs([{
-            "cmd": "Set",
-            "key": f"pokemon_wonder_trades_{ctx.team}",
-            "default": {"_lock": 0},
-            "operations": [
-                {"operation": "update", "value": {"_lock": 0}},
-                {"operation": "pop", "value": str(chosen)},
-            ],
-        }])
-        return reply["value"][str(chosen)][1]
 
     async def handle_death_link(self, ctx: "BizHawkClientContext", guard) -> None:
 
@@ -1568,118 +874,6 @@ class PokemonCrystalClient(BizHawkClient):
             await ctx.update_death_link(False)
             self.last_death_link = 0
 
-    async def handle_energy_link(self, ctx: "BizHawkClientContext", guard) -> None:
-        status_addr = data.ram_addresses["wArchipelagoEnergyLinkStatus"]
-        amount_addr = data.ram_addresses["wArchipelagoEnergyLinkAmount"]
-        pool_addr = data.ram_addresses["wArchipelagoEnergyLinkPool"]
-        energy_key = f"EnergyLink{ctx.team}"
-
-        pool_units = ctx.stored_data.get(energy_key) or 0
-        pool_dollars = pool_units // ENERGY_LINK_EXCHANGE_RATE
-        await bizhawk.guarded_write(
-            ctx.bizhawk_ctx,
-            [(pool_addr, list(int_to_money3(pool_dollars)), "WRAM")],
-            [guard],
-        )
-
-        status_read = await bizhawk.guarded_read(
-            ctx.bizhawk_ctx, [(status_addr, 1, "WRAM")], [guard])
-        if not status_read:
-            return
-        status = status_read[0][0]
-        if status not in (ENERGY_LINK_REQUEST_DEPOSIT, ENERGY_LINK_REQUEST_WITHDRAW):
-            return
-
-        amount_read = await bizhawk.guarded_read(
-            ctx.bizhawk_ctx, [(amount_addr, 3, "WRAM")], [guard])
-        if not amount_read:
-            return
-        dollars = money3_to_int(amount_read[0])
-        if dollars <= 0:
-            await bizhawk.write(ctx.bizhawk_ctx,
-                                [(status_addr, [ENERGY_LINK_DONE], "WRAM")])
-            return
-
-        # Refuse if the socket is down: send_msgs silently no-ops, and a DONE write here
-        # would make ROM debit the wallet for a Set that never reached the server.
-        if not ctx.server or not ctx.server.socket.open or ctx.server.socket.closed:
-            await bizhawk.write(ctx.bizhawk_ctx,
-                                [(status_addr, [ENERGY_LINK_ERROR_DISCONNECTED], "WRAM")])
-            return
-
-        from CommonClient import logger
-        if status == ENERGY_LINK_REQUEST_DEPOSIT:
-            tax = dollars * ENERGY_LINK_DEPOSIT_TAX_NUM // ENERGY_LINK_DEPOSIT_TAX_DEN
-            net = dollars - tax
-            delta = net * ENERGY_LINK_EXCHANGE_RATE
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": energy_key,
-                "default": 0,
-                "operations": [
-                    {"operation": "add", "value": delta},
-                    {"operation": "max", "value": 0},
-                ],
-            }])
-            await bizhawk.write(ctx.bizhawk_ctx,
-                                [(status_addr, [ENERGY_LINK_DONE], "WRAM")])
-            logger.info(f"EnergyLink: deposited ${net} (${tax} tax).")
-        else:
-            cost = dollars * ENERGY_LINK_EXCHANGE_RATE
-            if pool_units < cost:
-                await bizhawk.write(ctx.bizhawk_ctx,
-                                    [(status_addr, [ENERGY_LINK_ERROR_INSUFFICIENT], "WRAM")])
-                logger.info(f"EnergyLink: withdraw ${dollars} refused (pool only ${pool_dollars}).")
-                return
-            await ctx.send_msgs([{
-                "cmd": "Set",
-                "key": energy_key,
-                "default": 0,
-                "operations": [
-                    {"operation": "add", "value": -cost},
-                    {"operation": "max", "value": 0},
-                ],
-            }])
-            await bizhawk.write(ctx.bizhawk_ctx,
-                                [(status_addr, [ENERGY_LINK_DONE], "WRAM")])
-            logger.info(f"EnergyLink: withdrew ${dollars}.")
-
-    @staticmethod
-    async def handle_trap_link_setting(ctx: "BizHawkClientContext", guard) -> None:
-        trap_link_setting_status = await bizhawk.guarded_read(
-            ctx.bizhawk_ctx,
-            [(TRAP_LINK_SETTING_ADDR, 1, "WRAM")],
-            [guard]
-        )
-
-        old_tags = ctx.tags.copy()
-
-        if trap_link_setting_status:
-            if trap_link_setting_status[0][0] & TRAP_LINK_MASK:
-                ctx.tags.add("TrapLink")
-            else:
-                ctx.tags -= {"TrapLink"}
-
-        if old_tags != ctx.tags and ctx.server and not ctx.server.socket.closed:
-            await ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}])
-
-    @staticmethod
-    async def send_trap_link(ctx: "BizHawkClientContext", trap_id: int):
-        if "TrapLink" not in ctx.tags or ctx.slot is None:
-            return
-
-        if trap_id not in TRAP_ID_TO_NAME: return
-
-        await ctx.send_msgs([{
-            "cmd": "Bounce",
-            "tags": ["TrapLink"],
-            "data": {
-                "time": time.time(),
-                "source": ctx.player_names[ctx.slot],
-                "trap_name": TRAP_ID_TO_NAME[trap_id],
-            }
-        }])
-
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: dict) -> None:
         super().on_package(ctx, cmd, args)
 
@@ -1700,25 +894,9 @@ class PokemonCrystalClient(BizHawkClient):
             self.wonder_trade_update_event.set()
 
         if cmd == "Bounced":
-            if "tags" not in args or "data" not in args: return
-            source_name = args["data"]["source"]
-            if ("TrapLink" in ctx.tags) and ("TrapLink" in args["tags"]) and source_name != ctx.player_names[ctx.slot]:
-                trap_name: str = args["data"]["trap_name"]
-                if trap_name not in TRAP_NAME_TO_ID:
-                    return
-
-                local_trap_name = TRAP_ID_TO_NAME[TRAP_NAME_TO_ID[trap_name]]
-
-                if "trap_weights" not in ctx.slot_data:
-                    return
-
-                if local_trap_name not in ctx.slot_data["trap_weights"]:
-                    return
-
-                if ctx.slot_data["trap_weights"][local_trap_name] == 0:
-                    return
-
-                self.trap_link_queue.append(TRAP_NAME_TO_ID[trap_name])
+            trap_id = resolve_trap_link_id(ctx, args)
+            if trap_id is not None:
+                self.trap_link_queue.append(trap_id)
 
         elif cmd == "Retrieved":
             if ctx.items_handling & 0b010:
