@@ -1495,6 +1495,14 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
                 received = self.generated_pokemon[trade.received_pokemon].friendly_name
                 spoiler_handle.write(f"{trade.friendly_name}: {requested} -> {received}\n")
 
+        if self.options.randomize_lucky_number_show:
+            spoiler_handle.write(f"\nLucky Number Show ({self.player_name}):\n")
+            prizes = ("1st Prize", "2nd Prize", "3rd Prize")
+            for prize, trade_id in zip(prizes, self.generated_lucky_number_trades):
+                trade = self.generated_trades[trade_id]
+                requested = self.generated_pokemon[trade.requested_pokemon].friendly_name
+                spoiler_handle.write(f"{prize}: {trade.friendly_name} ({requested})\n")
+
         if self.options.grasssanity == Grasssanity.option_one_per_area:
             spoiler_handle.write(f"\nGrass locations ({self.player_name}):\n")
             for loc_id in self.grass_location_mapping.keys():
