@@ -8656,19 +8656,6 @@
       "AP_Trainer_PSYCHIC_T_NATHAN"
     ]
   },
-  "ITEM_FROM_SUPER_NERD_STAN": {
-    "label": "Ruins of Alph Outside - Super Nerd Stan",
-    "flag": "EVENT_ITEM_FROM_SUPER_NERD_STAN",
-    "type": "trainer",
-    "tags": [
-      "Trainersanity",
-      "Ruins of Alph Outside"
-    ],
-    "default_item": "NO_ITEM",
-    "scripts": [
-      "AP_Trainer_SUPER_NERD_STAN"
-    ]
-  },
   "METAL_COAT_FROM_GRANDPA_ON_SS_AQUA": {
     "label": "S.S. Aqua - Metal Coat from Grandpa",
     "flag": "EVENT_GOT_METAL_COAT_FROM_GRANDPA_ON_SS_AQUA",
