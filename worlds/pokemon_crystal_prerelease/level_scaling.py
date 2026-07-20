@@ -39,10 +39,10 @@ def perform_level_scaling(multiworld: MultiWorld):
         "EVENT_RISING_BADGE_FROM_CLAIR",
         "EVENT_BEAT_COOLTRAINERM_DARIN",  # Dragon's Den Entrance
         "EVENT_RIVAL_VICTORY_ROAD",
-        # "EVENT_BEAT_ELITE_4_WILL",
-        # "EVENT_BEAT_ELITE_4_KOGA",
-        # "EVENT_BEAT_ELITE_4_BRUNO",
-        # "EVENT_BEAT_ELITE_4_KAREN",
+        "EVENT_BEAT_ELITE_4_WILL",
+        "EVENT_BEAT_ELITE_4_KOGA",
+        "EVENT_BEAT_ELITE_4_BRUNO",
+        "EVENT_BEAT_ELITE_4_KAREN",
         "EVENT_BEAT_ELITE_FOUR",
         "EVENT_FAST_SHIP_LAZY_SAILOR",  # boat quest
         "EVENT_THUNDER_BADGE_FROM_LTSURGE",
