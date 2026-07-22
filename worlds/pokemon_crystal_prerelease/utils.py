@@ -11,7 +11,7 @@ from .options import FreeFlyLocation, Route32Condition, JohtoOnly, RandomizeBadg
     RandomizeTypes, RandomizeEvolution, RandomizeTrades, TradesRequired, MagnetTrainAccess, \
     Dexsanity, EncounterGrouping, SouthKantoAccess, SouthKantoCondition, LevelScaling, LockKantoGyms, \
     WildEncounterMethodsRequired, RemoveBadgeRequirement, SaffronGatehouseTea, EvolutionMethodsRequired, \
-    RandomizeFlyUnlocks, PokemonSourceLogic, RandomizeLuckyNumberShow
+    RandomizeFlyUnlocks, PokemonSourceLogic, RandomizeLuckyNumberShow, VanillaEventChains
 from ..Files import APTokenTypes
 
 if TYPE_CHECKING:
@@ -47,6 +47,22 @@ def __adjust_option_problems(world: "PokemonCrystalWorld"):
     __adjust_options_kinda_early_surf(world)
     __adjust_options_south_kanto_access(world)
     __adjust_options_lance_requires_elite_four(world)
+    __adjust_options_vanilla_misty_chain(world)
+
+
+def __adjust_options_vanilla_misty_chain(world: "PokemonCrystalWorld"):
+    # With vanilla badges the Cascade badge is Misty's own event, and regional HM badges make
+    # Kanto Cut require it. The vanilla Misty chain then hides Misty behind the Power Plant/Cerulean
+    # Rocket quest, whose approaches are Kanto-Cut-gated, so the Cascade badge would be required to
+    # obtain itself. Drop the Misty chain to break the cycle.
+    if (VanillaEventChains.MISTY in world.options.vanilla_event_chains.value
+            and world.options.randomize_badges.value == RandomizeBadges.option_vanilla
+            and world.options.hm_badge_requirements.value == HMBadgeRequirements.option_regional):
+        world.options.vanilla_event_chains.value.discard(VanillaEventChains.MISTY)
+        logging.warning(
+            "Pokemon Crystal: The vanilla Misty event chain is incompatible with vanilla badges and "
+            "regional HM badge requirements. Disabling the Misty event chain for player %s.",
+            world.player_name)
 
 
 def __adjust_options_lance_requires_elite_four(world: "PokemonCrystalWorld"):
