@@ -1674,3 +1674,39 @@ question:
       ... 
     - |
       ...
+
+
+super_nerd_stan:
+  caller: withheld
+  script:
+    - |
+      Have you ever
+      heard the story
+      of
+    - |
+      SUPER NERD STAN?
+    - |
+      Legends say that
+      he is a SUPER NERD
+      fascinated with
+    - |
+      the RUINS OF
+      ALPH... The old
+      scripts say he
+    - |
+      can be found
+      there - but he's
+      never been seen.
+    - |
+      Some wonder if he
+      is even real.
+    - |
+      Others are con-
+      vinced he is -
+      just not in
+    - |
+      this version of
+      reality...
+    - |
+      What do you think,
+      <player>?
