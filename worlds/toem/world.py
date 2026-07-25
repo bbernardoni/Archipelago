@@ -1,30 +1,31 @@
 from typing import TYPE_CHECKING, Any, ClassVar
+
 from typing_extensions import override
 
-from BaseClasses import Item, ItemClassification, Tutorial, EntranceType, Region, Entrance
+from BaseClasses import Entrance, EntranceType, Item, ItemClassification, Region, Tutorial
+from entrance_rando import EntranceRandomizationError, disconnect_entrance_for_randomization, randomize_entrances
 from Options import Accessibility
-from worlds.AutoWorld import WebWorld, World
-from entrance_rando import randomize_entrances, disconnect_entrance_for_randomization, EntranceRandomizationError
 from Utils import Version
+from worlds.AutoWorld import WebWorld, World
 
+from .connections import ERGroups, ToemRegion, connection_name_to_id, region_connections, within_region_groups
 from .constants import GAME_NAME
-from .items import ItemGroup, ToemItem, ItemName, item_name_groups, item_name_to_id, item_table
+from .items import ItemGroup, ItemName, ToemItem, item_name_groups, item_name_to_id, item_table
 from .locations import (
+    EventName,
     LocationData,
     LocationGroup,
     LocationName,
     ToemLocation,
-    EventName,
     event_table,
-    location_table,
-    location_name_to_id,
     location_name_groups,
+    location_name_to_id,
+    location_table,
     location_to_item_name,
-    portrait_locations
+    portrait_locations,
 )
-from .options import ToemOptions, EntranceRandomization
-from .regions import RegionName, FullRegionName
-from .connections import ERGroups, region_connections, within_region_groups, connection_name_to_id, ToemRegion
+from .options import EntranceRandomization, ToemOptions
+from .regions import FullRegionName, RegionName
 from .rules import init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Options import PerGameCommonOptions, StartInventoryPool, Toggle, Range, Choice
+from Options import Choice, PerGameCommonOptions, Range, StartInventoryPool, Toggle
 
 
 class IncludeBasto(Toggle):

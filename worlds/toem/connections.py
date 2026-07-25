@@ -1,22 +1,24 @@
 from dataclasses import dataclass
-from typing import final, ClassVar
 from enum import IntEnum
-from rule_builder.rules import Rule, Has, HasAll, CanReachRegion, CanReachLocation
-from BaseClasses import Region, Entrance
-from entrance_rando import ERPlacementState
+from typing import ClassVar, final
 
+from BaseClasses import Entrance, Region
+from entrance_rando import ERPlacementState
+from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Rule
+
+from .items import ItemName
+from .locations import EventName, LocationName, get_stamp_rule
 from .regions import (
-    FullRegionName, 
+    FullRegionName,
     RegionName,
+    basto_regions,
+    kiiruberg_regions,
+    logcity_regions,
+    mountain_top_regions,
     oaklaville_regions,
     stanhamn_regions,
-    logcity_regions,
-    kiiruberg_regions,
-    mountain_top_regions,
-    basto_regions,
 )
-from .items import ItemName
-from .locations import LocationName, EventName, get_stamp_rule
+
 
 class ERGroups(IntEnum):
     EXCLUDED = 0

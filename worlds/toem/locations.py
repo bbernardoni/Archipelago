@@ -1,27 +1,28 @@
 from dataclasses import dataclass
 from itertools import groupby
-from typing import final, TYPE_CHECKING
+from typing import TYPE_CHECKING, final
+
 from typing_extensions import override
 
-from BaseClasses import Location, CollectionState
-from rule_builder.rules import Rule, Has, HasAll, HasAny, CanReachRegion, CanReachLocation
-from rule_builder.options import OptionFilter
-from rule_builder.field_resolvers import FromOption, FromWorldAttr
+from BaseClasses import CollectionState, Location
 from NetUtils import JSONMessagePart
+from rule_builder.field_resolvers import FromOption, FromWorldAttr
+from rule_builder.options import OptionFilter
+from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, HasAny, Rule
 
 from .constants import GAME_NAME
-from .regions import FullRegionName, RegionName
 from .items import ItemName
 from .options import (
-    IncludeBasto,
-    ProgressiveStamps,
-    HomelandaStampRequirement,
-    OaklavilleStampRequirement,
-    StanhamnStampRequirement,
-    LogcityStampRequirement,
-    KiirubergStampRequirement,
     BastoStampRequirement,
+    HomelandaStampRequirement,
+    IncludeBasto,
+    KiirubergStampRequirement,
+    LogcityStampRequirement,
+    OaklavilleStampRequirement,
+    ProgressiveStamps,
+    StanhamnStampRequirement,
 )
+from .regions import FullRegionName, RegionName
 
 if TYPE_CHECKING:
     from . import ToemWorld

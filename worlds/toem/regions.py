@@ -1,5 +1,6 @@
 from typing import final
 
+
 @final
 class RegionName:
     MENU = "Menu"

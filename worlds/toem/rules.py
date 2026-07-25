@@ -1,17 +1,16 @@
 from collections import deque
-from typing import TYPE_CHECKING
-from typing_extensions import override
 from dataclasses import dataclass
-from copy import deepcopy
+from typing import TYPE_CHECKING
 
-from BaseClasses import CollectionState, Region, Entrance
-from rule_builder.rules import Rule, Has, CanReachLocation, NestedRule, HasAll, HasAny, And, Or, CanReachRegion
+from typing_extensions import override
 
-from .constants import GAME_NAME
-from .locations import LocationName, EventName, EventData, event_table, location_table, bonfire_rule, location_to_item_name
-from .items import ItemName, ItemGroup, item_table
-from .regions import FullRegionName, RegionName
+from BaseClasses import CollectionState, Entrance, Region
+from rule_builder.rules import CanReachLocation, Has, NestedRule, Rule
+
 from .connections import region_connections
+from .constants import GAME_NAME
+from .locations import EventData, EventName, LocationName, bonfire_rule, event_table, location_table
+from .regions import FullRegionName, RegionName
 
 if TYPE_CHECKING:
     from . import ToemWorld
