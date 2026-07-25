@@ -551,43 +551,50 @@ region_connections: list[Connection] = [
 connection_name_to_id: dict[str, int] = {connection.name: i for i, connection in enumerate(region_connections, start=1)}
 
 
+required_regions_always = {
+    ConnectionName.OAKLAVILLE_TRAIL_DOWN: (FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_BUS_STOP,
+                                           FullRegionName.OAKLAVILLE_HOTEL),
+    ConnectionName.HOTEL_EXIT: (FullRegionName.OAKLAVILLE_LOOKOUT,),
+    ConnectionName.DOCKS_LEFT_EXIT: (FullRegionName.STANHAMN_HYDROPLANT,),
+    ConnectionName.DOCKS_RIGHT_EXIT: (FullRegionName.STANHAMN_HYDROPLANT,),
+    ConnectionName.GHOST_DRAWBRIDGE_LEFT: (FullRegionName.STANHAMN_HYDROPLANT,),
+    ConnectionName.GHOST_DRAWBRIDGE_DOWN: (FullRegionName.STANHAMN_HYDROPLANT,),
+    ConnectionName.WIZARD_TOWER_EXIT: (FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT,),
+}
+required_regions_no_items = required_regions_always | {
+    ConnectionName.OUTSIDE_RAVE_LEFT: (FullRegionName.OAKLAVILLE_GRAVEYARD,),
+    ConnectionName.FASHION_SHOW_EXIT: (FullRegionName.LOGCITY_NEWS_HOUSE,),
+    ConnectionName.BIRTHDAY_PARTY_UP: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.WIZARD_TOWER_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.OUTSIDE_WIZARD_TOWER_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.CLIFFS_DOWN: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.CLIFFS_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.CLIFFS_UP: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.OBSERVATORY_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND,),
+    ConnectionName.WIZARD_TOWER_EXIT: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE,
+                            FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
+    ConnectionName.BLIZZARD_BRIDGE_LEFT: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE,
+                                          FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
+    ConnectionName.BLIZZARD_BRIDGE_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE,
+                                           FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
+    ConnectionName.MAN_CAVE_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE,
+                                       FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
+}
+
 class ToemEntrance(Entrance):
     def can_connect_to(self, other: Entrance, dead_end: bool, er_state: "ERPlacementState") -> bool:
-        """
-        """
         living_room_entrances = {ConnectionName.PLAYER_ROOM_EXIT, ConnectionName.HOMELANDA_HOUSE_ENTRANCE}
         if self.name in living_room_entrances and other.name in living_room_entrances:
             return False
         if not dead_end:
-            if other.name in {ConnectionName.OAKLAVILLE_TRAIL_UP, ConnectionName.RAVE_ENTRANCE, ConnectionName.FASHION_SHOW_BACKSTAGE_ENTRANCE}:
+            if other.name in {ConnectionName.OAKLAVILLE_TRAIL_UP, ConnectionName.RAVE_ENTRANCE,
+                              ConnectionName.FASHION_SHOW_BACKSTAGE_ENTRANCE}:
                 return False
-            required_regions = {
-                ConnectionName.OAKLAVILLE_TRAIL_DOWN: (FullRegionName.OAKLAVILLE_CAMP, FullRegionName.OAKLAVILLE_BUS_STOP, FullRegionName.OAKLAVILLE_HOTEL),
-                ConnectionName.HOTEL_EXIT: (FullRegionName.OAKLAVILLE_LOOKOUT,),
-                ConnectionName.DOCKS_LEFT_EXIT: (FullRegionName.STANHAMN_HYDROPLANT,),
-                ConnectionName.DOCKS_RIGHT_EXIT: (FullRegionName.STANHAMN_HYDROPLANT,),
-                ConnectionName.GHOST_DRAWBRIDGE_LEFT: (FullRegionName.STANHAMN_HYDROPLANT,),
-                ConnectionName.GHOST_DRAWBRIDGE_DOWN: (FullRegionName.STANHAMN_HYDROPLANT,),
-                ConnectionName.WIZARD_TOWER_EXIT: (FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT,),
-            }
-            if not er_state.world.options.include_items:
-                required_regions |= {
-                    ConnectionName.OUTSIDE_RAVE_LEFT: (FullRegionName.OAKLAVILLE_GRAVEYARD,),
-                    ConnectionName.FASHION_SHOW_EXIT: (FullRegionName.LOGCITY_NEWS_HOUSE,),
-                    ConnectionName.BIRTHDAY_PARTY_UP: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.WIZARD_TOWER_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.OUTSIDE_WIZARD_TOWER_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.CLIFFS_DOWN: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.CLIFFS_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.CLIFFS_UP: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.OBSERVATORY_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND,),
-                    ConnectionName.WIZARD_TOWER_EXIT: (FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT, FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE, FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
-                    ConnectionName.BLIZZARD_BRIDGE_LEFT: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE, FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
-                    ConnectionName.BLIZZARD_BRIDGE_RIGHT: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE, FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
-                    ConnectionName.MAN_CAVE_ENTRANCE: (FullRegionName.KIIRUBERG_FROZEN_POND, FullRegionName.KIIRUBERG_SKI_LODGE, FullRegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
-                }
+            required_regions = required_regions_always if er_state.world.options.include_items \
+                               else required_regions_no_items
             if other.name in required_regions:
-                if not all(er_state.world.get_region(region) in er_state.placed_regions for region in required_regions[other.name]):
+                if not all(er_state.world.get_region(region) in er_state.placed_regions
+                           for region in required_regions[other.name]):
                     return False
             expanding_dead_ends = {
                 ConnectionName.HYDROPLANT_EXIT: RegionName.STANHAMN,
@@ -600,11 +607,13 @@ class ToemEntrance(Entrance):
                     ConnectionName.SKI_LODGE_EXIT: RegionName.KIIRUBERG,
                 }
             if other.name in expanding_dead_ends:
-                region_exits = [ex for region in er_state.world.multiworld.get_regions(er_state.world.player) if region.name.startswith(expanding_dead_ends[other.name])
-                                for ex in region.exits if not ex.connected_region]
+                region_exits = [ex for region in er_state.world.multiworld.get_regions(er_state.world.player)
+                                if region.name.startswith(expanding_dead_ends[other.name])
+                                for ex in region.exits
+                                if not ex.connected_region]
                 if len(er_state.find_placeable_exits(True, region_exits)) <= 1:
                     return False
-        
+
         # Run the regular Entrance class's method and return its result like normal.
         return super().can_connect_to(other, dead_end, er_state)
 

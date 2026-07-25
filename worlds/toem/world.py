@@ -9,7 +9,7 @@ from Utils import Version
 from worlds.AutoWorld import WebWorld, World
 
 from .connections import ERGroups, ToemRegion, connection_name_to_id, region_connections, within_region_groups
-from .constants import GAME_NAME
+from .constants import GAME_NAME, TOEM_MAX_GER_ATTEMPTS
 from .items import ItemGroup, ItemName, ToemItem, item_name_groups, item_name_to_id, item_table
 from .locations import (
     EventName,
@@ -67,20 +67,23 @@ class ToemWorld(World):
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
-            gen_version = Version(*map(int, slot_data["version"].split('.')))
+            gen_version = Version(*map(int, slot_data["version"].split(".")))
             if gen_version[:2] != self.world_version[:2]:
-                raise Exception(f"Toem version error: The version of the apworld used to generate ({slot_data["version"]}) does not match the version installed ({self.world_version.as_simple_string()})")
+                raise Exception(
+                    f"Toem version error: The version of the apworld used to generate ({slot_data['version']}) "
+                    f"does not match the version installed ({self.world_version.as_simple_string()})"
+                )
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
                 if opt is not None:
                     setattr(self.options, key, opt.from_any(value))
-            self.transitions = {from_: to_ for from_, to_ in slot_data["transitions"].items()}
+            self.transitions = dict(slot_data["transitions"].items())
         else:
             self.transitions = {}
 
         if self.options.homelanda_stamp_requirement > 0:
-            homelanda_stamp = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
-            self.multiworld.local_early_items[self.player][homelanda_stamp] = int(self.options.homelanda_stamp_requirement)
+            stamp_name = ItemName.PROGRESSIVE_STAMP if self.options.progressive_stamps else ItemName.HOMELANDA_STAMP
+            self.multiworld.local_early_items[self.player][stamp_name] = int(self.options.homelanda_stamp_requirement)
         if self.options.include_items and self.options.honk_attachment_early:
             self.multiworld.early_items[self.player][ItemName.HONK_ATTACHMENT] = 1
 
@@ -116,7 +119,8 @@ class ToemWorld(World):
             logic_groups.add(LocationGroup.ACHIEVEMENT)
 
         for location_name, location_data in location_table.items():
-            if not self.options.include_basto and location_name_to_id[location_name] >= location_name_to_id[LocationName.QUEST_BALLOONS]:
+            is_basto = location_name_to_id[location_name] >= location_name_to_id[LocationName.QUEST_BALLOONS]
+            if not self.options.include_basto and is_basto:
                 continue
             if location_data.group in logic_groups:
                 self.create_location(location_name, location_data)
@@ -143,7 +147,8 @@ class ToemWorld(World):
             logic_groups.add(ItemGroup.CASSETTE)
 
         for item_name, item_data in item_table.items():
-            if item_data.group not in logic_groups or not self.options.include_basto and item_data.parent_region == RegionName.BASTO:
+            if (item_data.group not in logic_groups or
+                    (not self.options.include_basto and item_data.parent_region == RegionName.BASTO)):
                 continue
 
             quantity = item_data.quantity
@@ -153,7 +158,7 @@ class ToemWorld(World):
                 if not self.options.progressive_stamps and item_name == ItemName.PROGRESSIVE_STAMP:
                     continue
                 if not self.options.include_basto and item_name == ItemName.PROGRESSIVE_STAMP:
-                    quantity -= item_table[ItemName.BASTO_STAMP].quantity 
+                    quantity -= item_table[ItemName.BASTO_STAMP].quantity
 
             itempool.extend(self.create_item(item_name) for _ in range(quantity))
 
@@ -175,23 +180,37 @@ class ToemWorld(World):
 
     @override
     def connect_entrances(self) -> None:
+        should_randomize = self.options.entrance_randomization != EntranceRandomization.option_disabled
         for connection in region_connections:
             if not self.options.include_basto and (connection.src_region_name.startswith(RegionName.BASTO)
                                                 or connection.dst_region_name.startswith(RegionName.BASTO)):
                 continue
             src_region = self.get_region(connection.src_region_name)
-            if self.options.entrance_randomization == EntranceRandomization.option_disabled or connection.group == ERGroups.EXCLUDED:
+            if not should_randomize or connection.group == ERGroups.EXCLUDED:
                 dst_region = self.get_region(connection.dst_region_name)
                 src_region.connect(dst_region, connection.name)
             else:
                 self.generate_entrance_pair(src_region, connection.name, connection.group)
         set_entrance_rules(self)
-        
-        if self.options.entrance_randomization != EntranceRandomization.option_disabled:
+
+        if should_randomize:
             if self.is_ut:
-                er_targets = {connection_name_to_id[entrance.name]: entrance for region in self.get_regions() for entrance in region.entrances if not entrance.parent_region}
-                er_exits = {connection_name_to_id[_exit.name]: _exit for region in self.get_regions() for _exit in region.exits if not _exit.connected_region}
-                self.deferred_entrances = {int(entrance_id): (er_exits[exit_id], er_targets[int(entrance_id)].connected_region) for entrance_id, exit_id in self.transitions.items()}
+                er_targets = {
+                    connection_name_to_id[entrance.name]: entrance
+                    for region in self.get_regions()
+                    for entrance in region.entrances
+                    if not entrance.parent_region
+                }
+                er_exits = {
+                    connection_name_to_id[_exit.name]: _exit
+                    for region in self.get_regions()
+                    for _exit in region.exits
+                    if not _exit.connected_region
+                }
+                self.deferred_entrances = {
+                    int(entrance_id): (er_exits[exit_id], er_targets[int(entrance_id)].connected_region)
+                    for entrance_id, exit_id in self.transitions.items()
+                }
                 for er_target in er_targets.values():
                     er_target.connected_region.entrances.remove(er_target)
                 if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
@@ -201,7 +220,6 @@ class ToemWorld(World):
             else:
                 if self.options.entrance_randomization == EntranceRandomization.option_within_region:
                     group_lookup = within_region_groups
-                TOEM_MAX_GER_ATTEMPTS = 10
                 for i in range(TOEM_MAX_GER_ATTEMPTS):
                     failed = False
                     try:
@@ -214,7 +232,9 @@ class ToemWorld(World):
                                     break
                     except EntranceRandomizationError as err:
                         if i >= TOEM_MAX_GER_ATTEMPTS - 1:
-                            raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps. Final error:\n\n{err}")
+                            raise EntranceRandomizationError(
+                                f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps."
+                            ) from err
                         failed = True
                     if not failed:
                         break
@@ -225,7 +245,10 @@ class ToemWorld(World):
                                     and _exit.connected_region):
                                 disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
 
-                self.transitions = {str(connection_name_to_id[from_]): connection_name_to_id[to_] for from_, to_ in er_state.pairings}
+                self.transitions = {
+                    str(connection_name_to_id[from_]): connection_name_to_id[to_]
+                    for from_, to_ in er_state.pairings
+                }
 
     def generate_entrance_pair(self, region: Region, name: str, group: int):
         exit = region.create_exit(name)
@@ -272,40 +295,46 @@ class ToemWorld(World):
                 reverse_exit.connect(reverse_entrance_region)
                 del self.deferred_entrances[entrance_id]
                 del self.deferred_entrances[reverse_id]
-                
+
     # visualize_regions helpers
     def visualize_regions(self, region_filter = None, entrance_filter = None):
         from Utils import visualize_regions
         root_region = self.get_region(FullRegionName.START_MENU)
-        
+
         if region_filter:
             saved_region_cache = self.multiworld.regions.region_cache[self.player]
-            new_region_cache = {region_name: region for region_name, region in saved_region_cache.items() if region_filter(region)}
+            new_region_cache = {
+                region_name: region
+                for region_name, region in saved_region_cache.items()
+                if region_filter(region)
+            }
             self.multiworld.regions.region_cache[self.player] = new_region_cache
             if root_region.name not in new_region_cache:
-                root_region = next(region for region in new_region_cache.values() if "Bus stop" in region.name or "Harbor bottom" in region.name)
+                root_region = next(region for region in new_region_cache.values()
+                                   if "Bus stop" in region.name or "Harbor bottom" in region.name)
         if entrance_filter:
             saved_exits: dict[Region, list[Entrance]] = {}
             for region in self.get_regions():
                 saved_exits[region] = region.exits
                 region.exits = [_exit for _exit in region.exits if entrance_filter(_exit)]
-        
+
         state = self.multiworld.get_all_state(allow_partial_entrances=True)
         state.update_reachable_regions(self.player)
-        visualize_regions(root_region, f"toem.puml", show_entrance_names=True, regions_to_highlight=state.reachable_regions[self.player],
-                          detail_other_regions=True)
-        
+        visualize_regions(root_region, "toem.puml", show_entrance_names=True,
+                          regions_to_highlight=state.reachable_regions[self.player], detail_other_regions=True)
+
         if entrance_filter:
             for region, exits in saved_exits.items():
                 region.exits = exits
         if region_filter:
             self.multiworld.regions.region_cache[self.player] = saved_region_cache
-        
+
     def no_helpers_filter(self):
         from .connections import ConnectionName
-        last_non_helper = next(i for i, connection in enumerate(region_connections) if connection.name == ConnectionName.JUNGLE_LEFT)
+        last_non_helper = next(i for i, connection in enumerate(region_connections)
+                               if connection.name == ConnectionName.JUNGLE_LEFT)
         helper_connections = {connection.name for connection in region_connections[last_non_helper+1:]}
-        return lambda _exit: not _exit.name in helper_connections
+        return lambda _exit: _exit.name not in helper_connections
 
     def visualize_ger(self, placeable_entrance_regions: set[Region]):
         from collections import deque
@@ -319,9 +348,11 @@ class ToemWorld(World):
         unconnected_regions = {region for region in self.get_regions() if region not in seen}
         ignored_regions = unconnected_regions - placeable_entrance_regions
 
-        region_filter = lambda region: region not in ignored_regions
+        def region_filter(region):
+            return region not in ignored_regions
         self.visualize_regions(region_filter, self.no_helpers_filter())
-    
+
     def visualize_super_region(self, parent_region: str):
-        region_filter = lambda region: region.name.startswith(f"{parent_region} - ")
+        def region_filter(region):
+            return region.name.startswith(f"{parent_region} - ")
         self.visualize_regions(region_filter, self.no_helpers_filter())

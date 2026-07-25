@@ -183,7 +183,7 @@ class LocationName:
     ITEM_PIRATE_HAT = "Item - Pirate hat"
     ITEM_PAPER_HAT = "Item - Paper hat"
     ITEM_FLAG = "Item - Photo challenger flag"
-    
+
     TAPE_FISHERMANS_WHISTLE = "Cassette - Fisherman's Whistle"
     TAPE_SMILING_HUNTSMAN = "Cassette - JG+LS - The Smiling Huntsman"
     TAPE_NAUT = "Cassette - Jamal Green - NAUT"
@@ -233,7 +233,7 @@ class LocationName:
     ITEM_SNEAKERS = "Item - Sneakers"
     ITEM_CINNAMON_BUN = "Item - Cinnamon bun"
     ITEM_FRISBEE = "Item - Frisbee"
-    
+
     TAPE_RATSKULLZ_THEME = "Cassette - Anes Sabanovic - Ratskullz Theme"
     TAPE_BIG_CITY = "Cassette - JG+LS - The Big City"
     TAPE_HUSTLE_BUSTLE = "Cassette - Jamal Green - Hustle Bustle Shuffle"
@@ -280,7 +280,7 @@ class LocationName:
     ITEM_SCARF = "Item - Scarf"
     ITEM_SKI_GOGGLES = "Item - Ski goggles"
     ITEM_SPACE_HELMET = "Item - Space helmet"
-    
+
     TAPE_LIFE_THROUGH_LENS = "Cassette - Jamal Green - Life Through a Lens"
     TAPE_PETTING_DEER = "Cassette - Jamal Green - The Petting of a Sacred Deer"
     TAPE_STORIES_OF_SNOW = "Cassette - Launchable Socks - Stories Of Snow"
@@ -371,14 +371,14 @@ class LocationName:
     ITEM_FOOT_CAST = "Item - Foot cast"
     ITEM_BERET = "Item - Beret"
     ITEM_ROYAL_CROWN = "Item - Royal crown"
-    
+
     TAPE_NIGHT_JAM = "Cassette - JG+LS - Night Jam"
     TAPE_WARM_DAYS_NIGHT = "Cassette - Jamal Green - A Warm Days Night"
     TAPE_ONE_BY_ONE = "Cassette - Jamal Green - One By One"
     TAPE_HAMMOCK_DAYS = "Cassette - Launchable Socks - Hammock Days"
     TAPE_SAILORS_TUNE = "Cassette - Launchable Socks - Sailor's Tune"
     TAPE_SONG_OF_THE_SEA = "Cassette - Launchable Socks - Song Of The Sea"
-    
+
     CHEEVO_TOPICAL_PARADISE = "Achievement - Tropical paradise"
     CHEEVO_MAXIMUM_VACATION = "Achievement - Maximum vacation"
     CHEEVO_KINGS_SHIRT = "Achievement - King's new shirt"
@@ -402,110 +402,123 @@ class LocationData:
     group: str
     rule: Rule | None = None
 
-def CanReachAllRegions(*regions: str) -> Rule:
+def CanReachAllRegions(*regions: str) -> Rule:  # noqa: N802
     rule = CanReachRegion(regions[0])
     for region in regions[1:]:
         rule = rule & CanReachRegion(region)
     return rule
 
-def CanReachAnyRegion(*regions: str) -> Rule:
+def CanReachAnyRegion(*regions: str) -> Rule:  # noqa: N802
     rule = CanReachRegion(regions[0])
     for region in regions[1:]:
         rule = rule | CanReachRegion(region)
     return rule
 
-def CanReachAllLocations(*locations: str) -> Rule:
+def CanReachAllLocations(*locations: str) -> Rule:  # noqa: N802
     rule = CanReachLocation(locations[0])
     for location in locations[1:]:
         rule = rule & CanReachLocation(location)
     return rule
 
-def CanReachAnyLocation(*locations: str) -> Rule:
+def CanReachAnyLocation(*locations: str) -> Rule:  # noqa: N802
     rule = CanReachLocation(locations[0])
     for location in locations[1:]:
         rule = rule | CanReachLocation(location)
     return rule
 
 oaklaville_quests = (
-    LocationName.QUEST_SUS_FOREST, LocationName.QUEST_MONSTERS, LocationName.QUEST_SOCKS, LocationName.QUEST_SCOUTS, 
-    LocationName.QUEST_HIDE_AND_SEEK, LocationName.QUEST_LOG_JAM, LocationName.QUEST_CHALLENGE_1, LocationName.QUEST_CHALLENGE_2, 
-    LocationName.QUEST_PAPARAZZI, LocationName.QUEST_CAPTURE_HOTEL, LocationName.QUEST_HOTEL_CHEF, LocationName.QUEST_STALLION, 
-    LocationName.QUEST_GHOST_HELPER, LocationName.QUEST_CUP_CHAMP, LocationName.QUEST_FLOWER
+    LocationName.QUEST_SUS_FOREST, LocationName.QUEST_MONSTERS, LocationName.QUEST_SOCKS, LocationName.QUEST_SCOUTS,
+    LocationName.QUEST_HIDE_AND_SEEK, LocationName.QUEST_LOG_JAM, LocationName.QUEST_CHALLENGE_1,
+    LocationName.QUEST_CHALLENGE_2, LocationName.QUEST_PAPARAZZI, LocationName.QUEST_CAPTURE_HOTEL,
+    LocationName.QUEST_HOTEL_CHEF, LocationName.QUEST_STALLION, LocationName.QUEST_GHOST_HELPER,
+    LocationName.QUEST_CUP_CHAMP, LocationName.QUEST_FLOWER
 )
 stanhamn_quests = (
-    LocationName.QUEST_KING_FISH, LocationName.QUEST_GOOD_SPOT, LocationName.QUEST_SUS_HARBOR, LocationName.QUEST_PAPER_HATS, 
-    LocationName.QUEST_CHALLENGE_3, LocationName.QUEST_CHALLENGE_4, LocationName.QUEST_FRAMES_FILTERS, LocationName.QUEST_TAKE_A_BATH, 
-    LocationName.QUEST_LOST_DOG, LocationName.QUEST_POWER, LocationName.QUEST_CHAOS, LocationName.QUEST_FLAME, LocationName.QUEST_SANDWICH, 
+    LocationName.QUEST_KING_FISH, LocationName.QUEST_GOOD_SPOT, LocationName.QUEST_SUS_HARBOR,
+    LocationName.QUEST_PAPER_HATS, LocationName.QUEST_CHALLENGE_3, LocationName.QUEST_CHALLENGE_4,
+    LocationName.QUEST_FRAMES_FILTERS, LocationName.QUEST_TAKE_A_BATH, LocationName.QUEST_LOST_DOG,
+    LocationName.QUEST_POWER, LocationName.QUEST_CHAOS, LocationName.QUEST_FLAME, LocationName.QUEST_SANDWICH,
     LocationName.QUEST_GARBAGE, LocationName.QUEST_WHISTLING, LocationName.QUEST_MELODY
 )
 logcity_quests = (
-    LocationName.QUEST_RATSKULLZ, LocationName.QUEST_PUNK_ROCKER, LocationName.QUEST_CHALLENGE_5, LocationName.QUEST_CHALLENGE_6, 
-    LocationName.QUEST_NEWS, LocationName.QUEST_SEWER, LocationName.QUEST_HOTBEAN, LocationName.QUEST_HANG_IN_THERE, 
-    LocationName.QUEST_SCARY_CITY, LocationName.QUEST_DATE, LocationName.QUEST_ART, LocationName.QUEST_INFLUENCER, 
-    LocationName.QUEST_FASHION, LocationName.QUEST_CLEANING, LocationName.QUEST_GRANNY, LocationName.QUEST_MICE, LocationName.QUEST_CROW
+    LocationName.QUEST_RATSKULLZ, LocationName.QUEST_PUNK_ROCKER, LocationName.QUEST_CHALLENGE_5,
+    LocationName.QUEST_CHALLENGE_6, LocationName.QUEST_NEWS, LocationName.QUEST_SEWER, LocationName.QUEST_HOTBEAN,
+    LocationName.QUEST_HANG_IN_THERE, LocationName.QUEST_SCARY_CITY, LocationName.QUEST_DATE, LocationName.QUEST_ART,
+    LocationName.QUEST_INFLUENCER, LocationName.QUEST_FASHION, LocationName.QUEST_CLEANING, LocationName.QUEST_GRANNY,
+    LocationName.QUEST_MICE, LocationName.QUEST_CROW
 )
 kiiruberg_quests = (
-    LocationName.QUEST_YETI_CUTE, LocationName.QUEST_ICE_WIZARD, LocationName.QUEST_MILITARY_SUS, LocationName.QUEST_ASTRONAUT, 
-    LocationName.QUEST_CHALLENGE_7, LocationName.QUEST_CHALLENGE_8, LocationName.QUEST_ASTEROID, LocationName.QUEST_GOAT_CHOIR, 
-    LocationName.QUEST_SNOWBALL, LocationName.QUEST_BIRTHDAY, LocationName.QUEST_PAINTINGS, LocationName.QUEST_BECOME_YETI, LocationName.QUEST_SNOWMAN
+    LocationName.QUEST_YETI_CUTE, LocationName.QUEST_ICE_WIZARD, LocationName.QUEST_MILITARY_SUS,
+    LocationName.QUEST_ASTRONAUT, LocationName.QUEST_CHALLENGE_7, LocationName.QUEST_CHALLENGE_8,
+    LocationName.QUEST_ASTEROID, LocationName.QUEST_GOAT_CHOIR, LocationName.QUEST_SNOWBALL,
+    LocationName.QUEST_BIRTHDAY, LocationName.QUEST_PAINTINGS, LocationName.QUEST_BECOME_YETI,
+    LocationName.QUEST_SNOWMAN
 )
 dev_animals = (
-    LocationName.COMP_OSKAR, LocationName.COMP_SERO, LocationName.COMP_PET_ROCK, LocationName.COMP_FIA, LocationName.COMP_FRAS, 
-    LocationName.COMP_WILLEMIJN, LocationName.COMP_PORTILLO, LocationName.COMP_MIKEE, LocationName.COMP_NARIKO, LocationName.COMP_TEDDY
+    LocationName.COMP_OSKAR, LocationName.COMP_SERO, LocationName.COMP_PET_ROCK, LocationName.COMP_FIA,
+    LocationName.COMP_FRAS, LocationName.COMP_WILLEMIJN, LocationName.COMP_PORTILLO, LocationName.COMP_MIKEE,
+    LocationName.COMP_NARIKO, LocationName.COMP_TEDDY
 )
 base_animals = (
-    LocationName.COMP_COW, LocationName.COMP_FLIES, LocationName.COMP_HOME_BIRD, LocationName.COMP_TATO, LocationName.COMP_ANT, 
-    LocationName.COMP_BEEHIVE, LocationName.COMP_BUTTERFLY, LocationName.COMP_OSKAR, LocationName.COMP_SERO, LocationName.COMP_FOREST_BIRD, 
-    LocationName.COMP_LADYBUG, LocationName.COMP_TOM, LocationName.COMP_NESTWORM, LocationName.COMP_PET_ROCK, LocationName.COMP_SNAIL, 
-    LocationName.COMP_SQUIRREL, LocationName.COMP_STAG_BEETLE, LocationName.COMP_TATO_BUG, LocationName.COMP_TATO_FLY, 
-    LocationName.COMP_BUBBLE_FLY, LocationName.COMP_FIA, LocationName.COMP_FRAS, LocationName.COMP_WILLEMIJN, LocationName.COMP_CRAB, 
-    LocationName.COMP_DRAGONFLY, LocationName.COMP_HAPPY_CARP, LocationName.COMP_JELLYFISH, LocationName.COMP_KING_FISH, 
-    LocationName.COMP_SEAGULL, LocationName.COMP_SEAHORSE, LocationName.COMP_SUNDAY_SWAN, LocationName.COMP_TATO_SCUBA, 
-    LocationName.COMP_TATO_SWIM, LocationName.COMP_TOAD, LocationName.COMP_BUSINESS_PIGEON, LocationName.COMP_PORTILLO, 
-    LocationName.COMP_MOUSE, LocationName.COMP_PIGEON, LocationName.COMP_PUNK_PARROT, LocationName.COMP_TATO_SKATEBOARD, 
-    LocationName.COMP_TATO_TOURIST, LocationName.COMP_TURTLE, LocationName.COMP_MIKEE, LocationName.COMP_NARIKO, 
-    LocationName.COMP_COSMO_DEER, LocationName.COMP_TEDDY, LocationName.COMP_FLUFF, LocationName.COMP_HEDGEHOG, 
-    LocationName.COMP_METEOPAL, LocationName.COMP_GOAT, LocationName.COMP_OWL, LocationName.COMP_SNOW_BIRD, 
+    LocationName.COMP_COW, LocationName.COMP_FLIES, LocationName.COMP_HOME_BIRD, LocationName.COMP_TATO,
+    LocationName.COMP_ANT, LocationName.COMP_BEEHIVE, LocationName.COMP_BUTTERFLY, LocationName.COMP_OSKAR,
+    LocationName.COMP_SERO, LocationName.COMP_FOREST_BIRD, LocationName.COMP_LADYBUG, LocationName.COMP_TOM,
+    LocationName.COMP_NESTWORM, LocationName.COMP_PET_ROCK, LocationName.COMP_SNAIL, LocationName.COMP_SQUIRREL,
+    LocationName.COMP_STAG_BEETLE, LocationName.COMP_TATO_BUG, LocationName.COMP_TATO_FLY, LocationName.COMP_BUBBLE_FLY,
+    LocationName.COMP_FIA, LocationName.COMP_FRAS, LocationName.COMP_WILLEMIJN, LocationName.COMP_CRAB,
+    LocationName.COMP_DRAGONFLY, LocationName.COMP_HAPPY_CARP, LocationName.COMP_JELLYFISH, LocationName.COMP_KING_FISH,
+    LocationName.COMP_SEAGULL, LocationName.COMP_SEAHORSE, LocationName.COMP_SUNDAY_SWAN, LocationName.COMP_TATO_SCUBA,
+    LocationName.COMP_TATO_SWIM, LocationName.COMP_TOAD, LocationName.COMP_BUSINESS_PIGEON, LocationName.COMP_PORTILLO,
+    LocationName.COMP_MOUSE, LocationName.COMP_PIGEON, LocationName.COMP_PUNK_PARROT, LocationName.COMP_TATO_SKATEBOARD,
+    LocationName.COMP_TATO_TOURIST, LocationName.COMP_TURTLE, LocationName.COMP_MIKEE, LocationName.COMP_NARIKO,
+    LocationName.COMP_COSMO_DEER, LocationName.COMP_TEDDY, LocationName.COMP_FLUFF, LocationName.COMP_HEDGEHOG,
+    LocationName.COMP_METEOPAL, LocationName.COMP_GOAT, LocationName.COMP_OWL, LocationName.COMP_SNOW_BIRD,
     LocationName.COMP_TATO_ALIEN, LocationName.COMP_TATO_SKI
 )
 fashionable_hats = ( # does not accept reporter hat, diving helmet, or space helmet
-    ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.HARD_HAT, ItemName.PIRATE_HAT, ItemName.PAPER_HAT, 
-    ItemName.HOTBEAN_HAT, ItemName.PUFFER_HAT
+    ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.HARD_HAT, ItemName.PIRATE_HAT,
+    ItemName.PAPER_HAT, ItemName.HOTBEAN_HAT, ItemName.PUFFER_HAT
 )
 fashionable_hats_basto = (ItemName.SUN_HAT,  ItemName.SUN_CAP,  ItemName.BERET,  ItemName.ROYAL_CROWN)
 clothing_items = (
-    ItemName.CLOGS, ItemName.FINGER, ItemName.GHOST_GLASSES, ItemName.SOAKED_SOCK, ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, 
-    ItemName.FISHING_HAT, ItemName.UMBRELLA, ItemName.HARD_HAT, ItemName.DIVING_HELMET, ItemName.PIRATE_HAT, ItemName.PAPER_HAT, 
-    ItemName.RUBBER_BOOTS, ItemName.HOTBEAN_HAT, ItemName.REPORTER_HAT, ItemName.SNEAKERS, ItemName.CLIMBING_BOOTS, 
-    ItemName.SCARF, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES, ItemName.MONSTER_MASK, ItemName.FLAG, ItemName.SPACE_HELMET
+    ItemName.CLOGS, ItemName.FINGER, ItemName.GHOST_GLASSES, ItemName.SOAKED_SOCK, ItemName.FJALLBJORN_HAT,
+    ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.UMBRELLA, ItemName.HARD_HAT, ItemName.DIVING_HELMET,
+    ItemName.PIRATE_HAT, ItemName.PAPER_HAT, ItemName.RUBBER_BOOTS, ItemName.HOTBEAN_HAT, ItemName.REPORTER_HAT,
+    ItemName.SNEAKERS, ItemName.CLIMBING_BOOTS, ItemName.SCARF, ItemName.PUFFER_HAT, ItemName.SKI_GOGGLES,
+    ItemName.MONSTER_MASK, ItemName.FLAG, ItemName.SPACE_HELMET
 )
 completionist_reqs = (
-    LocationName.QUEST_PHOTO_OF_NANA, LocationName.QUEST_HIDDEN_GIFT, LocationName.QUEST_EXPERIENCE_TOEM, 
-    LocationName.CHEEVO_STRONG_AS_AN_OAK, LocationName.CHEEVO_SEAWORTHY, LocationName.CHEEVO_BUSINESS, LocationName.CHEEVO_FIGHTER
+    LocationName.QUEST_PHOTO_OF_NANA, LocationName.QUEST_HIDDEN_GIFT, LocationName.QUEST_EXPERIENCE_TOEM,
+    LocationName.CHEEVO_STRONG_AS_AN_OAK, LocationName.CHEEVO_SEAWORTHY, LocationName.CHEEVO_BUSINESS,
+    LocationName.CHEEVO_FIGHTER
 )
 warm_clothes = HasAll(ItemName.CLIMBING_BOOTS, ItemName.PUFFER_HAT, ItemName.SCARF, ItemName.SKI_GOGGLES)
 photo_challenges = (
-    LocationName.QUEST_CHALLENGE_1, LocationName.QUEST_CHALLENGE_2, LocationName.QUEST_CHALLENGE_3, LocationName.QUEST_CHALLENGE_4, 
-    LocationName.QUEST_CHALLENGE_5, LocationName.QUEST_CHALLENGE_6, LocationName.QUEST_CHALLENGE_7, LocationName.QUEST_CHALLENGE_8
+    LocationName.QUEST_CHALLENGE_1, LocationName.QUEST_CHALLENGE_2, LocationName.QUEST_CHALLENGE_3,
+    LocationName.QUEST_CHALLENGE_4, LocationName.QUEST_CHALLENGE_5, LocationName.QUEST_CHALLENGE_6,
+    LocationName.QUEST_CHALLENGE_7, LocationName.QUEST_CHALLENGE_8
 )
 basto_animals = (
-    LocationName.COMP_BAT, LocationName.COMP_SNAKE, LocationName.COMP_BEAK_BIRD, LocationName.COMP_BITLING_FROG, 
-    LocationName.COMP_BITLING_MOUSE, LocationName.COMP_BITLING_SNAIL, LocationName.COMP_BITLING_TATO, LocationName.COMP_COCO_CRAB, 
-    LocationName.COMP_DAY_LIZARD, LocationName.COMP_DRILL_MOLE, LocationName.COMP_EGGERT, LocationName.COMP_FIRE_FLY, 
-    LocationName.COMP_GLOW_WORM, LocationName.COMP_ITSY_BITSY, LocationName.COMP_MUD_FROG, LocationName.COMP_NIGHT_LIZARD, 
-    LocationName.COMP_SNOUT_BUG, LocationName.COMP_TATO_COCO, LocationName.COMP_TATO_KING, LocationName.COMP_WATER_STRIDER
+    LocationName.COMP_BAT, LocationName.COMP_SNAKE, LocationName.COMP_BEAK_BIRD, LocationName.COMP_BITLING_FROG,
+    LocationName.COMP_BITLING_MOUSE, LocationName.COMP_BITLING_SNAIL, LocationName.COMP_BITLING_TATO,
+    LocationName.COMP_COCO_CRAB, LocationName.COMP_DAY_LIZARD, LocationName.COMP_DRILL_MOLE, LocationName.COMP_EGGERT,
+    LocationName.COMP_FIRE_FLY, LocationName.COMP_GLOW_WORM, LocationName.COMP_ITSY_BITSY, LocationName.COMP_MUD_FROG,
+    LocationName.COMP_NIGHT_LIZARD, LocationName.COMP_SNOUT_BUG, LocationName.COMP_TATO_COCO,
+    LocationName.COMP_TATO_KING, LocationName.COMP_WATER_STRIDER
 )
 basto_quests = (
-    LocationName.QUEST_BALLOONS, LocationName.QUEST_ARTHUR, LocationName.QUEST_BAD_HAIR_DAY, LocationName.QUEST_TAKE_A_NAP, 
-    LocationName.QUEST_SPOOKY_STORIES, LocationName.QUEST_PORTRAITS, LocationName.QUEST_CINEMA, LocationName.QUEST_NIGHT_LIGHTS, 
-    LocationName.QUEST_JET_SKI, LocationName.QUEST_FRUITS, LocationName.QUEST_BRAIN_FREEZE, LocationName.QUEST_SWEET_TOOTH, 
-    LocationName.QUEST_IN_YOUR_FACE, LocationName.QUEST_BROKEN_DREAMS, LocationName.QUEST_DRY_SEASON, LocationName.QUEST_MUSCLES, 
+    LocationName.QUEST_BALLOONS, LocationName.QUEST_ARTHUR, LocationName.QUEST_BAD_HAIR_DAY,
+    LocationName.QUEST_TAKE_A_NAP, LocationName.QUEST_SPOOKY_STORIES, LocationName.QUEST_PORTRAITS,
+    LocationName.QUEST_CINEMA, LocationName.QUEST_NIGHT_LIGHTS, LocationName.QUEST_JET_SKI, LocationName.QUEST_FRUITS,
+    LocationName.QUEST_BRAIN_FREEZE, LocationName.QUEST_SWEET_TOOTH, LocationName.QUEST_IN_YOUR_FACE,
+    LocationName.QUEST_BROKEN_DREAMS, LocationName.QUEST_DRY_SEASON, LocationName.QUEST_MUSCLES,
     LocationName.QUEST_SAND_CASTLE, LocationName.QUEST_CARNIVAL, LocationName.QUEST_BATS, LocationName.QUEST_BITLING
 )
 portrait_locations = (
-    LocationName.CHEEVO_CALMED_DOWN, LocationName.CHEEVO_JUST_A_SOCK, LocationName.CHEEVO_SPARKLING_JUMP, 
-    LocationName.CHEEVO_FLIGHT_READY, LocationName.CHEEVO_FOLLOWERS, LocationName.CHEEVO_NEW_JOB, 
-    LocationName.CHEEVO_YOUTH, LocationName.CHEEVO_STORY, LocationName.CHEEVO_MOONLIT_BEAUTY, LocationName.CHEEVO_KINGS_SHIRT
+    LocationName.CHEEVO_CALMED_DOWN, LocationName.CHEEVO_JUST_A_SOCK, LocationName.CHEEVO_SPARKLING_JUMP,
+    LocationName.CHEEVO_FLIGHT_READY, LocationName.CHEEVO_FOLLOWERS, LocationName.CHEEVO_NEW_JOB,
+    LocationName.CHEEVO_YOUTH, LocationName.CHEEVO_STORY, LocationName.CHEEVO_MOONLIT_BEAUTY,
+    LocationName.CHEEVO_KINGS_SHIRT
 )
 
 def get_stamp_rule(region: str) -> Rule:
@@ -526,15 +539,17 @@ def get_stamp_rule(region: str) -> Rule:
         RegionName.BASTO: ItemName.BASTO_STAMP,
     }[region]
     return (
-        Has(ItemName.PROGRESSIVE_STAMP, FromWorldAttr(f"progressive_stamp_requirements.{region}"), options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_true)]) | 
-        Has(stamp_item, FromOption(stamp_option), options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_false)])
+        Has(ItemName.PROGRESSIVE_STAMP, FromWorldAttr(f"progressive_stamp_requirements.{region}"),
+            options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_true)]) |
+        Has(stamp_item, FromOption(stamp_option),
+            options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_false)])
     )
 
 bonfire_rule = Has(ItemName.WATERGUN) & get_stamp_rule(RegionName.BASTO)
 
 ratskullz_regions = (
-    FullRegionName.LOGCITY_CLOCK_TOWER, FullRegionName.LOGCITY_CROSSWALK, FullRegionName.LOGCITY_OVERPASS, 
-    FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.LOGCITY_RATSKULLZ_ALLEY, FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW, 
+    FullRegionName.LOGCITY_CLOCK_TOWER, FullRegionName.LOGCITY_CROSSWALK, FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW,
+    FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.LOGCITY_RATSKULLZ_ALLEY, FullRegionName.LOGCITY_OVERPASS,
     FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_OUTSIDE_GALLERY
 )
 
@@ -548,7 +563,7 @@ class RatskullzRule(Rule["ToemWorld"], game=GAME_NAME):
         @override
         def _evaluate(self, state: CollectionState) -> bool:
             return sum(state.can_reach_region(region, self.player) for region in ratskullz_regions) >= 5
-        
+
         @override
         def region_dependencies(self) -> dict[str, set[int]]:
             return {region: {id(self)} for region in ratskullz_regions}
@@ -614,7 +629,7 @@ class RatskullzRule(Rule["ToemWorld"], game=GAME_NAME):
 
         @override
         def __str__(self) -> str:
-            return f"Can reach 5x regions from ({", ".join(ratskullz_regions)})"
+            return f"Can reach 5x regions from ({', '.join(ratskullz_regions)})"
 
 location_table: dict[str, LocationData] = {
     LocationName.QUEST_PHOTO_OF_NANA: LocationData(FullRegionName.HOMELANDA_BUS_STOP, LocationGroup.QUEST),

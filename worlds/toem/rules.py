@@ -42,12 +42,14 @@ def init_stamp_requirements(world: "ToemWorld") -> None:
         total += world.options.basto_stamp_requirement.value
         world.progressive_stamp_requirements[RegionName.BASTO] = total
 
-basto_bed_regions = {FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_TENT, FullRegionName.BASTO_OUTSIDE_CASTLE, 
-        FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_BONFIRE_TOP, FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE}
+basto_bed_regions = {FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_TENT,
+    FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_BONFIRE_TOP,
+    FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE,
+}
 
 @dataclass()
 class BastoDayNightRule(Rule["ToemWorld"], game=GAME_NAME):
-    
+
     event_data: EventData
 
     @override
@@ -82,7 +84,7 @@ class BastoDayNightRule(Rule["ToemWorld"], game=GAME_NAME):
                             seen.add(entrance.parent_region)
                             queue.append(entrance.parent_region)
             return False
-        
+
         #@override
         #def region_dependencies(self) -> dict[str, set[int]]:
         #    return {region: {id(self)} for region in ratskullz_regions}
@@ -100,7 +102,8 @@ def substitute_item(world: "ToemWorld", item_name: str, original_rule: Rule) -> 
         return expand_location(world, LocationName.TAPE_FISHERMANS_WHISTLE)
     if not world.options.include_items and item_name in item_table and item_table[item_name].group == ItemGroup.ITEM:
         if item_name == ItemName.ICE_CREAM:
-            ice_creams = [LocationName.ITEM_ICE_CREAM_BANAKIN, LocationName.ITEM_ICE_CREAM_MELONEAR, LocationName.ITEM_ICE_CREAM_BEANUT, LocationName.ITEM_ICE_CREAM_ORANGANAS]
+            ice_creams = [LocationName.ITEM_ICE_CREAM_BANAKIN, LocationName.ITEM_ICE_CREAM_MELONEAR,
+                          LocationName.ITEM_ICE_CREAM_BEANUT, LocationName.ITEM_ICE_CREAM_ORANGANAS]
             return And(*[expand_location(world, ice_cream) for ice_cream in ice_creams])
         return expand_location(world, item_to_location_name[item_name])
     return original_rule
@@ -117,23 +120,11 @@ def substitute_rule(world: "ToemWorld", original_rule: Rule) -> Rule:
     elif isinstance(rule, Has):
         rule = substitute_item(world, rule.item_name, rule)
     elif isinstance(rule, HasAll):
-        rule = And(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names], options=rule.options, filtered_resolution=rule.filtered_resolution)
+        rule = And(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names],
+                   options=rule.options, filtered_resolution=rule.filtered_resolution)
     elif isinstance(rule, HasAny):
-        rule = Or(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names], options=rule.options, filtered_resolution=rule.filtered_resolution)
-    elif isinstance(rule, CanReachLocation):
-        rule = substitute_location(world, rule)
-    return rule
-
-def substitute_rule(world: "ToemWorld", original_rule: Rule) -> Rule:
-    rule = deepcopy(original_rule)
-    if isinstance(rule, NestedRule):
-        rule.children = tuple(substitute_rule(world, child) for child in rule.children)
-    elif isinstance(rule, Has):
-        rule = substitute_item(world, rule.item_name, rule)
-    elif isinstance(rule, HasAll):
-        rule = And(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names], options=rule.options, filtered_resolution=rule.filtered_resolution)
-    elif isinstance(rule, HasAny):
-        rule = Or(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names], options=rule.options, filtered_resolution=rule.filtered_resolution)
+        rule = Or(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names],
+                  options=rule.options, filtered_resolution=rule.filtered_resolution)
     elif isinstance(rule, CanReachLocation):
         rule = substitute_location(world, rule)
     return rule

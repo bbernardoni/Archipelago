@@ -29,7 +29,10 @@ class IncludeAchievements(Toggle):
 
 
 class ProgressiveStamps(Toggle):
-    """Make stamps progressive. Makes it so any stamp item will give you a stamp for the earliest region that still needs stamps for the bus ticket."""
+    """
+    Make stamps progressive.
+    Makes it so any stamp item will give you a stamp for the earliest region that still needs stamps for the bus ticket.
+    """
     display_name: ClassVar[str] = "Progressive Stamps"
     default: ClassVar[int] = 1
 
@@ -83,13 +86,17 @@ class BastoStampRequirement(Range):
 
 
 class HonkAttachmentEarly(Toggle):
-    """Add honk attachment to `early_items`. Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn."""
+    """
+    Add honk attachment to `early_items`.
+    Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn.
+    """
     display_name: ClassVar[str] = "Honk Attachment Early"
     default: ClassVar[int] = 0
 
 
 class EntranceRandomization(Choice):
-    """Should area entrances be randomized?
+    """
+    Should area entrances be randomized?
     Disabled: No entrance randomization is done
     Within Region: Only entrances within a region are randomized with each other
     """
