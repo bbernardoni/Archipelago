@@ -21,8 +21,6 @@ from .locations import (
     location_name_groups,
     location_name_to_id,
     location_table,
-    location_to_item_name,
-    portrait_locations,
 )
 from .options import EntranceRandomization, ToemOptions
 from .regions import FullRegionName, RegionName

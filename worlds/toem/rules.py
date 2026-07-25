@@ -1,15 +1,25 @@
 from collections import deque
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from typing_extensions import override
 
 from BaseClasses import CollectionState, Entrance, Region
-from rule_builder.rules import CanReachLocation, Has, NestedRule, Rule
+from rule_builder.rules import And, CanReachLocation, CanReachRegion, Has, HasAll, HasAny, NestedRule, Or, Rule
 
 from .connections import region_connections
 from .constants import GAME_NAME
-from .locations import EventData, EventName, LocationName, bonfire_rule, event_table, location_table
+from .items import ItemGroup, ItemName, item_table
+from .locations import (
+    EventData,
+    EventName,
+    LocationName,
+    bonfire_rule,
+    event_table,
+    location_table,
+    location_to_item_name,
+)
 from .regions import FullRegionName, RegionName
 
 if TYPE_CHECKING:
