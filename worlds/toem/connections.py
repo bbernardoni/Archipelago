@@ -638,9 +638,9 @@ region_connections: list[Connection] = [
 
     # Mountain top
     Connection(FullRegionName.MOUNTAIN_TOP_BUS_STOP, FullRegionName.MOUNTAIN_TOP_TOEM,
-               ConnectionName.MOUNTAIN_TOP_BUS_STOP_CLIMB, ERGroups.MOUNTAIN_TOP),
+               ConnectionName.MOUNTAIN_TOP_BUS_STOP_CLIMB, ERGroups.MOUNTAIN_TOP, Has(ItemName.CLIMBING_BOOTS)),
     Connection(FullRegionName.MOUNTAIN_TOP_TOEM, FullRegionName.MOUNTAIN_TOP_BUS_STOP,
-               ConnectionName.TOEM_DESCEND, ERGroups.MOUNTAIN_TOP),
+               ConnectionName.TOEM_DESCEND, ERGroups.MOUNTAIN_TOP, Has(ItemName.CLIMBING_BOOTS)),
 
     # Basto
     Connection(FullRegionName.BASTO_BUS_STOP_TOP, FullRegionName.BASTO_BUS_STOP_BOTTOM,
