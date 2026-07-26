@@ -17,7 +17,7 @@ from .locations import (
     event_table,
     location_table,
 )
-from .regions import FullRegionName, RegionName
+from .regions import Area, RegionName
 
 if TYPE_CHECKING:
     from . import ToemWorld
@@ -27,21 +27,21 @@ def init_stamp_requirements(world: "ToemWorld") -> None:
     if world.options.progressive_stamps:
         world.progressive_stamp_requirements = {}
         total = world.options.homelanda_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.HOMELANDA] = total
+        world.progressive_stamp_requirements[Area.HOMELANDA] = total
         total += world.options.oaklaville_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.OAKLAVILLE] = total
+        world.progressive_stamp_requirements[Area.OAKLAVILLE] = total
         total += world.options.stanhamn_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.STANHAMN] = total
+        world.progressive_stamp_requirements[Area.STANHAMN] = total
         total += world.options.logcity_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.LOGCITY] = total
+        world.progressive_stamp_requirements[Area.LOGCITY] = total
         total += world.options.kiiruberg_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.KIIRUBERG] = total
+        world.progressive_stamp_requirements[Area.KIIRUBERG] = total
         total += world.options.basto_stamp_requirement.value
-        world.progressive_stamp_requirements[RegionName.BASTO] = total
+        world.progressive_stamp_requirements[Area.BASTO] = total
 
-basto_bed_regions = {FullRegionName.BASTO_LILY_PAD_POND_RIGHT, FullRegionName.BASTO_TENT,
-    FullRegionName.BASTO_OUTSIDE_CASTLE, FullRegionName.BASTO_GYM_HOUSE, FullRegionName.BASTO_BONFIRE_TOP,
-    FullRegionName.BASTO_GHOST_HANGOUT, FullRegionName.BASTO_JUNGLE,
+basto_bed_regions = {
+    RegionName.BASTO_LILY_PAD_POND_RIGHT, RegionName.BASTO_TENT, RegionName.BASTO_OUTSIDE_CASTLE,
+    RegionName.BASTO_GYM_HOUSE, RegionName.BASTO_BONFIRE_TOP, RegionName.BASTO_GHOST_HANGOUT, RegionName.BASTO_JUNGLE
 }
 
 @dataclass()
@@ -72,7 +72,7 @@ class BastoDayNightRule(Rule["ToemWorld"], game=GAME_NAME):
                         elif entrance.name == "Bonfire day bridge from top":
                             if self.is_day:
                                 return True
-                        elif not entrance.parent_region.name.startswith(RegionName.BASTO):
+                        elif not entrance.parent_region.name.startswith(Area.BASTO):
                             if self.is_day:
                                 return True
                         elif entrance.parent_region.name in basto_bed_regions:
@@ -111,8 +111,8 @@ def secondary_indirects(world: "ToemWorld", resolved_rule: Rule.Resolved, entran
 
 def set_entrance_rules(world: "ToemWorld") -> None:
     for connection in region_connections:
-        if not world.options.include_basto and (connection.src_region_name.startswith(RegionName.BASTO)
-                                             or connection.dst_region_name.startswith(RegionName.BASTO)):
+        if not world.options.include_basto and (connection.src_region_name.startswith(Area.BASTO)
+                                             or connection.dst_region_name.startswith(Area.BASTO)):
             continue
         if connection.rule is not None:
             entrance = world.get_entrance(connection.name)

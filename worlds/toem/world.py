@@ -25,7 +25,7 @@ from .locations import (
     portrait_locations,
 )
 from .options import EntranceRandomization, ToemOptions
-from .regions import FullRegionName, RegionName
+from .regions import Area, RegionName
 from .rules import init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ class ToemWorld(World):
     location_name_groups: ClassVar[dict[str, set[str]]] = location_name_groups
     item_name_to_id: ClassVar[dict[str, int]] = item_name_to_id
     location_name_to_id: ClassVar[dict[str, int]] = location_name_to_id
-    origin_region_name: str = FullRegionName.START_MENU
+    origin_region_name: str = RegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
     transitions: dict[str, int] # has to be a str key as that's all json supports
     is_ut: bool
@@ -109,7 +109,7 @@ class ToemWorld(World):
         regions = {connection.src_region_name for connection in region_connections}
         regions |= {connection.dst_region_name for connection in region_connections}
         for region in regions:
-            if self.options.include_basto or not region.startswith(RegionName.BASTO):
+            if self.options.include_basto or not region.startswith(Area.BASTO):
                 self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
 
         logic_groups: set[str] = {LocationGroup.QUEST, LocationGroup.COMPENDIUM}
@@ -135,11 +135,11 @@ class ToemWorld(World):
                 self.create_location(location_name, location_data)
 
         if self.options.include_basto:
-            self.create_event(EventName.BASTO_BONFIRE, FullRegionName.BASTO_BUS_STOP_BOTTOM)
+            self.create_event(EventName.BASTO_BONFIRE, RegionName.BASTO_BUS_STOP_BOTTOM)
             for event_name, event_data in event_table.items():
                 self.create_event(event_name, event_data.region)
         else:
-            self.create_event(EventName.TOEM_EXPERIENCED, FullRegionName.MOUNTAIN_TOP_TOEM)
+            self.create_event(EventName.TOEM_EXPERIENCED, RegionName.MOUNTAIN_TOP_TOEM)
 
     @override
     def create_item(self, name: str) -> ToemItem:
@@ -157,7 +157,7 @@ class ToemWorld(World):
 
         for item_name, item_data in item_table.items():
             if (item_data.group not in logic_groups or
-                    (not self.options.include_basto and item_data.parent_region == RegionName.BASTO)):
+                    (not self.options.include_basto and item_data.area == Area.BASTO)):
                 continue
 
             quantity = item_data.quantity
@@ -191,8 +191,8 @@ class ToemWorld(World):
     def connect_entrances(self) -> None:
         should_randomize = self.options.entrance_randomization != EntranceRandomization.option_disabled
         for connection in region_connections:
-            if not self.options.include_basto and (connection.src_region_name.startswith(RegionName.BASTO)
-                                                or connection.dst_region_name.startswith(RegionName.BASTO)):
+            if not self.options.include_basto and (connection.src_region_name.startswith(Area.BASTO)
+                                                or connection.dst_region_name.startswith(Area.BASTO)):
                 continue
             src_region = self.get_region(connection.src_region_name)
             if not should_randomize or connection.group == ERGroups.EXCLUDED:
@@ -308,7 +308,7 @@ class ToemWorld(World):
     # visualize_regions helpers
     def visualize_regions(self, region_filter = None, entrance_filter = None):
         from Utils import visualize_regions
-        root_region = self.get_region(FullRegionName.START_MENU)
+        root_region = self.get_region(RegionName.START_MENU)
 
         if region_filter:
             saved_region_cache = self.multiworld.regions.region_cache[self.player]
@@ -347,7 +347,7 @@ class ToemWorld(World):
 
     def visualize_ger(self, placeable_entrance_regions: set[Region]):
         from collections import deque
-        root_region = self.get_region(FullRegionName.START_MENU)
+        root_region = self.get_region(RegionName.START_MENU)
         seen: set[Region] = set()
         regions: deque[Region] = deque((root_region,))
         while regions:
@@ -361,7 +361,7 @@ class ToemWorld(World):
             return region not in ignored_regions
         self.visualize_regions(region_filter, self.no_helpers_filter())
 
-    def visualize_super_region(self, parent_region: str):
+    def visualize_area(self, area: str):
         def region_filter(region):
-            return region.name.startswith(f"{parent_region} - ")
+            return region.name.startswith(f"{area} - ")
         self.visualize_regions(region_filter, self.no_helpers_filter())
