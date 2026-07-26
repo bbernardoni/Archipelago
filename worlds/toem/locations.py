@@ -550,7 +550,8 @@ bonfire_rule = Has(ItemName.WATERGUN) & get_stamp_rule(RegionName.BASTO)
 ratskullz_regions = (
     FullRegionName.LOGCITY_CLOCK_TOWER, FullRegionName.LOGCITY_CROSSWALK, FullRegionName.LOGCITY_OUTSIDE_FASHION_SHOW,
     FullRegionName.LOGCITY_SKATE_PARK, FullRegionName.LOGCITY_RATSKULLZ_ALLEY, FullRegionName.LOGCITY_OVERPASS,
-    FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_OUTSIDE_GALLERY
+    FullRegionName.LOGCITY_OUTSIDE_CAFE, FullRegionName.LOGCITY_OUTSIDE_GALLERY, FullRegionName.LOGCITY_OUTSIDE_GALLERY,
+    FullRegionName.LOGCITY_BUS_STOP
 )
 
 @dataclass()
