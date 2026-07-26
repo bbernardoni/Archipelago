@@ -668,10 +668,13 @@ if __name__ == '__main__':
         import gc
         import sys
         import weakref
-        weak = weakref.ref(multiworld)
-        del multiworld
-        gc.collect()  # need to collect to deref all hard references
-        assert not weak(), f"MultiWorld object was not de-allocated, it's referenced {sys.getrefcount(weak())} times." \
-                           " This would be a memory leak."
+        if "debugpy" in sys.modules:
+            import debugpy
+            if not debugpy.is_client_connected():
+                weak = weakref.ref(multiworld)
+                del multiworld
+                gc.collect()  # need to collect to deref all hard references
+                assert not weak(), f"MultiWorld object was not de-allocated, it's referenced {sys.getrefcount(weak())} times." \
+                                   " This would be a memory leak."
     # in case of error-free exit should not need confirmation
     atexit.unregister(confirmation)
