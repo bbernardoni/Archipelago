@@ -129,7 +129,7 @@ class ToemWorld(World):
                     item_name = location_to_item_name[location_name]
                     if item_table[item_name].classification & ItemClassification.progression != 0:
                         self.create_event(location_name, location_data.region, item_name)
-                elif self.options.include_basto and self.options.include_items and location_name in portrait_locations:
+                elif self.options.include_basto and location_name in portrait_locations:
                     self.create_event(location_name, location_data.region)
             else:
                 self.create_location(location_name, location_data)
