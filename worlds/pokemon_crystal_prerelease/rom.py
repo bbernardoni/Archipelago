@@ -427,10 +427,10 @@ def write_customizable_options(options: PokemonCrystalOptions,
         address = data.rom_addresses["AP_Setting_ShopsanityRestrictRareCandies"] + 1
         write_bytes([patched_value], address)
 
-    # if must_write_option("all_pokemon_seen"):
-    #     patched_value = 1 if options.all_pokemon_seen.value else 0
-    #     write_bytes([patched_value], data.rom_addresses["AP_Setting_AllPokemonSeen_1"] + 1)
-    #     write_bytes([patched_value], data.rom_addresses["AP_Setting_AllPokemonSeen_2"] + 1)
+    if must_write_option("all_pokemon_seen"):
+        patched_value = 1 if options.all_pokemon_seen.value else 0
+        write_bytes([patched_value], data.rom_addresses["AP_Setting_AllPokemonSeen_1"] + 1)
+        write_bytes([patched_value], data.rom_addresses["AP_Setting_AllPokemonSeen_2"] + 1)
 
     if must_write_option("starting_money"):
         start_money = options.starting_money.value.to_bytes(3, "big")

@@ -75,7 +75,7 @@ are supported.
 The following options can always be overridden: `trainer_name`, `trainer_gender`, `trainer_palette`, `rival_name`,
 `start_time`, `game_options`, `field_move_menu_order`, `default_pokedex_mode`, `shopsanity_restrict_rare_candies`,
 `reusable_tms`, `minimum_catch_rate`, `skip_elite_four`, `better_marts`, `build_a_mart`, `experience_modifier`,
-`starting_money`.
+`starting_money`, `all_pokemon_seen`.
 
 You can change these settings at any time after patching the ROM and re-apply them by patching the ROM again. Your
 save data will be preserved.

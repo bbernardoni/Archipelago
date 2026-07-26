@@ -122,6 +122,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
         self.local_unlocked_unowns = 0
         self.remote_unlocked_unowns = 0
         self.has_tracker_slot = False
+        self.sent_all_pokemon_seen = False
         self.commands_enabled = False
         self.initialize_wonder_trade()
 
@@ -270,6 +271,20 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
             register_commands(ctx)
 
         try:
+
+            # all_pokemon_seen can be overridden at patch time, so report the ROM's value to the tracker
+            if not self.sent_all_pokemon_seen:
+                all_pokemon_seen = (await bizhawk.read(
+                    ctx.bizhawk_ctx,
+                    [(data.rom_addresses["AP_Setting_AllPokemonSeen_1"] + 1, 1, "ROM")]))[0][0]
+                await ctx.send_msgs([{
+                    "cmd": "Set",
+                    "key": f"pokemon_crystal_all_pokemon_seen_{ctx.team}_{ctx.slot}",
+                    "default": False,
+                    "want_reply": False,
+                    "operations": [{"operation": "replace", "value": bool(all_pokemon_seen)}]
+                }])
+                self.sent_all_pokemon_seen = True
 
             # Scout the locations that can be hinted if provide hints is turned on
             if ctx.slot_data["provide_shop_hints"] != ProvideShopHints.option_off and ctx.locations_info == {}:
