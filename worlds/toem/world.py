@@ -8,7 +8,14 @@ from Options import Accessibility
 from Utils import Version
 from worlds.AutoWorld import WebWorld, World
 
-from .connections import ERGroups, ToemRegion, connection_name_to_id, region_connections, within_region_groups
+from .connections import (
+    ERGroups,
+    ToemRegion,
+    all_connections,
+    connection_name_to_id,
+    helper_connections,
+    within_region_groups,
+)
 from .constants import GAME_NAME, TOEM_MAX_GER_ATTEMPTS
 from .items import ItemGroup, ItemName, ToemItem, item_name_groups, item_name_to_id, item_table
 from .locations import (
@@ -106,8 +113,8 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        regions = {connection.src_region_name for connection in region_connections}
-        regions |= {connection.dst_region_name for connection in region_connections}
+        regions = {connection.src_region_name for connection in all_connections}
+        regions |= {connection.dst_region_name for connection in all_connections}
         for region in regions:
             if self.options.include_basto or not region.startswith(Area.BASTO):
                 self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
@@ -190,16 +197,16 @@ class ToemWorld(World):
     @override
     def connect_entrances(self) -> None:
         should_randomize = self.options.entrance_randomization != EntranceRandomization.option_disabled
-        for connection in region_connections:
+        for connection_name, connection in all_connections.items():
             if not self.options.include_basto and (connection.src_region_name.startswith(Area.BASTO)
                                                 or connection.dst_region_name.startswith(Area.BASTO)):
                 continue
             src_region = self.get_region(connection.src_region_name)
             if not should_randomize or connection.group == ERGroups.EXCLUDED:
                 dst_region = self.get_region(connection.dst_region_name)
-                src_region.connect(dst_region, connection.name)
+                src_region.connect(dst_region, connection_name)
             else:
-                self.generate_entrance_pair(src_region, connection.name, connection.group)
+                self.generate_entrance_pair(src_region, connection_name, connection.group)
         set_entrance_rules(self)
 
         if should_randomize:
@@ -338,13 +345,6 @@ class ToemWorld(World):
         if region_filter:
             self.multiworld.regions.region_cache[self.player] = saved_region_cache
 
-    def no_helpers_filter(self):
-        from .connections import ConnectionName
-        last_non_helper = next(i for i, connection in enumerate(region_connections)
-                               if connection.name == ConnectionName.JUNGLE_LEFT)
-        helper_connections = {connection.name for connection in region_connections[last_non_helper+1:]}
-        return lambda _exit: _exit.name not in helper_connections
-
     def visualize_ger(self, placeable_entrance_regions: set[Region]):
         from collections import deque
         root_region = self.get_region(RegionName.START_MENU)
@@ -359,9 +359,9 @@ class ToemWorld(World):
 
         def region_filter(region):
             return region not in ignored_regions
-        self.visualize_regions(region_filter, self.no_helpers_filter())
+        self.visualize_regions(region_filter, lambda _exit: _exit.name not in helper_connections)
 
     def visualize_area(self, area: str):
         def region_filter(region):
             return region.name.startswith(f"{area} - ")
-        self.visualize_regions(region_filter, self.no_helpers_filter())
+        self.visualize_regions(region_filter, lambda _exit: _exit.name not in helper_connections)

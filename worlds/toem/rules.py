@@ -7,7 +7,7 @@ from typing_extensions import override
 from BaseClasses import CollectionState, Entrance, Region
 from rule_builder.rules import CanReachLocation, Has, NestedRule, Rule
 
-from .connections import region_connections
+from .connections import all_connections
 from .constants import GAME_NAME
 from .locations import (
     EventData,
@@ -110,12 +110,12 @@ def secondary_indirects(world: "ToemWorld", resolved_rule: Rule.Resolved, entran
             secondary_indirects(world, location_rule, entrance)
 
 def set_entrance_rules(world: "ToemWorld") -> None:
-    for connection in region_connections:
+    for connection_name, connection in all_connections.items():
         if not world.options.include_basto and (connection.src_region_name.startswith(Area.BASTO)
                                              or connection.dst_region_name.startswith(Area.BASTO)):
             continue
         if connection.rule is not None:
-            entrance = world.get_entrance(connection.name)
+            entrance = world.get_entrance(connection_name)
             world.set_rule(entrance, connection.rule)
             secondary_indirects(world, entrance.access_rule, entrance)
 
