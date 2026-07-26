@@ -202,12 +202,12 @@ progression_deprioritized = ItemClassification.progression_deprioritized_skip_ba
 
 item_table: dict[str, ItemData] = {
     ItemName.HOMELANDA_STAMP: ItemData(progression_useful, 3, ItemGroup.STAMP, Area.HOMELANDA),
-    ItemName.OAKLAVILLE_STAMP: ItemData(ItemClassification.progression, 15, ItemGroup.STAMP, Area.OAKLAVILLE),
-    ItemName.STANHAMN_STAMP: ItemData(ItemClassification.progression, 16, ItemGroup.STAMP, Area.STANHAMN),
-    ItemName.LOGCITY_STAMP: ItemData(ItemClassification.progression, 18, ItemGroup.STAMP, Area.LOGCITY),
-    ItemName.KIIRUBERG_STAMP: ItemData(ItemClassification.progression, 13, ItemGroup.STAMP, Area.KIIRUBERG),
-    ItemName.BASTO_STAMP: ItemData(ItemClassification.progression, 20, ItemGroup.STAMP, Area.BASTO),
-    ItemName.PROGRESSIVE_STAMP: ItemData(ItemClassification.progression, 85, ItemGroup.STAMP, Area.MENU),
+    ItemName.OAKLAVILLE_STAMP: ItemData(progression_deprioritized, 15, ItemGroup.STAMP, Area.OAKLAVILLE),
+    ItemName.STANHAMN_STAMP: ItemData(progression_deprioritized, 16, ItemGroup.STAMP, Area.STANHAMN),
+    ItemName.LOGCITY_STAMP: ItemData(progression_deprioritized, 18, ItemGroup.STAMP, Area.LOGCITY),
+    ItemName.KIIRUBERG_STAMP: ItemData(progression_deprioritized, 13, ItemGroup.STAMP, Area.KIIRUBERG),
+    ItemName.BASTO_STAMP: ItemData(progression_deprioritized, 20, ItemGroup.STAMP, Area.BASTO),
+    ItemName.PROGRESSIVE_STAMP: ItemData(progression_deprioritized, 85, ItemGroup.STAMP, Area.MENU),
     ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
     ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
     ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
