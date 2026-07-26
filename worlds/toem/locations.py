@@ -479,7 +479,9 @@ fashionable_hats = ( # does not accept reporter hat, diving helmet, or space hel
     ItemName.FJALLBJORN_HAT, ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.HARD_HAT, ItemName.PIRATE_HAT,
     ItemName.PAPER_HAT, ItemName.HOTBEAN_HAT, ItemName.PUFFER_HAT
 )
-fashionable_hats_basto = (ItemName.SUN_HAT,  ItemName.SUN_CAP,  ItemName.BERET,  ItemName.ROYAL_CROWN)
+fashionable_hats_basto = (
+    ItemName.SUN_HAT,  ItemName.SUN_CAP,  ItemName.BERET,  ItemName.ROYAL_CROWN, ItemName.VIKING_HELMET
+)
 clothing_items = (
     ItemName.CLOGS, ItemName.FINGER, ItemName.GHOST_GLASSES, ItemName.SOAKED_SOCK, ItemName.FJALLBJORN_HAT,
     ItemName.COWBOY_HAT, ItemName.FISHING_HAT, ItemName.UMBRELLA, ItemName.HARD_HAT, ItemName.DIVING_HELMET,
@@ -902,7 +904,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_BIRTHDAY: LocationData(FullRegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, LocationGroup.QUEST,
             warm_clothes & CanReachRegion(FullRegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT)),
     LocationName.QUEST_PAINTINGS: LocationData(FullRegionName.KIIRUBERG_CLIFFS_MIDDLE, LocationGroup.QUEST,
-            Has(ItemName.CLIMBING_BOOTS) &CanReachAllRegions(FullRegionName.KIIRUBERG_FROZEN_POND,
+            Has(ItemName.CLIMBING_BOOTS) & CanReachAllRegions(FullRegionName.KIIRUBERG_FROZEN_POND,
                 FullRegionName.KIIRUBERG_OUTSIDE_OBSERVATORY_BOTTOM, FullRegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM,
                 FullRegionName.MOUNTAIN_TOP_TOEM)),
     LocationName.QUEST_BECOME_YETI: LocationData(FullRegionName.KIIRUBERG_SKI_LIFT_BASE, LocationGroup.QUEST),
@@ -947,7 +949,7 @@ location_table: dict[str, LocationData] = {
             CanReachLocation(LocationName.QUEST_PAINTINGS)),
     LocationName.CHEEVO_CLOSE: LocationData(FullRegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_TOEM: LocationData(FullRegionName.MOUNTAIN_TOP_TOEM, LocationGroup.ACHIEVEMENT,
-            Has(ItemName.CLIMBING_BOOTS)), # TODO on full ER check if climbing boots are required
+            Has(ItemName.CLIMBING_BOOTS)),
     LocationName.CHEEVO_CUTIES: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(*dev_animals)),
     LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(FullRegionName.START_MENU, LocationGroup.ACHIEVEMENT,
