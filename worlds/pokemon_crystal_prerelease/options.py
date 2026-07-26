@@ -1264,7 +1264,7 @@ class WildEncounterBlocklist(PokemonSet):
     These Pokemon will not appear in the wild
     Does nothing if wild Pokemon are not randomized
     Blocklists are best effort, other constraints may cause them to be ignored
-    This setting does not affect the bug catching contest.
+    This setting also applies to bug catching contest encounters
     """
     display_name = "Wild Encounter Blocklist"
 
