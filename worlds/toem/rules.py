@@ -1,16 +1,14 @@
 from collections import deque
-from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from typing_extensions import override
 
 from BaseClasses import CollectionState, Entrance, Region
-from rule_builder.rules import And, CanReachLocation, CanReachRegion, Has, HasAll, HasAny, NestedRule, Or, Rule
+from rule_builder.rules import CanReachLocation, Has, NestedRule, Rule
 
 from .connections import region_connections
 from .constants import GAME_NAME
-from .items import ItemGroup, ItemName, item_table
 from .locations import (
     EventData,
     EventName,
@@ -18,7 +16,6 @@ from .locations import (
     bonfire_rule,
     event_table,
     location_table,
-    location_to_item_name,
 )
 from .regions import FullRegionName, RegionName
 
@@ -89,53 +86,13 @@ class BastoDayNightRule(Rule["ToemWorld"], game=GAME_NAME):
         #def region_dependencies(self) -> dict[str, set[int]]:
         #    return {region: {id(self)} for region in ratskullz_regions}
 
-# TODO implement event item instead of subsituting
-def expand_location(world: "ToemWorld", location_name: str) -> Rule:
-    rule = CanReachRegion(location_table[location_name].region)
-    if location_table[location_name].rule is not None:
-        rule &= substitute_rule(world, location_table[location_name].rule)
-    return rule
-
-item_to_location_name = {v: k for k, v in location_to_item_name.items()}
-def substitute_item(world: "ToemWorld", item_name: str, original_rule: Rule) -> Rule:
-    if not world.options.include_cassettes and item_name == ItemName.FISHERMANS_WHISTLE_TAPE:
-        return expand_location(world, LocationName.TAPE_FISHERMANS_WHISTLE)
-    if not world.options.include_items and item_name in item_table and item_table[item_name].group == ItemGroup.ITEM:
-        if item_name == ItemName.ICE_CREAM:
-            ice_creams = [LocationName.ITEM_ICE_CREAM_BANAKIN, LocationName.ITEM_ICE_CREAM_MELONEAR,
-                          LocationName.ITEM_ICE_CREAM_BEANUT, LocationName.ITEM_ICE_CREAM_ORANGANAS]
-            return And(*[expand_location(world, ice_cream) for ice_cream in ice_creams])
-        return expand_location(world, item_to_location_name[item_name])
-    return original_rule
-
-def substitute_location(world: "ToemWorld", original_rule: CanReachLocation) -> Rule:
-    if not world.options.include_achievements and original_rule.location_name.startswith("Achievement"):
-        return expand_location(world, original_rule.location_name)
-    return original_rule
-
-def substitute_rule(world: "ToemWorld", original_rule: Rule) -> Rule:
-    rule = deepcopy(original_rule)
-    if isinstance(rule, NestedRule):
-        rule.children = tuple(substitute_rule(world, child) for child in rule.children)
-    elif isinstance(rule, Has):
-        rule = substitute_item(world, rule.item_name, rule)
-    elif isinstance(rule, HasAll):
-        rule = And(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names],
-                   options=rule.options, filtered_resolution=rule.filtered_resolution)
-    elif isinstance(rule, HasAny):
-        rule = Or(*[substitute_item(world, item_name, Has(item_name)) for item_name in rule.item_names],
-                  options=rule.options, filtered_resolution=rule.filtered_resolution)
-    elif isinstance(rule, CanReachLocation):
-        rule = substitute_location(world, rule)
-    return rule
-
 def set_location_rules(world: "ToemWorld") -> None:
     for location in world.get_locations():
         if location.name not in location_table: # skip pure events
             continue
         rule = location_table[location.name].rule
         if rule is not None:
-            world.set_rule(location, substitute_rule(world, rule))
+            world.set_rule(location, rule)
 
     if world.options.include_basto:
         for event_name, event_data in event_table.items():
@@ -158,15 +115,14 @@ def set_entrance_rules(world: "ToemWorld") -> None:
                                              or connection.dst_region_name.startswith(RegionName.BASTO)):
             continue
         if connection.rule is not None:
-            rule = substitute_rule(world, connection.rule)
             entrance = world.get_entrance(connection.name)
-            world.set_rule(entrance, rule)
+            world.set_rule(entrance, connection.rule)
             secondary_indirects(world, entrance.access_rule, entrance)
 
 def set_victory_rule(world: "ToemWorld") -> None:
     if world.options.include_basto:
         victory_event_name = EventName.BASTO_BONFIRE
-        victory_rule = substitute_rule(world, bonfire_rule)
+        victory_rule = bonfire_rule
     else:
         victory_event_name = EventName.TOEM_EXPERIENCED
         victory_rule = CanReachLocation(LocationName.QUEST_EXPERIENCE_TOEM)
