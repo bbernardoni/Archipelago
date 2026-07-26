@@ -21,6 +21,8 @@ from .locations import (
     location_name_groups,
     location_name_to_id,
     location_table,
+    location_to_item_name,
+    portrait_locations,
 )
 from .options import EntranceRandomization, ToemOptions
 from .regions import FullRegionName, RegionName
@@ -122,7 +124,14 @@ class ToemWorld(World):
             is_basto = location_name_to_id[location_name] >= location_name_to_id[LocationName.QUEST_BALLOONS]
             if not self.options.include_basto and is_basto:
                 continue
-            if location_data.group in logic_groups:
+            if location_data.group not in logic_groups:
+                if location_name in location_to_item_name:
+                    item_name = location_to_item_name[location_name]
+                    if item_table[item_name].classification & ItemClassification.progression != 0:
+                        self.create_event(location_name, location_data.region, item_name)
+                elif self.options.include_basto and self.options.include_items and location_name in portrait_locations:
+                    self.create_event(location_name, location_data.region)
+            else:
                 self.create_location(location_name, location_data)
 
         if self.options.include_basto:
