@@ -12,6 +12,8 @@ class Area:
     MOUNTAIN_TOP = "Mountain Top"
     BASTO = "Basto"
 
+gameplay_areas = (Area.HOMELANDA, Area.OAKLAVILLE, Area.STANHAMN, Area.LOGCITY, Area.KIIRUBERG, Area.MOUNTAIN_TOP, Area.BASTO)
+
 @final
 class RegionName:
     # Menu

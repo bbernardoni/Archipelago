@@ -22,7 +22,7 @@ from .options import (
     ProgressiveStamps,
     StanhamnStampRequirement,
 )
-from .regions import Area, RegionName
+from .regions import Area, RegionName, gameplay_areas
 
 if TYPE_CHECKING:
     from . import ToemWorld
@@ -1203,10 +1203,15 @@ def get_location_group(location_name: str) -> str:
 
 
 def get_location_area(location_name: str) -> str:
-    return location_table[location_name].region
+    return location_table[location_name].region.split(" - ")[0]
 
 
 location_name_groups: dict[str, set[str]] = {
     group: set(location_names)
     for group, location_names in groupby(sorted(location_table, key=get_location_group), get_location_group)
 }
+location_name_groups.update({
+    group: set(item_names)
+    for group, item_names in groupby(sorted(location_table, key=get_location_area), get_location_area)
+    if group in gameplay_areas
+})

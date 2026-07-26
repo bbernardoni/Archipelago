@@ -376,4 +376,7 @@ def get_item_area(location_name: str) -> str:
 item_name_groups: dict[str, set[str]] = {
     group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_group), get_item_group)
 }
+item_name_groups.update({
+    group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)
+})
 
