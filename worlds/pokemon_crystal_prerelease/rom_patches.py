@@ -90,20 +90,44 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
-    # Redrawing the AP item popup over a live one (stacked notifications) flickers a few
-    # scanlines of window below the box. HDMATransfer_OnlyTopFourRows copies ~15 scanlines
-    # worth of tilemap and then holds di for ~11 scanlines per HDMA block, twice; if that di
-    # window covers the split line (23), the HBlank interrupt that clears rLCDC_WINDOW_ENABLE
-    # is missed and the window keeps rendering past the box until the ei.
-    # TriggerAPItemSign already waits for a "safe" rLY, but its upper bound of 110 is measured
-    # before the copy: starting near it pushes HDMATransfer's own "wait for rLY < 120" gate
-    # into the next frame, landing both di blocks right across line 23. Lower the bound to 60
-    # so copy + both transfers (~37 scanlines) finish inside the same frame, below the box.
+    # The AP item popup owns a window split: the window draws the box over the top three rows
+    # and the LCD HBlank handler clears rLCDC_WINDOW_ENABLE at scanline 23 so it stops there.
+    # VBlank0 runs its whole body with interrupts disabled, sound engine included, and routinely
+    # overruns ~30 scanlines into the visible frame, so that write cannot happen until VBlank0
+    # returns and the window keeps rendering to wherever that lands - the transfer's unused
+    # fourth row in full, plus a line of stale VRAM past it - whatever the split is armed to.
+    # Once the VRAM work is done, hold interrupts open just long enough for the LCD handler to
+    # make that one write, then close them again before UpdateJoypad and _UpdateSound. Leaving
+    # them open across the sound update corrupts graphics: Request2bpp switches the ROM bank to
+    # the source's bank and halts with it held until served, so an HBlank serve landing while
+    # _UpdateSound has banked to audio copies music data into VRAM.
+    # Only runs while the split is armed; with no popup up this is vanilla behaviour.
     RomPatch(
-        name="ap_item_popup_redraw_split_flicker",
+        name="vblank0_service_window_split",
         entries=[
-            # TriggerAPItemSign.wait_below_box (2e:4149): cp 110 -> cp 60
-            RomPatchEntry(bank=0x2e, address=0x4150, data=[60]),
+            # VBlank0 .done_oam (00:0319): xor a / ld [wVBlankOccurred], a -> call stub
+            RomPatchEntry(bank=0x00, address=0x0319, data=[
+                0xCD, 0x70, 0x00,  # call $0070
+                0x00,              # nop
+            ]),
+            # Stub in the free gap between the interrupt vectors and the header ($63-$100)
+            RomPatchEntry(bank=0x00, address=0x0070, data=[
+                0xF0, 0xD5,        # ldh a, [hWindowSplit]
+                0xA7,              # and a
+                0x28, 0x0D,        # jr z, .skip            ; no popup -> vanilla path
+                0x47,              # ld b, a
+                0x04,              # inc b                  ; wait past the split line's HBlank
+                0xFB,              # ei
+                0xF0, 0x44,        # .wait: ldh a, [rLY]
+                0xFE, 0x90,        # cp LY_VBLANK
+                0x30, 0xFA,        # jr nc, .wait           ; still in VBlank
+                0xB8,              # cp b
+                0x38, 0xF7,        # jr c, .wait            ; not past the split yet
+                0xF3,              # di
+                0xAF,              # .skip: xor a
+                0xEA, 0xB3, 0xCF,  # ld [wVBlankOccurred], a
+                0xC9,              # ret
+            ]),
         ],
     ),
     # The grass rustle sprite is a tracking object: every frame it copies the player's sprite
