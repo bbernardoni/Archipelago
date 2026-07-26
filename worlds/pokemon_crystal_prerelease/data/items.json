@@ -2741,6 +2741,7 @@
   "OAKS_PARCEL": {
     "name": "Oak's Parcel",
     "classification": "PROGRESSION",
+    "deprioritized": true,
     "price": 0,
     "tags": [
       "Unique",
