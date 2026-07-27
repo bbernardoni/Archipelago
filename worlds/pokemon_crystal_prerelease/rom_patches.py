@@ -194,4 +194,40 @@ ROM_PATCHES: list[RomPatch] = [
             RomPatchEntry(bank=0x1D, address=0x49DA, data=[0xDF]),
         ],
     ),
+    # SCENE_ELMSLAB_MEET_OFFICER, armed by the Cherrygrove rival, is the only thing that runs
+    # NameRival and clears the officer out of the lab. With no route blocker in New Bark the
+    # potion is routinely unclaimed by the time the officer shows up, and the aide stands by
+    # the door below the officer's coord events - talking to them there overwrites the scene
+    # with SCENE_ELMSLAB_NOOP and strands the officer with nothing left to trigger the naming.
+    # Stop the potion script clobbering a pending officer scene, and re-arm it from the objects
+    # callback so already-dead saves recover on their next visit. The potion is the only scene
+    # write reachable from the door side; everything else is past the row 5 choke point.
+    RomPatch(
+        name="elms_lab_officer_scene_survives_aide",
+        entries=[
+            # AideScript_GivePotion (1e:517c): setscene SCENE_ELMSLAB_NOOP / end (1e:518e,
+            # 3 bytes) -> sjump to stub. Reached by scall from the walk-over coord scripts and
+            # by iffalse from ElmsAideScript; end behaves the same either way.
+            RomPatchEntry(bank=0x1E, address=0x518E, data=[0x03, 0xF0, 0x7F]),
+            # Stub in bank $1e end-of-bank free space ($7b30-$7fff)
+            RomPatchEntry(bank=0x1E, address=0x7FF0, data=[
+                0x13,                    # checkscene
+                0x06, 0x03, 0xF7, 0x7F,  # ifequal SCENE_ELMSLAB_MEET_OFFICER, .keep
+                0x14, 0x02,              # setscene SCENE_ELMSLAB_NOOP
+                0x91,                    # .keep: end
+            ]),
+            # ElmsLabMoveElmCallback (1e:4cc5): checkscene / iftrue .Skip -> sjump to stub.
+            # The 4th byte of the overwritten iftrue ($4cc8) is left dangling but unreachable.
+            RomPatchEntry(bank=0x1E, address=0x4CC5, data=[0x03, 0xD0, 0x7F]),
+            RomPatchEntry(bank=0x1E, address=0x7FD0, data=[
+                0x31, 0xB6, 0x06,        # checkevent EVENT_COP_IN_ELMS_LAB
+                0x09, 0xD8, 0x7F,        # iftrue .no_cop      ; set = officer already gone
+                0x14, 0x03,              # setscene SCENE_ELMSLAB_MEET_OFFICER
+                0x13,                    # .no_cop: checkscene ; original callback body
+                0x09, 0xCD, 0x4C,        # iftrue ElmsLabMoveElmCallback.Skip
+                0x72, 0x02, 0x03, 0x04,  # moveobject ELMSLAB_ELM, 3, 4
+                0x90,                    # endcallback
+            ]),
+        ],
+    ),
 ]
