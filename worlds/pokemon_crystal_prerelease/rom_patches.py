@@ -155,4 +155,43 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    # Boarding the Fast Ship blackoutmods the cabin so a whiteout mid-voyage keeps you on the
+    # ship, which throws away the pokecenter you actually last used. Vanilla restores it on
+    # arrival, but under ER the ports can't (the port city's center is not necessarily reachable)
+    # so they ClearLastSpawn instead, and every teleport/whiteout after a crossing falls back to
+    # SPAWN_HOME. Teleport can't be used on the ship at all (TryTeleport requires an outdoor map),
+    # so the cabin spawn only ever feeds GetWhiteoutSpawn - derive it from the current map there
+    # and stop writing it to wLastSpawnMap, which leaves your real spawn untouched by the trip.
+    RomPatch(
+        name="fast_ship_spawn_keeps_last_pokecenter",
+        entries=[
+            # GetWhiteoutSpawn (04:6531): ld [wDefaultSpawnpoint], a (04:6544) -> jp stub
+            RomPatchEntry(bank=0x04, address=0x6544, data=[0xC3, 0xDD, 0x7F]),
+            # Stub in bank 4 end-of-bank free space ($7fdd-$7fff)
+            RomPatchEntry(bank=0x04, address=0x7fdd, data=[
+                0x47,              # ld b, a                    ; spawn from the wLastSpawnMap lookup
+                0xFA, 0xBC, 0xDC,  # ld a, [wMapGroup]
+                0xFE, 0x0F,        # cp GROUP_FAST_SHIP_1F
+                0x20, 0x0D,        # jr nz, .done
+                0xFA, 0xBD, 0xDC,  # ld a, [wMapNumber]
+                0xFE, 0x03,        # cp MAP_FAST_SHIP_1F        ; ship maps are 3-7 in the group,
+                0x38, 0x06,        # jr c, .done                ; the ports and passages are not
+                0xFE, 0x08,        # cp MAP_FAST_SHIP_B1F + 1
+                0x30, 0x02,        # jr nc, .done
+                0x06, 0x32,        # ld b, SPAWN_FAST_SHIP
+                0x78,              # .done: ld a, b
+                0xEA, 0x01, 0xD0,  # ld [wDefaultSpawnpoint], a
+                0xC9,              # ret
+            ]),
+            # FastShip1FEnterShipScript (1d:522e): blackoutmod FAST_SHIP_CABINS_SW_SSW_NW
+            # (1d:5241) -> sjump to the next command
+            RomPatchEntry(bank=0x1D, address=0x5241, data=[0x03, 0x44, 0x52]),
+            # VermilionPortLeaveShipScript (1d:4e74): the ER branch's iftrue (1d:4e8e) targets
+            # callasm ClearLastSpawn ($4e95) -> the end after blackoutmod ($4e94), so ER now
+            # leaves the spawn alone. Non-ER still blackoutmods the port city as in vanilla.
+            RomPatchEntry(bank=0x1D, address=0x4E8F, data=[0x94]),
+            # OlivinePortLeaveShipScript (1d:49bf): same, $49e0 -> $49df
+            RomPatchEntry(bank=0x1D, address=0x49DA, data=[0xDF]),
+        ],
+    ),
 ]
