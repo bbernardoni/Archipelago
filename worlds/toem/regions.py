@@ -141,16 +141,33 @@ class RegionName:
     KIIRUBERG = Area.KIIRUBERG
     MOUNTAIN_TOP = Area.MOUNTAIN_TOP
     BASTO = Area.BASTO
+    # Question regions
+    FASHION_SHOW = f"{Area.LOGCITY} - Fashion show"
+    BALLOON_ANIMAL = f"{Area.KIIRUBERG} - Balloon animal"
+    ASTEROID = f"{Area.KIIRUBERG} - Asteroid"
     # Compendium regions
     SQUIRRELS = f"{Area.OAKLAVILLE} - Squirrels"
+    SERO = f"{Area.OAKLAVILLE} - Sero"
+    TATO_FLY = f"{Area.OAKLAVILLE} - Tato fly"
     SEAGULLS = f"{Area.STANHAMN} - Seagulls"
     SUNDAY_SWAN = f"{Area.STANHAMN} - Sunday Swan"
+    FIA = f"{Area.STANHAMN} - Fia"
+    FRAS = f"{Area.STANHAMN} - Fräs"
     PIGEON = f"{Area.LOGCITY} - Pigeon"
+    MOUSE = f"{Area.LOGCITY} - Mouse"
+    FLUFF = f"{Area.KIIRUBERG} - Fluff ball"
+    HEDGEHOG = f"{Area.KIIRUBERG} - Hedgehog"
+    METEOPAL = f"{Area.KIIRUBERG} - Meteopal"
+    GOAT_BIRTHDAY_PARTY = f"{Area.KIIRUBERG} - Goat (Birthday party)"
+    GOAT_CLIFFS = f"{Area.KIIRUBERG} - Goat (Cliffs)"
     GOAT = f"{Area.KIIRUBERG} - Goat"
+    OWL = f"{Area.KIIRUBERG} - Owl"
     BAT = f"{Area.BASTO} - Bat"
     BEAK_BIRD = f"{Area.BASTO} - Beak Bird"
     BITLING_TATO = f"{Area.BASTO} - Bitling Tato"
     WATER_STRIDER = f"{Area.BASTO} - Water Strider"
+    # Item regions
+    GHOST_GLASSES = f"{Area.OAKLAVILLE} - Ghost glasses"
     # Achievement regions
     GOOD_BOY = "Pet a pet"
     MAXIMUM_VACATION = f"{Area.BASTO} - Maximum Vacation"
@@ -210,3 +227,12 @@ basto_regions = (
     RegionName.BASTO_GHOST_HANGOUT, RegionName.BASTO_CAVE, RegionName.BASTO_SECRET_CAVE,
     RegionName.BASTO_JUNGLE
 )
+
+area_lists = {
+    Area.OAKLAVILLE: oaklaville_regions,
+    Area.STANHAMN: stanhamn_regions,
+    Area.LOGCITY: logcity_regions,
+    Area.KIIRUBERG: kiiruberg_regions,
+    Area.MOUNTAIN_TOP: mountain_top_regions,
+    Area.BASTO: basto_regions,
+}

@@ -4,20 +4,11 @@ from typing import ClassVar, final
 
 from BaseClasses import Entrance, Region
 from entrance_rando import ERPlacementState
-from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Rule
+from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Rule, True_
 
-from .items import ItemName
+from .items import HardLogic, ItemName
 from .locations import EventName, LocationName, get_stamp_rule
-from .regions import (
-    Area,
-    RegionName,
-    basto_regions,
-    kiiruberg_regions,
-    logcity_regions,
-    mountain_top_regions,
-    oaklaville_regions,
-    stanhamn_regions,
-)
+from .regions import Area, RegionName, area_lists
 
 
 class ERGroups(IntEnum):
@@ -743,72 +734,177 @@ region_connections: dict[str, Connection] = {
         RegionName.BASTO_JUNGLE, RegionName.BASTO_BONFIRE_TOP, ERGroups.BASTO),
 }
 
-helper_connections: dict[str, Connection] = {
+
+@dataclass(frozen=True)
+class HelperConnection:
+    name: str
+    dst_region_name: str
+    rule: Rule | None = None
+
+helper_region_data: dict[str, list[HelperConnection]] = {
+    # Quest connections
+    RegionName.FASHION_SHOW: [
+        HelperConnection("Fashion show from bottom", RegionName.LOGCITY_FASHION_SHOW_BOTTOM),
+        HelperConnection("Fashion show from top", RegionName.LOGCITY_FASHION_SHOW_TOP),
+    ],
+    RegionName.BALLOON_ANIMAL: [
+        HelperConnection("Balloon animal from Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
+        HelperConnection("Balloon animal from Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP,
+                         HardLogic(True_())),
+    ],
+    RegionName.ASTEROID: [
+        HelperConnection("Asteroid from Snowman square bottom", RegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM),
+        HelperConnection("Asteroid from Snowman square top", RegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP,
+                         HardLogic(True_())),
+    ],
+
     # Compendium connections
-    "Squirrel from Ghost cup game": Connection(RegionName.OAKLAVILLE_GHOST_CUP_GAME, RegionName.SQUIRRELS),
-    "Squirrels from Hotel elevator": Connection(RegionName.OAKLAVILLE_HOTEL_ELEVATOR, RegionName.SQUIRRELS),
-    "Seagulls from Stanhamn bus stop": Connection(RegionName.STANHAMN_BUS_STOP, RegionName.SEAGULLS),
-    "Seagulls from Hippo beach": Connection(RegionName.STANHAMN_HIPPO_BEACH, RegionName.SEAGULLS),
-    "Seagulls from Outside lighthouse": Connection(RegionName.STANHAMN_OUTSIDE_LIGHTHOUSE, RegionName.SEAGULLS),
-    "Sunday swan from Docks left": Connection(RegionName.STANHAMN_DOCKS_LEFT, RegionName.SUNDAY_SWAN),
-    "Sunday swan from Docks right": Connection(RegionName.STANHAMN_DOCKS_RIGHT, RegionName.SUNDAY_SWAN),
-    "Pigeon from Clock tower": Connection(RegionName.LOGCITY_CLOCK_TOWER, RegionName.PIGEON),
-    "Pigeon from Outside cafe": Connection(RegionName.LOGCITY_OUTSIDE_CAFE, RegionName.PIGEON),
-    "Pigeon from Outside gallery": Connection(RegionName.LOGCITY_OUTSIDE_GALLERY, RegionName.PIGEON),
-    "Pigeon from Ratskullz alley": Connection(RegionName.LOGCITY_RATSKULLZ_ALLEY, RegionName.PIGEON),
-    "Goat from Birthday party bottom": Connection(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, RegionName.GOAT),
-    "Goat from Birthday party top": Connection(RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP, RegionName.GOAT),
-    "Goat from Ski mountain top": Connection(RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP, RegionName.GOAT),
-    "Goat from Cliffs top": Connection(RegionName.KIIRUBERG_CLIFFS_TOP, RegionName.GOAT),
-    "Goat from Cliffs middle": Connection(RegionName.KIIRUBERG_CLIFFS_MIDDLE, RegionName.GOAT),
-    "Bat from Cave": Connection(RegionName.BASTO_CAVE, RegionName.BAT),
-    "Bat from Bonfire top": Connection(RegionName.BASTO_BONFIRE_TOP, RegionName.BAT),
-    "Bat from Outside castle": Connection(RegionName.BASTO_OUTSIDE_CASTLE, RegionName.BAT),
-    "Beak bird from Harbor bottom": Connection(RegionName.BASTO_BUS_STOP_BOTTOM, RegionName.BEAK_BIRD),
-    "Beak bird from Harbor top": Connection(RegionName.BASTO_BUS_STOP_TOP, RegionName.BEAK_BIRD),
-    "Beak bird from Lily pad pond left": Connection(RegionName.BASTO_LILY_PAD_POND_LEFT, RegionName.BEAK_BIRD),
-    "Beak bird from Lily pad pond right": Connection(RegionName.BASTO_LILY_PAD_POND_RIGHT, RegionName.BEAK_BIRD),
-    "Bitling tato from Harbor bottom": Connection(RegionName.BASTO_BUS_STOP_BOTTOM, RegionName.BITLING_TATO),
-    "Bitling tato from Harbor top": Connection(RegionName.BASTO_BUS_STOP_TOP, RegionName.BITLING_TATO),
-    "Water strider from Lily pad pond left": Connection(RegionName.BASTO_LILY_PAD_POND_LEFT, RegionName.WATER_STRIDER),
-    "Water strider from Outside castle": Connection(RegionName.BASTO_OUTSIDE_CASTLE, RegionName.WATER_STRIDER),
+    RegionName.SQUIRRELS: [
+        HelperConnection("Squirrel from Ghost cup game", RegionName.OAKLAVILLE_GHOST_CUP_GAME),
+        HelperConnection("Squirrels from Hotel elevator", RegionName.OAKLAVILLE_HOTEL_ELEVATOR),
+    ],
+    RegionName.SERO: [
+        HelperConnection("Sero from Graveyard", RegionName.OAKLAVILLE_GRAVEYARD),
+        HelperConnection("Sero from Skeleton house balcony", RegionName.OAKLAVILLE_SKELETON_BALCONY,
+                         HardLogic(True_())),
+    ],
+    RegionName.TATO_FLY: [
+        HelperConnection("Tato fly from Skeleton house balcony", RegionName.OAKLAVILLE_SKELETON_BALCONY),
+        HelperConnection("Tato fly from Graveyard", RegionName.OAKLAVILLE_GRAVEYARD,
+                         HardLogic(True_())),
+    ],
+    RegionName.SEAGULLS: [
+        HelperConnection("Seagulls from Stanhamn bus stop", RegionName.STANHAMN_BUS_STOP),
+        HelperConnection("Seagulls from Hippo beach", RegionName.STANHAMN_HIPPO_BEACH),
+        HelperConnection("Seagulls from Outside lighthouse", RegionName.STANHAMN_OUTSIDE_LIGHTHOUSE),
+        HelperConnection("Seagulls from Outside hydroplant (before honking)", RegionName.STANHAMN_OUTSIDE_HYDROPLANT,
+                         HardLogic(True_())),
+        HelperConnection("Seagulls from Pirate Drawbridge (if sandwich present)", RegionName.STANHAMN_PIRATE_DRAWBRIDGE,
+                         HardLogic(CanReachLocation(LocationName.ITEM_SANDWICH))),
+    ],
+    RegionName.SUNDAY_SWAN: [
+        HelperConnection("Sunday swan from Docks left", RegionName.STANHAMN_DOCKS_LEFT),
+        HelperConnection("Sunday swan from Docks right", RegionName.STANHAMN_DOCKS_RIGHT),
+    ],
+    RegionName.FIA: [
+        HelperConnection("Fia from Docks right", RegionName.STANHAMN_DOCKS_RIGHT),
+        HelperConnection("Fia from Docks left", RegionName.STANHAMN_DOCKS_LEFT,
+                         HardLogic(True_())),
+    ],
+    RegionName.FRAS: [
+        HelperConnection("Fräs from Docks left", RegionName.STANHAMN_DOCKS_LEFT),
+        HelperConnection("Fräs from Docks right", RegionName.STANHAMN_DOCKS_RIGHT,
+                         HardLogic(True_())),
+    ],
+    RegionName.PIGEON: [
+        HelperConnection("Pigeon from Clock tower", RegionName.LOGCITY_CLOCK_TOWER),
+        HelperConnection("Pigeon from Outside cafe", RegionName.LOGCITY_OUTSIDE_CAFE),
+        HelperConnection("Pigeon from Outside gallery", RegionName.LOGCITY_OUTSIDE_GALLERY),
+        HelperConnection("Pigeon from Ratskullz alley", RegionName.LOGCITY_RATSKULLZ_ALLEY),
+    ],
+    RegionName.MOUSE: [
+        HelperConnection("Mouse from Overpass", RegionName.LOGCITY_OVERPASS),
+        HelperConnection("Mouse from Cafe (before honking)", RegionName.LOGCITY_CAFE,
+                         HardLogic(True_())),
+    ],
+    RegionName.FLUFF: [
+        HelperConnection("Fluff ball from Birthday party bottom", RegionName.KIIRUBERG_OUTSIDE_OBSERV_BOTTOM),
+        HelperConnection("Fluff ball from Birthday party top", RegionName.KIIRUBERG_OUTSIDE_OBSERV_TOP,
+                         HardLogic(True_())),
+    ],
+    RegionName.HEDGEHOG: [
+        HelperConnection("Hedgehog from Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
+        HelperConnection("Hedgehog from Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP,
+                         HardLogic(True_())),
+    ],
+    RegionName.METEOPAL: [
+        HelperConnection("Meteopal from Snowman square bottom", RegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM),
+        HelperConnection("Meteopal from Snowman square top", RegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP,
+                         HardLogic(True_())),
+    ],
+    RegionName.GOAT_BIRTHDAY_PARTY: [
+        HelperConnection("Goat from Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
+        HelperConnection("Goat from Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP),
+    ],
+    RegionName.GOAT_CLIFFS: [
+        HelperConnection("Goat from Cliffs top", RegionName.KIIRUBERG_CLIFFS_TOP),
+        HelperConnection("Goat from Cliffs middle", RegionName.KIIRUBERG_CLIFFS_MIDDLE),
+    ],
+    RegionName.GOAT: [
+        HelperConnection("Goat from Birthday party", RegionName.GOAT_BIRTHDAY_PARTY),
+        HelperConnection("Goat from Ski mountain top", RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
+        HelperConnection("Goat from Cliffs", RegionName.GOAT_CLIFFS),
+    ],
+    RegionName.OWL: [
+        HelperConnection("Owl from Cliffs top", RegionName.KIIRUBERG_CLIFFS_TOP),
+        HelperConnection("Owl from Cliffs middle", RegionName.KIIRUBERG_CLIFFS_MIDDLE,
+                         HardLogic(True_())),
+    ],
+    RegionName.BAT: [
+        HelperConnection("Bat from Cave", RegionName.BASTO_CAVE),
+        HelperConnection("Bat from Bonfire top", RegionName.BASTO_BONFIRE_TOP),
+        HelperConnection("Bat from Outside castle", RegionName.BASTO_OUTSIDE_CASTLE),
+    ],
+    RegionName.BEAK_BIRD: [
+        HelperConnection("Beak bird from Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
+        HelperConnection("Beak bird from Harbor top", RegionName.BASTO_BUS_STOP_TOP),
+        HelperConnection("Beak bird from Lily pad pond left", RegionName.BASTO_LILY_PAD_POND_LEFT),
+        HelperConnection("Beak bird from Lily pad pond right", RegionName.BASTO_LILY_PAD_POND_RIGHT),
+    ],
+    RegionName.BITLING_TATO: [
+        HelperConnection("Bitling tato from Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
+        HelperConnection("Bitling tato from Harbor top", RegionName.BASTO_BUS_STOP_TOP),
+    ],
+    RegionName.WATER_STRIDER: [
+        HelperConnection("Water strider from Lily pad pond left", RegionName.BASTO_LILY_PAD_POND_LEFT),
+        HelperConnection("Water strider from Outside castle", RegionName.BASTO_OUTSIDE_CASTLE),
+    ],
+
+    # Item connections
+    RegionName.GHOST_GLASSES: [
+        HelperConnection("Ghost glasses from Graveyard", RegionName.OAKLAVILLE_GRAVEYARD),
+        HelperConnection("Ghost glasses from Skeleton house balcony", RegionName.OAKLAVILLE_SKELETON_BALCONY),
+    ],
 
     # Achievement connections
-    "Pet Tom": Connection(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, RegionName.GOOD_BOY),
-    "Pet Oskar": Connection(RegionName.OAKLAVILLE_HOTEL, RegionName.GOOD_BOY),
-    "Pet Sero": Connection(RegionName.OAKLAVILLE_GRAVEYARD, RegionName.GOOD_BOY),
-    "Pet the Pet rock": Connection(RegionName.OAKLAVILLE_CAMP, RegionName.GOOD_BOY),
-    "Pet Fia": Connection(RegionName.STANHAMN_DOCKS_RIGHT, RegionName.GOOD_BOY),
-    "Pet Fräs": Connection(RegionName.STANHAMN_DOCKS_LEFT, RegionName.GOOD_BOY),
-    "Pet Willemijn": Connection(RegionName.STANHAMN_KING_FISH_BEACH, RegionName.GOOD_BOY),
-    "Pet Portillo": Connection(RegionName.LOGCITY_OUTSIDE_CAFE, RegionName.GOOD_BOY),
-    "Pet Mikée or Nariko": Connection(RegionName.KIIRUBERG_BALLOON_HOUSE, RegionName.GOOD_BOY),
-    "Pet Teddy": Connection(RegionName.KIIRUBERG_MECKS_HOUSE, RegionName.GOOD_BOY),
-    "Sit on a chair in Lily pad pond left": Connection(RegionName.BASTO_LILY_PAD_POND_LEFT, RegionName.MAXIMUM_VACATION),
-    "Sit on a chair in Gym house": Connection(RegionName.BASTO_GYM_HOUSE, RegionName.MAXIMUM_VACATION),
-    "Sit on a chair in Carnival": Connection(RegionName.BASTO_CARNIVAL, RegionName.MAXIMUM_VACATION),
-    "Sit on a chair in Bonfire top": Connection(RegionName.BASTO_BONFIRE_TOP, RegionName.MAXIMUM_VACATION),
-    "Sit on a chair in Ghost hangout": Connection(RegionName.BASTO_GHOST_HANGOUT, RegionName.MAXIMUM_VACATION),
+    RegionName.GOOD_BOY: [
+        HelperConnection("Pet Tom", RegionName.OAKLAVILLE_OUTSIDE_HOTEL),
+        HelperConnection("Pet Oskar", RegionName.OAKLAVILLE_HOTEL),
+        HelperConnection("Pet Sero", RegionName.OAKLAVILLE_GRAVEYARD),
+        HelperConnection("Pet the Pet rock", RegionName.OAKLAVILLE_CAMP),
+        HelperConnection("Pet Fia", RegionName.STANHAMN_DOCKS_RIGHT),
+        HelperConnection("Pet Fräs", RegionName.STANHAMN_DOCKS_LEFT),
+        HelperConnection("Pet Willemijn", RegionName.STANHAMN_KING_FISH_BEACH),
+        HelperConnection("Pet Portillo", RegionName.LOGCITY_OUTSIDE_CAFE),
+        HelperConnection("Pet Mikée or Nariko", RegionName.KIIRUBERG_BALLOON_HOUSE),
+        HelperConnection("Pet Teddy", RegionName.KIIRUBERG_MECKS_HOUSE),
+    ],
+    RegionName.MAXIMUM_VACATION: [
+        HelperConnection("Sit on a chair in Lily pad pond left", RegionName.BASTO_LILY_PAD_POND_LEFT),
+        HelperConnection("Sit on a chair in Gym house", RegionName.BASTO_GYM_HOUSE),
+        HelperConnection("Sit on a chair in Carnival", RegionName.BASTO_CARNIVAL),
+        HelperConnection("Sit on a chair in Bonfire top", RegionName.BASTO_BONFIRE_TOP),
+        HelperConnection("Sit on a chair in Ghost hangout", RegionName.BASTO_GHOST_HANGOUT),
+    ],
 
     # Cassette connections
-    "Visit Logicity bus stop": Connection(RegionName.LOGCITY_BUS_STOP, RegionName.BIG_CITY_TAPE),
-    "Visit Outside fasion show": Connection(RegionName.LOGCITY_OUTSIDE_FASHION_SHOW, RegionName.BIG_CITY_TAPE),
-    "Visit Birthday party bottom": Connection(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, RegionName.STORIES_OF_SNOW_TAPE),
-    "Visit Birthday party top": Connection(RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP, RegionName.STORIES_OF_SNOW_TAPE),
+    RegionName.BIG_CITY_TAPE: [
+        HelperConnection("Visit Logicity bus stop", RegionName.LOGCITY_BUS_STOP),
+        HelperConnection("Visit Outside fasion show", RegionName.LOGCITY_OUTSIDE_FASHION_SHOW),
+    ],
+    RegionName.STORIES_OF_SNOW_TAPE: [
+        HelperConnection("Visit Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
+        HelperConnection("Visit Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP),
+    ],
+}
+helper_connections: dict[str, Connection] = {
+    helper_connection.name: Connection(helper_connection.dst_region_name, region, rule=helper_connection.rule)
+    for region, connection_list in helper_region_data.items()
+    for helper_connection in connection_list
 }
 # Super region connections
-helper_connections.update({f"{region} in {Area.OAKLAVILLE}": Connection(region, RegionName.OAKLAVILLE)
-                           for region in oaklaville_regions})
-helper_connections.update({f"{region} in {Area.STANHAMN}": Connection(region, RegionName.STANHAMN)
-                           for region in stanhamn_regions})
-helper_connections.update({f"{region} in {Area.LOGCITY}": Connection(region, RegionName.LOGCITY)
-                           for region in logcity_regions})
-helper_connections.update({f"{region} in {Area.KIIRUBERG}": Connection(region, RegionName.KIIRUBERG)
-                           for region in kiiruberg_regions})
-helper_connections.update({f"{region} in {Area.MOUNTAIN_TOP}": Connection(region, RegionName.MOUNTAIN_TOP)
-                           for region in mountain_top_regions})
-helper_connections.update({f"{region} in {Area.BASTO}": Connection(region, RegionName.BASTO)
-                           for region in basto_regions})
+for area, region_list in area_lists.items():
+    helper_connections.update({f"{region} in {area}": Connection(region, area) for region in region_list})
 
 all_connections = region_connections | helper_connections
 

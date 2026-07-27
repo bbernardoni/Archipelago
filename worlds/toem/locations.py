@@ -8,10 +8,10 @@ from BaseClasses import CollectionState, Location
 from NetUtils import JSONMessagePart
 from rule_builder.field_resolvers import FromOption, FromWorldAttr
 from rule_builder.options import OptionFilter
-from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, HasAny, Rule
+from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, HasAny, Rule, True_
 
 from .constants import GAME_NAME
-from .items import ItemName
+from .items import HardLogic, ItemName
 from .options import (
     BastoStampRequirement,
     HomelandaStampRequirement,
@@ -653,7 +653,7 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_SUS_FOREST: LocationData(RegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.QUEST,
             CanReachRegion(RegionName.OAKLAVILLE_HIDE_AND_SEEK)),
     LocationName.QUEST_MONSTERS: LocationData(RegionName.OAKLAVILLE_HOTEL, LocationGroup.QUEST,
-            HasAll(ItemName.TRIPOD, ItemName.HONK_ATTACHMENT) &
+            (HasAll(ItemName.TRIPOD, ItemName.HONK_ATTACHMENT) | HardLogic(True_())) &
             CanReachAllRegions(RegionName.OAKLAVILLE_PLAYGROUND, RegionName.STANHAMN_HIPPO_BEACH,
                                RegionName.LOGCITY_SKATE_PARK, RegionName.KIIRUBERG_BLIZZARD_MONSTER)),
     LocationName.QUEST_SOCKS: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.QUEST,
@@ -686,7 +686,7 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_BEEHIVE: LocationData(RegionName.OAKLAVILLE_PLAYGROUND, LocationGroup.COMPENDIUM),
     LocationName.COMP_BUTTERFLY: LocationData(RegionName.OAKLAVILLE_BUS_STOP, LocationGroup.COMPENDIUM),
     LocationName.COMP_OSKAR: LocationData(RegionName.OAKLAVILLE_HOTEL, LocationGroup.COMPENDIUM),
-    LocationName.COMP_SERO: LocationData(RegionName.OAKLAVILLE_GRAVEYARD, LocationGroup.COMPENDIUM),
+    LocationName.COMP_SERO: LocationData(RegionName.SERO, LocationGroup.COMPENDIUM),
     LocationName.COMP_FOREST_BIRD: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.COMPENDIUM),
     LocationName.COMP_LADYBUG: LocationData(RegionName.OAKLAVILLE_CAMP, LocationGroup.COMPENDIUM),
     LocationName.COMP_TOM: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.COMPENDIUM),
@@ -696,7 +696,7 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_SQUIRREL: LocationData(RegionName.SQUIRRELS, LocationGroup.COMPENDIUM),
     LocationName.COMP_STAG_BEETLE: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.COMPENDIUM),
     LocationName.COMP_TATO_BUG: LocationData(RegionName.OAKLAVILLE_MUSHROOM_HOUSE, LocationGroup.COMPENDIUM),
-    LocationName.COMP_TATO_FLY: LocationData(RegionName.OAKLAVILLE_SKELETON_BALCONY, LocationGroup.COMPENDIUM),
+    LocationName.COMP_TATO_FLY: LocationData(RegionName.TATO_FLY, LocationGroup.COMPENDIUM),
     LocationName.ITEM_FINGER: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.ITEM),
     LocationName.ITEM_TRIPOD: LocationData(RegionName.START_MENU, LocationGroup.ITEM,
             CanReachAnyLocation(*photo_challenges)),
@@ -705,7 +705,7 @@ location_table: dict[str, LocationData] = {
             CanReachLocation(LocationName.QUEST_CUP_CHAMP)),
     LocationName.ITEM_FJALLBJORN_HAT: LocationData(RegionName.OAKLAVILLE_CAMP, LocationGroup.ITEM,
             CanReachLocation(LocationName.QUEST_SCOUTS)),
-    LocationName.ITEM_GHOST_GLASSES: LocationData(RegionName.OAKLAVILLE_GRAVEYARD, LocationGroup.ITEM),
+    LocationName.ITEM_GHOST_GLASSES: LocationData(RegionName.GHOST_GLASSES, LocationGroup.ITEM),
     LocationName.ITEM_SOAKED_SOCK: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.ITEM,
             CanReachLocation(LocationName.QUEST_SOCKS)),
     LocationName.ITEM_MONSTER_MASK: LocationData(RegionName.OAKLAVILLE_HOTEL, LocationGroup.ITEM,
@@ -755,8 +755,8 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_MELODY: LocationData(RegionName.STANHAMN_KING_FISH_BEACH, LocationGroup.QUEST,
             Has(ItemName.FISHERMANS_WHISTLE_TAPE)),
     LocationName.COMP_BUBBLE_FLY: LocationData(RegionName.STANHAMN_PIRATE_DRAWBRIDGE, LocationGroup.COMPENDIUM),
-    LocationName.COMP_FIA: LocationData(RegionName.STANHAMN_DOCKS_RIGHT, LocationGroup.COMPENDIUM),
-    LocationName.COMP_FRAS: LocationData(RegionName.STANHAMN_DOCKS_LEFT, LocationGroup.COMPENDIUM),
+    LocationName.COMP_FIA: LocationData(RegionName.FIA, LocationGroup.COMPENDIUM),
+    LocationName.COMP_FRAS: LocationData(RegionName.FRAS, LocationGroup.COMPENDIUM),
     LocationName.COMP_WILLEMIJN: LocationData(RegionName.STANHAMN_KING_FISH_BEACH, LocationGroup.COMPENDIUM),
     LocationName.COMP_CRAB: LocationData(RegionName.STANHAMN_HIPPO_BEACH, LocationGroup.COMPENDIUM),
     LocationName.COMP_DRAGONFLY: LocationData(RegionName.STANHAMN_OUTSIDE_HYDROPLANT, LocationGroup.COMPENDIUM),
@@ -834,8 +834,8 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_INFLUENCER: LocationData(RegionName.LOGCITY_CLOCK_TOWER, LocationGroup.QUEST,
             CanReachRegion(RegionName.LOGCITY_OUTSIDE_CAFE)),
     LocationName.QUEST_FASHION: LocationData(RegionName.LOGCITY_FASHION_SHOW_BACKSTAGE, LocationGroup.QUEST,
-            HasAny(*fashionable_hats) |
-            HasAny(*fashionable_hats_basto, options=[OptionFilter(IncludeBasto, IncludeBasto.option_true)])),
+            CanReachRegion(RegionName.FASHION_SHOW) & (HasAny(*fashionable_hats) |
+            HasAny(*fashionable_hats_basto, options=[OptionFilter(IncludeBasto, IncludeBasto.option_true)]))),
     LocationName.QUEST_CLEANING: LocationData(RegionName.LOGCITY_BUS_STOP, LocationGroup.QUEST,
             CanReachRegion(RegionName.LOGCITY_RATSKULLZ_ALLEY)),
     LocationName.QUEST_GRANNY: LocationData(RegionName.LOGCITY_OUTSIDE_FASHION_SHOW, LocationGroup.QUEST),
@@ -845,7 +845,7 @@ location_table: dict[str, LocationData] = {
             Has(ItemName.FRISBEE)),
     LocationName.COMP_BUSINESS_PIGEON: LocationData(RegionName.LOGCITY_OUTSIDE_GALLERY, LocationGroup.COMPENDIUM),
     LocationName.COMP_PORTILLO: LocationData(RegionName.LOGCITY_OUTSIDE_CAFE, LocationGroup.COMPENDIUM),
-    LocationName.COMP_MOUSE: LocationData(RegionName.LOGCITY_OVERPASS, LocationGroup.COMPENDIUM),
+    LocationName.COMP_MOUSE: LocationData(RegionName.MOUSE, LocationGroup.COMPENDIUM),
     LocationName.COMP_PIGEON: LocationData(RegionName.PIGEON, LocationGroup.COMPENDIUM),
     LocationName.COMP_PUNK_PARROT: LocationData(RegionName.LOGCITY_CLOCK_TOWER, LocationGroup.COMPENDIUM,
             Has(ItemName.CINNAMON_BUN)),
@@ -888,19 +888,17 @@ location_table: dict[str, LocationData] = {
     LocationName.QUEST_ASTRONAUT: LocationData(RegionName.KIIRUBERG_OBSERVATORY, LocationGroup.QUEST,
             Has(ItemName.SPACE_HELMET)),
     LocationName.QUEST_CHALLENGE_7: LocationData(RegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, LocationGroup.QUEST,
-            Has(ItemName.CLIMBING_BOOTS) & CanReachRegion(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM)),
+            Has(ItemName.CLIMBING_BOOTS) & CanReachRegion(RegionName.BALLOON_ANIMAL)),
     LocationName.QUEST_CHALLENGE_8: LocationData(RegionName.KIIRUBERG_CLIFFS_TOP, LocationGroup.QUEST,
             CanReachAnyRegion(RegionName.KIIRUBERG_OBSERVATORY, RegionName.KIIRUBERG_MILITARY_BASE,
                               RegionName.KIIRUBERG_WIZARD_TOWER)),
     LocationName.QUEST_ASTEROID: LocationData(RegionName.KIIRUBERG_OBSERVATORY, LocationGroup.QUEST,
-            CanReachRegion(RegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM)),
+            CanReachRegion(RegionName.ASTEROID)),
     LocationName.QUEST_GOAT_CHOIR: LocationData(RegionName.KIIRUBERG_FROZEN_POND, LocationGroup.QUEST,
-            CanReachAnyRegion(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM,
-                              RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP) &
-            CanReachRegion(RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP) &
-            CanReachAnyRegion(RegionName.KIIRUBERG_CLIFFS_TOP, RegionName.KIIRUBERG_CLIFFS_MIDDLE)),
+            CanReachAllRegions(RegionName.GOAT_BIRTHDAY_PARTY, RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP,
+                               RegionName.GOAT_CLIFFS)),
     LocationName.QUEST_SNOWBALL: LocationData(RegionName.KIIRUBERG_FROZEN_POND, LocationGroup.QUEST,
-            Has(ItemName.CLIMBING_BOOTS)),
+            Has(ItemName.CLIMBING_BOOTS) | HardLogic(True_())),
     LocationName.QUEST_BIRTHDAY: LocationData(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, LocationGroup.QUEST,
             warm_clothes & CanReachRegion(RegionName.KIIRUBERG_BLIZZARD_BRIDGE_RIGHT)),
     LocationName.QUEST_PAINTINGS: LocationData(RegionName.KIIRUBERG_CLIFFS_MIDDLE, LocationGroup.QUEST,
@@ -915,13 +913,13 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_NARIKO: LocationData(RegionName.KIIRUBERG_BALLOON_HOUSE, LocationGroup.COMPENDIUM),
     LocationName.COMP_COSMO_DEER: LocationData(RegionName.KIIRUBERG_COSMO_GARDEN, LocationGroup.COMPENDIUM),
     LocationName.COMP_TEDDY: LocationData(RegionName.KIIRUBERG_MECKS_HOUSE, LocationGroup.COMPENDIUM),
-    LocationName.COMP_FLUFF: LocationData(RegionName.KIIRUBERG_OUTSIDE_OBSERV_BOTTOM, LocationGroup.COMPENDIUM),
-    LocationName.COMP_HEDGEHOG: LocationData(RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, LocationGroup.COMPENDIUM),
-    LocationName.COMP_METEOPAL: LocationData(RegionName.KIIRUBERG_SNOWMAN_SQUARE_BOTTOM, LocationGroup.COMPENDIUM,
+    LocationName.COMP_FLUFF: LocationData(RegionName.FLUFF, LocationGroup.COMPENDIUM),
+    LocationName.COMP_HEDGEHOG: LocationData(RegionName.HEDGEHOG, LocationGroup.COMPENDIUM),
+    LocationName.COMP_METEOPAL: LocationData(RegionName.METEOPAL, LocationGroup.COMPENDIUM,
             CanReachRegion(RegionName.KIIRUBERG_OBSERVATORY)),
     LocationName.COMP_GOAT: LocationData(RegionName.GOAT, LocationGroup.COMPENDIUM,
-            CanReachRegion(RegionName.KIIRUBERG_FROZEN_POND)),
-    LocationName.COMP_OWL: LocationData(RegionName.KIIRUBERG_CLIFFS_TOP, LocationGroup.COMPENDIUM),
+            CanReachRegion(RegionName.KIIRUBERG_FROZEN_POND) | HardLogic(True_())),
+    LocationName.COMP_OWL: LocationData(RegionName.OWL, LocationGroup.COMPENDIUM),
     LocationName.COMP_SNOW_BIRD: LocationData(RegionName.KIIRUBERG_SKI_LIFT_BASE, LocationGroup.COMPENDIUM),
     LocationName.COMP_TATO_ALIEN: LocationData(RegionName.KIIRUBERG_OBSERVATORY, LocationGroup.COMPENDIUM),
     LocationName.COMP_TATO_SKI: LocationData(RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP, LocationGroup.COMPENDIUM),

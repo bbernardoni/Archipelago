@@ -1,12 +1,18 @@
 from dataclasses import dataclass
 from itertools import groupby
-from typing import final
+from typing import TYPE_CHECKING, final
 
-from BaseClasses import Item, ItemClassification
+from typing_extensions import override
+
+from BaseClasses import CollectionState, Item, ItemClassification
+from NetUtils import JSONMessagePart
+from rule_builder.rules import False_, Rule, WrapperRule
 
 from .constants import GAME_NAME
 from .regions import Area
 
+if TYPE_CHECKING:
+    from . import ToemWorld
 
 @final
 class ItemGroup:
@@ -185,6 +191,9 @@ class ItemName:
     SAILORS_TUNE_TAPE = "Launchable Socks - Sailor's Tune"
     SONG_OF_THE_SEA_TAPE = "Launchable Socks - Song Of The Sea"
 
+    # UT Gliched Item
+    HARD_LOGIC = "Hard Logic"
+
 
 class ToemItem(Item):
     game: str = GAME_NAME
@@ -201,6 +210,7 @@ progression_useful = ItemClassification.progression | ItemClassification.useful
 progression_deprioritized = ItemClassification.progression_deprioritized_skip_balancing
 
 item_table: dict[str, ItemData] = {
+    # Stamps
     ItemName.HOMELANDA_STAMP: ItemData(progression_useful, 3, ItemGroup.STAMP, Area.HOMELANDA),
     ItemName.OAKLAVILLE_STAMP: ItemData(progression_deprioritized, 15, ItemGroup.STAMP, Area.OAKLAVILLE),
     ItemName.STANHAMN_STAMP: ItemData(progression_deprioritized, 16, ItemGroup.STAMP, Area.STANHAMN),
@@ -208,6 +218,8 @@ item_table: dict[str, ItemData] = {
     ItemName.KIIRUBERG_STAMP: ItemData(progression_deprioritized, 13, ItemGroup.STAMP, Area.KIIRUBERG),
     ItemName.BASTO_STAMP: ItemData(progression_deprioritized, 20, ItemGroup.STAMP, Area.BASTO),
     ItemName.PROGRESSIVE_STAMP: ItemData(progression_deprioritized, 85, ItemGroup.STAMP, Area.MENU),
+
+    # Compendium Photos
     ItemName.COW_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
     ItemName.FLIES_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
     ItemName.HOME_BIRD_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.HOMELANDA),
@@ -282,6 +294,8 @@ item_table: dict[str, ItemData] = {
     ItemName.TATO_COCO_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
     ItemName.TATO_KING_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
     ItemName.WATER_STRIDER_PHOTO: ItemData(ItemClassification.filler, 1, ItemGroup.PHOTO, Area.BASTO),
+
+    # Items
     ItemName.CLOGS: ItemData(ItemClassification.progression, 1, ItemGroup.ITEM, Area.HOMELANDA),
     ItemName.AWARD_MASK: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.HOMELANDA),
     ItemName.FINGER: ItemData(progression_deprioritized, 1, ItemGroup.ITEM, Area.OAKLAVILLE),
@@ -335,6 +349,8 @@ item_table: dict[str, ItemData] = {
     ItemName.FOOT_CAST: ItemData(ItemClassification.filler, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.BERET: ItemData(progression_deprioritized, 1, ItemGroup.ITEM, Area.BASTO),
     ItemName.ROYAL_CROWN: ItemData(progression_deprioritized, 1, ItemGroup.ITEM, Area.BASTO),
+
+    # Cassettes
     ItemName.PHOTO_OF_HOME_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.HOMELANDA),
     ItemName.SUMMER_BREEZE_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.OAKLAVILLE),
     ItemName.SQUIRREL_HOTEL_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.OAKLAVILLE),
@@ -379,4 +395,39 @@ item_name_groups: dict[str, set[str]] = {
 item_name_groups.update({
     group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)
 })
+
+@dataclass()
+class HardLogic(WrapperRule["ToemWorld"], game=GAME_NAME):
+    @override
+    def _instantiate(self, world: "ToemWorld") -> Rule.Resolved:
+        # Maybe I'll add this later
+        #if world.options.difficulty.value == Difficulty.option_hard:
+        #    return self.child.resolve(world)
+        if getattr(world.multiworld, "generation_is_fake", False):
+            return self.Resolved(
+                self.child.resolve(world),
+                player=world.player,
+                caching_enabled=getattr(world, "rule_caching_enabled", False),
+            )
+        return False_().resolve(world)
+
+    class Resolved(WrapperRule.Resolved):
+        @override
+        def _evaluate(self, state: CollectionState) -> bool:
+            return state.has(ItemName.OOL_ITEM, self.player) and self.child(state)
+
+        @override
+        def item_dependencies(self) -> dict[str, set[int]]:
+            deps = super().item_dependencies()
+            deps.setdefault(ItemName.OOL_ITEM, set()).add(id(self))
+            return deps
+
+        @override
+        def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
+            messages: list[JSONMessagePart] = [
+                {"type": "color", "color": "yellow", "text": "Hard Logic ["},
+            ]
+            messages.extend(self.child.explain_json(state))
+            messages.append({"type": "color", "color": "yellow", "text": "]"})
+            return messages
 

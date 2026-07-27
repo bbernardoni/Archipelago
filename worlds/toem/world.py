@@ -65,8 +65,10 @@ class ToemWorld(World):
     origin_region_name: str = RegionName.START_MENU
     progressive_stamp_requirements: dict[str, int]
     transitions: dict[str, int] # has to be a str key as that's all json supports
+
     is_ut: bool
-    ut_can_gen_without_yaml = True
+    ut_can_gen_without_yaml: ClassVar = True
+    glitches_item_name: ClassVar = ItemName.OOL_ITEM
     deferred_entrances: dict[str, tuple[Entrance, Region]]
     found_entrances_datastorage_key = "Slot:{player}:TraversedEntrances"
 
@@ -113,8 +115,8 @@ class ToemWorld(World):
 
     @override
     def create_regions(self) -> None:
-        regions = {connection.src_region_name for connection in all_connections}
-        regions |= {connection.dst_region_name for connection in all_connections}
+        regions = {connection.src_region_name for connection in all_connections.values()}
+        regions |= {connection.dst_region_name for connection in all_connections.values()}
         for region in regions:
             if self.options.include_basto or not region.startswith(Area.BASTO):
                 self.multiworld.regions.append(ToemRegion(region, self.player, self.multiworld))
@@ -150,6 +152,8 @@ class ToemWorld(World):
 
     @override
     def create_item(self, name: str) -> ToemItem:
+        if name == ItemName.HARD_LOGIC:
+            return ToemItem(name, ItemClassification.progression, None, self.player)
         return ToemItem(name, item_table[name].classification, self.item_name_to_id[name], self.player)
 
     @override
