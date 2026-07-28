@@ -2465,7 +2465,8 @@ class TMBlocklist(OptionSet):
     Does not apply to vanilla TMs
     """
     display_name = "TM Blocklist"
-    valid_keys = sorted(move.name.title() for id, move in data.moves.items() if id not in ("NO_MOVE", "STRUGGLE"))
+    valid_keys = sorted(move.name.title() for id, move in data.moves.items()
+                        if id not in ("NO_MOVE", "STRUGGLE", "ROCK_SMASH", "HEADBUTT") and not move.is_hm)
 
 
 class ModerniseMovesGeneration(NamedRange):
