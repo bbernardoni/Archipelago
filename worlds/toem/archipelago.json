@@ -1,6 +1,6 @@
 {
     "game": "TOEM: A Photo Adventure",
     "authors": ["DrTChops","0xDEAFC0DE","Shellshe"],
-    "minimum_ap_version": "0.6.3",
+    "minimum_ap_version": "0.6.7",
     "world_version": "2.1.0"
 }
