@@ -7,7 +7,7 @@ from rule_builder.rules import Rule, Has, HasAll, HasAny, HasFromListUnique, Tru
 from worlds.generic.Rules import add_rule as _ap_add_rule, CollectionRule
 from .battle_tower_data import BATTLE_TOWER_NUM_TIERS, BATTLE_TOWER_UBERS_TIER
 from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic, \
-    CanUseHM, CanUseFieldMove
+    CanUseHM, CanUseFieldMove, HasHMBadge, HasBadges, HasGyms
 from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType
 from .evolution import evolution_location_name
 from .items import item_const_name_to_label
@@ -350,32 +350,11 @@ class PokemonCrystalLogic:
                 FishingRodType.Super: Has("Super Rod"),
             }
 
-    def has_hm_badge_requirement(self, hm: str, kanto: bool) -> Rule:
-        reqs = self.hm_badge_requirements_kanto if kanto else self.hm_badge_requirements_johto
-        if hm not in reqs:
-            return True_()
-        return HasAny(*(self.badge_items[badge] for badge in reqs[hm]))
-
-    def badge(self, name: str) -> Rule:
-        return Has(self.badge_items[name])
-
-    def gym(self, name: str) -> Rule:
-        return Has(self.gym_events[name])
-
-    def can_map_card_fly(self) -> Rule:
-        return HasAll(*self.map_card_fly_unlocks)
-
-    def has_expn(self) -> Rule:
-        return HasAll(*self.expn_components)
-
     def can_phone_call(self) -> Rule:
         return HasAll(*self.phone_call_components)
 
     def can_phone_call_power(self) -> Rule:
         return Has("EVENT_RESTORED_POWER_TO_KANTO") & self.can_phone_call()
-
-    def has_pokedex(self) -> Rule:
-        return Has(self.pokedex)
 
     def ship_rule(self) -> Rule:
         rule: Rule = Has("S.S. Ticket")
@@ -390,8 +369,7 @@ class PokemonCrystalLogic:
         return rule
 
     def _badges_or_gyms(self, badges: bool, count: int) -> Rule:
-        pool = self.badge_items.values() if badges else self.gym_events.values()
-        return HasFromListUnique(*pool, count=count)
+        return HasBadges(count) if badges else HasGyms(count)
 
     def has_rockets_requirement(self) -> Rule:
         return self._badges_or_gyms(
@@ -410,7 +388,7 @@ class PokemonCrystalLogic:
         elif self.options.victory_road_requirement == VictoryRoadRequirement.option_badges:
             return self._badges_or_gyms(True, count)
         else:
-            return HasFromListUnique(*list(self.badge_items.values())[:8], count=count)
+            return HasBadges(count, johto_only=True)
 
     def has_elite_four_requirement(self) -> Rule:
         count = self.options.elite_four_count.value
@@ -419,7 +397,7 @@ class PokemonCrystalLogic:
         elif self.options.elite_four_requirement == EliteFourRequirement.option_badges:
             return self._badges_or_gyms(True, count)
         else:
-            return HasFromListUnique(*list(self.badge_items.values())[:8], count=count)
+            return HasBadges(count, johto_only=True)
 
     def has_red_requirement(self) -> Rule:
         return self._badges_or_gyms(
@@ -529,7 +507,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             gyms = min(i, mom_available_gyms)
             set_rule(get_location(f"MOM_SAVINGS_{i + 1}"),
                      (Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM") | CanReachRegion("REGION_ROUTE_31"))
-                     & HasFromListUnique(*world.logic.gym_events.values(), count=gyms))
+                     & HasGyms(gyms))
 
     can_surf_and_whirlpool = CanUseHM(CanUseHM.SURF) & CanUseHM(CanUseHM.WHIRLPOOL)
     can_surf_and_waterfall = CanUseHM(CanUseHM.SURF) & CanUseHM(CanUseHM.WATERFALL)
@@ -586,7 +564,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                                                  FreeFlyLocation.option_map_card):
         from .regions import _get_fly_dest_region
         map_card_dest = _get_fly_dest_region(world, world.map_card_fly_location)
-        add_rule(get_entrance(f"Free Fly {map_card_dest}"), world.logic.can_map_card_fly())
+        add_rule(get_entrance(f"Free Fly {map_card_dest}"), HasAll(*world.logic.map_card_fly_unlocks))
 
     def fly_unlock_rule(fr):
         if world.options.randomize_fly_unlocks or world.options.remote_items:
@@ -608,11 +586,11 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_location("EVENT_GAVE_MYSTERY_EGG_TO_ELM"), Has("Mystery Egg"))
     set_rule(get_location("Elm's Lab - Everstone from Elm"), Has("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"))
     set_rule(get_location("Elm's Lab - Gift from Aide after returning Mystery Egg"), Has("Mystery Egg"))
-    set_rule(get_location("Elm's Lab - Master Ball from Elm"), world.logic.badge("rising"))
+    set_rule(get_location("Elm's Lab - Master Ball from Elm"), Has(world.logic.badge_items["rising"]))
     set_rule(get_location("Elm's Lab - S.S. Ticket from Elm"), Has("EVENT_BEAT_ELITE_FOUR"))
 
     # Route 29
-    set_rule(get_location("Route 29 - Pink Bow from Tuscany"), world.logic.badge("zephyr"))
+    set_rule(get_location("Route 29 - Pink Bow from Tuscany"), Has(world.logic.badge_items["zephyr"]))
 
     # Route 30
     if world.options.route_30_access == Route30Access.option_mr_pokemon:
@@ -644,7 +622,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                 tier_rule = HasAll(*trainer.tier_gates[:i + 1])
                 if trainer.pokemon_request_slot is not None:
                     slot = trainer.pokemon_request_slot
-                    rule = tier_rule & world.logic.can_phone_call() & HasRequestSlot(slot) & world.logic.has_pokedex()
+                    rule = tier_rule & world.logic.can_phone_call() & HasRequestSlot(slot) & Has(world.logic.pokedex)
                 else:
                     rule = tier_rule & world.logic.can_phone_call()
                 safe_set_location_rule(rematch_location_name(trainer, i), rule)
@@ -707,7 +685,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_location("Violet City - Northwest Item across Water"), CanUseHM(CanUseHM.SURF))
     set_rule(get_location("Violet City - Northeast Item across Water"), CanUseHM(CanUseHM.SURF))
 
-    set_rule(get_location("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"), world.logic.gym("falkner"))
+    set_rule(get_location("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"), Has(world.logic.gym_events["falkner"]))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_OUTSIDE -> REGION_RUINS_OF_ALPH_OUTSIDE:SOUTH"),
              CanUseHM(CanUseHM.SURF))
@@ -747,7 +725,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_ROUTE_32:NORTH -> REGION_ROUTE_32:SOUTH"), route_32_access_rule)
     set_rule(get_entrance("REGION_ROUTE_32:SOUTH -> REGION_ROUTE_32:NORTH"), route_32_access_rule)
 
-    set_rule(get_location("Route 32 - Miracle Seed from Man in North"), world.logic.badge("zephyr"))
+    set_rule(get_location("Route 32 - Miracle Seed from Man in North"), Has(world.logic.badge_items["zephyr"]))
     set_rule(get_location("Route 32 - TM05 from Roar Guy"), CanUseHM(CanUseHM.CUT))
 
     # Union Cave
@@ -844,7 +822,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_location("Route 34 - Leaf Stone from Gina"), world.logic.can_phone_call())
 
     # Goldenrod City
-    set_rule(get_location("Goldenrod City - Squirtbottle from Flower Shop"), world.logic.badge("plain"))
+    set_rule(get_location("Goldenrod City - Squirtbottle from Flower Shop"), Has(world.logic.badge_items["plain"]))
     set_rule(get_location("Goldenrod City - Post-E4 GS Ball from Trade Corner Receptionist"),
              Has("EVENT_BEAT_ELITE_FOUR"))
     set_static_rule("Eevee", Has("EVENT_MET_BILL"))
@@ -926,7 +904,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     if world.options.randomize_phone_call_items and world.options.randomize_pokemon_requests:
         set_rule(get_location("National Park - Nugget from Beverly"),
-                 world.logic.can_phone_call() & HasRequestSlot(5) & world.logic.has_pokedex())
+                 world.logic.can_phone_call() & HasRequestSlot(5) & Has(world.logic.pokedex))
 
     if WildEncounterMethodsRequired.BUG_CATCHING_CONTEST not in world.options.wild_encounter_methods_required and world.is_universal_tracker:
         for i in range(len(world.generated_contest)):
@@ -988,7 +966,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     # Route 39
     if world.options.randomize_phone_call_items and world.options.randomize_pokemon_requests:
         set_rule(get_location("Route 39 - Nugget from Derek"),
-                 world.logic.can_phone_call() & HasRequestSlot(6) & world.logic.has_pokedex())
+                 world.logic.can_phone_call() & HasRequestSlot(6) & Has(world.logic.pokedex))
 
     # Route 39 Moomoo Farm - items require healing Miltank in the barn first
     healed_moomoo_rule = Has("EVENT_HEALED_MOOMOO")
@@ -1065,7 +1043,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_location("Cianwood City - Hidden Item in West Rock"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
         set_rule(get_location("Cianwood City - Hidden Item in North Rock"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
-    set_rule(get_location("Cianwood City - HM02 from Chuck's Wife"), world.logic.gym("chuck"))
+    set_rule(get_location("Cianwood City - HM02 from Chuck's Wife"), Has(world.logic.gym_events["chuck"]))
 
     set_rule(get_entrance("REGION_CIANWOOD_GYM -> REGION_CIANWOOD_GYM:STRENGTH"), CanUseHM(CanUseHM.STRENGTH))
 
@@ -1193,7 +1171,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     if world.options.randomize_phone_call_items and world.options.randomize_pokemon_requests:
         set_rule(get_location("Route 43 - Pink Bow from Tiffany"),
-                 world.logic.can_phone_call() & HasRequestSlot(7) & world.logic.has_pokedex())
+                 world.logic.can_phone_call() & HasRequestSlot(7) & Has(world.logic.pokedex))
 
     # Lake of Rage
     if world.options.red_gyarados_access == RedGyaradosAccess.option_whirlpool:
@@ -1210,7 +1188,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     if world.options.randomize_pokemon_requests:
         set_rule(get_location("Lake of Rage - Magikarp Prize"),
-                 Has("MAGIKARP") & Has("EVENT_CLEARED_ROCKET_HIDEOUT") & world.logic.has_pokedex())
+                 Has("MAGIKARP") & Has("EVENT_CLEARED_ROCKET_HIDEOUT") & Has(world.logic.pokedex))
 
     # Route 44
     set_rule(get_entrance("REGION_ROUTE_44 -> REGION_ROUTE_44:WATER"), CanUseHM(CanUseHM.SURF))
@@ -1251,7 +1229,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_2F -> REGION_BLACKTHORN_GYM_1F:HOLE_3"), CanUseHM(CanUseHM.STRENGTH))
 
     set_rule(get_entrance("REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE -> REGION_DRAGONS_DEN_1F:UPPER"),
-             world.logic.gym("clair"))
+             Has(world.logic.gym_events["clair"]))
     set_rule(get_entrance("REGION_BLACKTHORN_CITY -> REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE"),
              CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE -> REGION_BLACKTHORN_CITY"),
@@ -1268,7 +1246,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTHEAST -> REGION_DRAGONS_DEN_B1F:SOUTH"), CanUseHM(CanUseHM.SURF))
 
     # Dragon Shrine - elder kicks you out if you haven't beaten Clair
-    beaten_clair = world.logic.gym("clair")
+    beaten_clair = Has(world.logic.gym_events["clair"])
     set_rule(get_entrance("REGION_DRAGON_SHRINE:ENTRANCE -> REGION_DRAGONS_DEN_B1F:SOUTH"), beaten_clair)
     set_rule(get_entrance("REGION_DRAGON_SHRINE:ENTRANCE -> REGION_DRAGON_SHRINE"), beaten_clair)
 
@@ -1415,8 +1393,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
         # Route 3
         if world.options.route_3_access.value == Route3Access.option_boulder_badge:
-            set_rule(get_entrance("REGION_PEWTER_CITY -> REGION_ROUTE_3"), world.logic.badge("boulder"))
-            set_rule(get_entrance("REGION_ROUTE_3 -> REGION_PEWTER_CITY"), world.logic.badge("boulder"))
+            set_rule(get_entrance("REGION_PEWTER_CITY -> REGION_ROUTE_3"), Has(world.logic.badge_items["boulder"]))
+            set_rule(get_entrance("REGION_ROUTE_3 -> REGION_PEWTER_CITY"), Has(world.logic.badge_items["boulder"]))
 
         if hidden():
             set_rule(get_location("Mount Moon Square - Hidden Item under Rock"),
@@ -1508,7 +1486,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             add_rule(get_location("Vermilion City - Lost Item from Guy in Fan Club"),
                      Has("EVENT_MET_COPYCAT_FOUND_OUT_ABOUT_LOST_ITEM"))
 
-        has_expn = world.logic.has_expn()
+        has_expn = HasAll(*world.logic.expn_components)
         set_rule(get_location("EVENT_FOUGHT_SNORLAX"), has_expn)
         set_static_rule("Snorlax", has_expn)
 
@@ -1651,7 +1629,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
             for i, location in enumerate(bills_grandpa_locations):
                 set_rule(get_location(location),
-                         And(*[HasRequestSlot(j) for j in range(i + 1)], world.logic.has_pokedex()))
+                         And(*[HasRequestSlot(j) for j in range(i + 1)], Has(world.logic.pokedex)))
 
     if Goal.UNOWN_HUNT in world.options.goal:
         for location, unown in world.generated_unown_signs.items():
@@ -1661,7 +1639,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     trade_gate: Rule = True_() if world.options.trades_required else GlitchedLogic()
     for trade_id in world.generated_trades:
-        safe_set_location_rule(trade_id, HasTradeRequest(trade_id) & world.logic.has_pokedex() & trade_gate)
+        safe_set_location_rule(trade_id, HasTradeRequest(trade_id) & Has(world.logic.pokedex) & trade_gate)
 
     if world.options.randomize_lucky_number_show:
         prize_labels = ["Radio Tower 1F - Lucky Number Show 1st Prize",
@@ -1670,7 +1648,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         for i, trade_id in enumerate(world.generated_lucky_number_trades):
             # Trade-access event lives in the trade's region (region reach is free); gate it on the species.
             safe_set_location_rule(
-                f"Lucky Number Trade {i + 1}", HasTradeRequest(trade_id) & world.logic.has_pokedex())
+                f"Lucky Number Trade {i + 1}", HasTradeRequest(trade_id) & Has(world.logic.pokedex))
             # Prize requires winning the corresponding trade-access event.
             safe_set_location_rule(prize_labels[i], Has(f"Lucky Number Trade {i + 1}"))
 
@@ -1690,7 +1668,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                 add_rule(get_entrance(f"{region.name} -> {region.name}:GRASS"), rule)
 
     if world.options.dexsanity or world.options.dexcountsanity:
-        set_rule(get_entrance("Menu -> Pokedex"), world.logic.has_pokedex())
+        set_rule(get_entrance("Menu -> Pokedex"), Has(world.logic.pokedex))
 
     for pokemon_id in world.generated_dexsanity:
         pokemon_data = world.generated_pokemon[pokemon_id]
@@ -1841,7 +1819,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             gate: Rule = GlitchedLogic() if ool else True_()
             if evo.evo_type in (EvolutionType.Level, EvolutionType.Stats):
                 gyms = ((evo.level - 1) // world.options.evolution_gym_levels) + 1
-                inner = True_() if ool else HasFromListUnique(*world.logic.gym_events.values(), count=gyms)
+                inner = True_() if ool else HasGyms(gyms)
             elif evo.evo_type is EvolutionType.Item:
                 inner = Has(item_label)
             elif evo.evo_type is EvolutionType.Trade:
@@ -1996,8 +1974,7 @@ def verify_hm_accessibility(world: "PokemonCrystalWorld") -> None:
 
         if unverified_hms and unverified_hms == hms:
             state = world.get_world_collection_state()
-            if any((logic.has_hm_badge_requirement(hm, False) | logic.has_hm_badge_requirement(hm, True))
-                           .resolve(world)(state) for hm in unverified_hms):
+            if any((HasHMBadge(hm) | HasHMBadge(hm, True)).resolve(world)(state) for hm in unverified_hms):
                 unverified_hms_list = ",".join(unverified_hms)
                 raise Exception(f"Failed to ensure access to {unverified_hms_list} for player {world.player}")
         elif unverified_hms:

@@ -5,7 +5,7 @@ from typing_extensions import override
 
 from BaseClasses import CollectionState
 from NetUtils import JSONMessagePart
-from rule_builder.rules import Rule, Has, True_, False_
+from rule_builder.rules import Rule, Has, HasAny, HasFromListUnique, True_, False_
 
 from .data import data as crystal_data
 from .items import PokemonCrystalGlitchedToken
@@ -225,6 +225,48 @@ class GlitchedLogic(Rule["PokemonCrystalWorld"], game=GAME):
 
 
 @dataclasses.dataclass()
+class HasBadges(Rule["PokemonCrystalWorld"], game=GAME):
+    """Player has `count` distinct badges, or only Johto's eight when `johto_only`."""
+
+    count: int
+    johto_only: bool = False
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        badges = list(world.logic.badge_items.values())
+        if self.johto_only:
+            badges = badges[:8]
+        return HasFromListUnique(*badges, count=self.count).resolve(world)
+
+
+@dataclasses.dataclass()
+class HasGyms(Rule["PokemonCrystalWorld"], game=GAME):
+    """Player has beaten `count` distinct gym leaders."""
+
+    count: int
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        return HasFromListUnique(*world.logic.gym_events.values(), count=self.count).resolve(world)
+
+
+@dataclasses.dataclass()
+class HasHMBadge(Rule["PokemonCrystalWorld"], game=GAME):
+    """Player holds a badge that permits `hm`'s field use on the given continent."""
+
+    hm: str
+    kanto: bool = False
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        logic = world.logic
+        requirements = logic.hm_badge_requirements_kanto if self.kanto else logic.hm_badge_requirements_johto
+        if self.hm not in requirements:
+            return True_().resolve(world)
+        return HasAny(*(logic.badge_items[badge] for badge in requirements[self.hm])).resolve(world)
+
+
+@dataclasses.dataclass()
 class CanUseHM(Rule["PokemonCrystalWorld"], game=GAME):
     """Player has the HM, can teach it, and holds a badge that permits its field use.
 
@@ -271,7 +313,7 @@ class CanUseHM(Rule["PokemonCrystalWorld"], game=GAME):
         if self.region is not None:
             region_data = crystal_data.regions[self.region]
             kanto = not (region_data.johto or region_data.silver_cave)
-        rule = rule & world.logic.has_hm_badge_requirement(self.hm, kanto=kanto)
+        rule = rule & HasHMBadge(self.hm, kanto)
 
         if require_flash == RequireFlash.option_logically_required:
             rule = rule | GlitchedLogic()
