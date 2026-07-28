@@ -5,10 +5,11 @@ from typing_extensions import override
 
 from BaseClasses import CollectionState
 from NetUtils import JSONMessagePart
-from rule_builder.rules import Rule, Has, False_
+from rule_builder.rules import Rule, Has, True_, False_
 
 from .data import data as crystal_data
 from .items import PokemonCrystalGlitchedToken
+from .options import RequireFlash
 
 if TYPE_CHECKING:
     from .world import PokemonCrystalWorld
@@ -221,3 +222,80 @@ class GlitchedLogic(Rule["PokemonCrystalWorld"], game=GAME):
         if not getattr(world.multiworld, "generation_is_fake", False):
             return False_().resolve(world)
         return Has(PokemonCrystalGlitchedToken.TOKEN_NAME).resolve(world)
+
+
+@dataclasses.dataclass()
+class CanUseHM(Rule["PokemonCrystalWorld"], game=GAME):
+    """Player has the HM, can teach it, and holds a badge that permits its field use.
+
+    Pass `region` to take the badge requirements from that region's continent instead of `kanto`.
+    FLASH additionally honours require_flash; pass `allow_ool=False` where the HM is needed
+    regardless of the option.
+    """
+
+    CUT: ClassVar[str] = "CUT"
+    FLY: ClassVar[str] = "FLY"
+    SURF: ClassVar[str] = "SURF"
+    STRENGTH: ClassVar[str] = "STRENGTH"
+    FLASH: ClassVar[str] = "FLASH"
+    WHIRLPOOL: ClassVar[str] = "WHIRLPOOL"
+    WATERFALL: ClassVar[str] = "WATERFALL"
+
+    FIELD_MOVES: ClassVar[dict[str, tuple[str, str]]] = {
+        CUT: ("HM01 Cut", "Teach CUT"),
+        FLY: ("HM02 Fly", "Teach FLY"),
+        SURF: ("HM03 Surf", "Teach SURF"),
+        STRENGTH: ("HM04 Strength", "Teach STRENGTH"),
+        FLASH: ("HM05 Flash", "Teach FLASH"),
+        WHIRLPOOL: ("HM06 Whirlpool", "Teach WHIRLPOOL"),
+        WATERFALL: ("HM07 Waterfall", "Teach WATERFALL"),
+    }
+
+    hm: str
+    kanto: bool = False
+    region: str | None = None
+    allow_ool: bool = True
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        require_flash = world.options.require_flash if self.hm == self.FLASH and self.allow_ool else None
+        if require_flash == RequireFlash.option_not_required:
+            return True_().resolve(world)
+
+        item, teach = self.FIELD_MOVES[self.hm]
+        rule: Rule = Has(item)
+        if not world.options.field_moves_always_usable:
+            rule = rule & Has(teach)
+
+        kanto = self.kanto
+        if self.region is not None:
+            region_data = crystal_data.regions[self.region]
+            kanto = not (region_data.johto or region_data.silver_cave)
+        rule = rule & world.logic.has_hm_badge_requirement(self.hm, kanto=kanto)
+
+        if require_flash == RequireFlash.option_logically_required:
+            rule = rule | GlitchedLogic()
+        return rule.resolve(world)
+
+
+@dataclasses.dataclass()
+class CanUseFieldMove(Rule["PokemonCrystalWorld"], game=GAME):
+    """Player has the TM for a field move that no badge gates, and can teach it."""
+
+    HEADBUTT: ClassVar[str] = "HEADBUTT"
+    ROCK_SMASH: ClassVar[str] = "ROCK_SMASH"
+
+    FIELD_MOVES: ClassVar[dict[str, tuple[str, str]]] = {
+        HEADBUTT: ("TM02", "Teach HEADBUTT"),
+        ROCK_SMASH: ("TM08", "Teach ROCK_SMASH"),
+    }
+
+    move: str
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        item, teach = self.FIELD_MOVES[self.move]
+        rule: Rule = Has(item)
+        if not world.options.field_moves_always_usable:
+            rule = rule & Has(teach)
+        return rule.resolve(world)

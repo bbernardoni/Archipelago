@@ -6,7 +6,8 @@ from rule_builder.rules import Rule, Has, HasAll, HasAny, HasFromListUnique, Tru
     CanReachRegion, CanReachLocation
 from worlds.generic.Rules import add_rule as _ap_add_rule, CollectionRule
 from .battle_tower_data import BATTLE_TOWER_NUM_TIERS, BATTLE_TOWER_UBERS_TIER
-from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic
+from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic, \
+    CanUseHM, CanUseFieldMove
 from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType
 from .evolution import evolution_location_name
 from .items import item_const_name_to_label
@@ -15,7 +16,7 @@ from .options import Goal, JohtoOnly, Route32Condition, UndergroundsRequirePower
     MtSilverRequirement, FreeFlyLocation, HMBadgeRequirements, VictoryRoadRequirement, EliteFourRequirement, \
     RedRequirement, \
     Route44AccessRequirement, RandomizeBadges, RadioTowerRequirement, PokemonCrystalOptions, Shopsanity, \
-    RequireFlash, RequireItemfinder, Route42Access, RedGyaradosAccess, PhoneCallMode, Route30Access, \
+    RequireItemfinder, Route42Access, RedGyaradosAccess, PhoneCallMode, Route30Access, \
     SouthKantoCondition, RemoveBadgeRequirement, WildEncounterMethodsRequired, SaffronGatehouseTea, \
     VanillaEventChains
 from .pokemon import add_hm_compatibility, get_chamber_event_for_unown
@@ -355,50 +356,6 @@ class PokemonCrystalLogic:
             return True_()
         return HasAny(*(self.badge_items[badge] for badge in reqs[hm]))
 
-    def _can_use_hm(self, hm: str, item: str, teach: str, kanto: bool) -> Rule:
-        rule: Rule = Has(item)
-        if not self.options.field_moves_always_usable:
-            rule = rule & Has(teach)
-        return rule & self.has_hm_badge_requirement(hm, kanto=kanto)
-
-    def can_cut(self, kanto: bool = False) -> Rule:
-        return self._can_use_hm("CUT", "HM01 Cut", "Teach CUT", kanto)
-
-    def can_fly(self) -> Rule:
-        return self._can_use_hm("FLY", "HM02 Fly", "Teach FLY", kanto=False)
-
-    def can_surf(self, kanto: bool = False) -> Rule:
-        return self._can_use_hm("SURF", "HM03 Surf", "Teach SURF", kanto)
-
-    def can_strength(self, kanto: bool = False) -> Rule:
-        return self._can_use_hm("STRENGTH", "HM04 Strength", "Teach STRENGTH", kanto)
-
-    def can_flash(self, kanto: bool = False, allow_ool: bool = True) -> Rule:
-        if self.options.require_flash == RequireFlash.option_not_required and allow_ool:
-            return True_()
-        rule = self._can_use_hm("FLASH", "HM05 Flash", "Teach FLASH", kanto)
-        if allow_ool and self.options.require_flash == RequireFlash.option_logically_required:
-            rule = rule | GlitchedLogic()
-        return rule
-
-    def can_whirlpool(self, kanto: bool = False) -> Rule:
-        return self._can_use_hm("WHIRLPOOL", "HM06 Whirlpool", "Teach WHIRLPOOL", kanto)
-
-    def can_waterfall(self, kanto: bool = False) -> Rule:
-        return self._can_use_hm("WATERFALL", "HM07 Waterfall", "Teach WATERFALL", kanto)
-
-    def can_headbutt(self) -> Rule:
-        rule: Rule = Has("TM02")
-        if not self.options.field_moves_always_usable:
-            rule = rule & Has("Teach HEADBUTT")
-        return rule
-
-    def can_rock_smash(self) -> Rule:
-        rule: Rule = Has("TM08")
-        if not self.options.field_moves_always_usable:
-            rule = rule & Has("Teach ROCK_SMASH")
-        return rule
-
     def badge(self, name: str) -> Rule:
         return Has(self.badge_items[name])
 
@@ -574,16 +531,16 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                      (Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM") | CanReachRegion("REGION_ROUTE_31"))
                      & HasFromListUnique(*world.logic.gym_events.values(), count=gyms))
 
-    can_surf_and_whirlpool = world.logic.can_surf() & world.logic.can_whirlpool()
-    can_surf_and_waterfall = world.logic.can_surf() & world.logic.can_waterfall()
+    can_surf_and_whirlpool = CanUseHM(CanUseHM.SURF) & CanUseHM(CanUseHM.WHIRLPOOL)
+    can_surf_and_waterfall = CanUseHM(CanUseHM.SURF) & CanUseHM(CanUseHM.WATERFALL)
 
     lock_kanto_gyms = world.options.lock_kanto_gyms or world.options.kinda_early_surf
     kanto_gym_lock = HasAny("EVENT_SILVER_CAVE_ACCESS", "EVENT_FOUGHT_SNORLAX", "EVENT_FOUGHT_LUGIA",
                             "EVENT_FOUGHT_HO_OH", "EVENT_FOUGHT_SUICUNE", "EVENT_VICTORY_ROAD_ACCESS")
     if world.options.lock_kanto_gyms and world.options.kinda_early_surf:
-        kanto_gyms_access = kanto_gym_lock & world.logic.can_surf(kanto=True)
+        kanto_gyms_access = kanto_gym_lock & CanUseHM(CanUseHM.SURF, kanto=True)
     elif world.options.kinda_early_surf:
-        kanto_gyms_access = world.logic.can_surf(kanto=True)
+        kanto_gyms_access = CanUseHM(CanUseHM.SURF, kanto=True)
     else:
         kanto_gyms_access = kanto_gym_lock
 
@@ -624,7 +581,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     world.set_completion_rule(HasAll(*goal_events))
 
     # Free Fly
-    set_rule(get_entrance("Fly"), world.logic.can_fly())
+    set_rule(get_entrance("Fly"), CanUseHM(CanUseHM.FLY))
     if world.options.free_fly_location.value in (FreeFlyLocation.option_free_fly_and_map_card,
                                                  FreeFlyLocation.option_map_card):
         from .regions import _get_fly_dest_region
@@ -647,7 +604,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             set_rule(get_entrance(f"Fly Destination {i}"), fly_unlock_rule(fly_region))
 
     # New Bark Town
-    set_rule(get_entrance("REGION_NEW_BARK_TOWN -> REGION_ROUTE_27:WEST"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_NEW_BARK_TOWN -> REGION_ROUTE_27:WEST"), CanUseHM(CanUseHM.SURF))
     set_rule(get_location("EVENT_GAVE_MYSTERY_EGG_TO_ELM"), Has("Mystery Egg"))
     set_rule(get_location("Elm's Lab - Everstone from Elm"), Has("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"))
     set_rule(get_location("Elm's Lab - Gift from Aide after returning Mystery Egg"), Has("Mystery Egg"))
@@ -659,9 +616,9 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Route 30
     if world.options.route_30_access == Route30Access.option_mr_pokemon:
-        route_30_rule = Has("EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON") | world.logic.can_cut()
+        route_30_rule = Has("EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON") | CanUseHM(CanUseHM.CUT)
     else:
-        route_30_rule = Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM") | world.logic.can_cut()
+        route_30_rule = Has("EVENT_GAVE_MYSTERY_EGG_TO_ELM") | CanUseHM(CanUseHM.CUT)
 
     if world.options.route_30_battle:
         set_rule(get_entrance("REGION_ROUTE_30:NORTHWEST -> REGION_ROUTE_30"), route_30_rule)
@@ -701,7 +658,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                      world.logic.can_phone_call() & Has("EVENT_BEAT_ELITE_FOUR"))
 
     # Cherrygrove
-    set_rule(get_location("Cherrygrove City - Mystic Water from Island Man"), world.logic.can_surf())
+    set_rule(get_location("Cherrygrove City - Mystic Water from Island Man"), CanUseHM(CanUseHM.SURF))
 
     safe_set_location_rule("Cherrygrove City - Rival", Has("EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON"))
     set_rule(get_location("EVENT_BEAT_CHERRYGROVE_RIVAL"), Has("EVENT_GOT_MYSTERY_EGG_FROM_MR_POKEMON"))
@@ -714,48 +671,48 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_location("Route 31 - Berry from Wade"), world.logic.can_phone_call())
 
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTHEAST -> REGION_DARK_CAVE_VIOLET_ENTRANCE:WEST"),
-             world.logic.can_rock_smash())
+             CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:WEST -> REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTHEAST"),
-             world.logic.can_rock_smash())
+             CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTHEAST -> REGION_DARK_CAVE_VIOLET_ENTRANCE:SOUTHEAST"),
-             world.logic.can_rock_smash())
+             CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:SOUTHEAST -> REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTHEAST"),
-             world.logic.can_rock_smash())
+             CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTH -> REGION_DARK_CAVE_VIOLET_ENTRANCE:WEST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     if world.options.blackthorn_dark_cave_access.value == BlackthornDarkCaveAccess.option_waterfall:
         rule = can_surf_and_waterfall
     else:
-        rule = world.logic.can_surf()
+        rule = CanUseHM(CanUseHM.SURF)
     set_rule(get_entrance("REGION_DARK_CAVE_VIOLET_ENTRANCE:WEST -> REGION_DARK_CAVE_VIOLET_ENTRANCE:NORTH"), rule)
 
     set_rule(get_entrance(
         "REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:NORTHEAST -> REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:SOUTHEAST"),
-        world.logic.can_surf())
+        CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance(
         "REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:SOUTHEAST -> REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:NORTHEAST"),
-        world.logic.can_surf())
+        CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance(
         "REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:SOUTHEAST -> REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:NORTHWEST"),
-        world.logic.can_surf())
+        CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance(
         "REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:NORTHWEST -> REGION_DARK_CAVE_BLACKTHORN_ENTRANCE:SOUTHEAST"),
-        world.logic.can_surf())
+        CanUseHM(CanUseHM.SURF))
 
     # Violet City
     if hidden():
-        set_rule(get_location("Violet City - Hidden Item behind Cut Tree"), world.logic.can_cut())
-    set_rule(get_location("Violet City - Northwest Item across Water"), world.logic.can_surf())
-    set_rule(get_location("Violet City - Northeast Item across Water"), world.logic.can_surf())
+        set_rule(get_location("Violet City - Hidden Item behind Cut Tree"), CanUseHM(CanUseHM.CUT))
+    set_rule(get_location("Violet City - Northwest Item across Water"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_location("Violet City - Northeast Item across Water"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_location("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"), world.logic.gym("falkner"))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_OUTSIDE -> REGION_RUINS_OF_ALPH_OUTSIDE:SOUTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_OUTSIDE:SOUTH -> REGION_RUINS_OF_ALPH_OUTSIDE"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_KABUTO_CHAMBER -> REGION_RUINS_OF_ALPH_KABUTO_ITEM_ROOM"),
              Has("EVENT_MART_ESCAPE_ROPE"))
@@ -764,7 +721,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
              Has("Water Stone"))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_AERODACTYL_CHAMBER -> REGION_RUINS_OF_ALPH_AERODACTYL_ITEM_ROOM"),
-             world.logic.can_flash(allow_ool=False))
+             CanUseHM(CanUseHM.FLASH, allow_ool=False))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_HO_OH_CHAMBER -> REGION_RUINS_OF_ALPH_HO_OH_ITEM_ROOM"),
              Has("Rainbow Wing"))
@@ -791,38 +748,40 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_ROUTE_32:SOUTH -> REGION_ROUTE_32:NORTH"), route_32_access_rule)
 
     set_rule(get_location("Route 32 - Miracle Seed from Man in North"), world.logic.badge("zephyr"))
-    set_rule(get_location("Route 32 - TM05 from Roar Guy"), world.logic.can_cut())
+    set_rule(get_location("Route 32 - TM05 from Roar Guy"), CanUseHM(CanUseHM.CUT))
 
     # Union Cave
     # 1F internal
-    set_rule(get_entrance("REGION_UNION_CAVE_1F -> REGION_UNION_CAVE_1F:SOUTH"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_UNION_CAVE_1F:SOUTH -> REGION_UNION_CAVE_1F"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_UNION_CAVE_1F -> REGION_UNION_CAVE_1F:SOUTH"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_UNION_CAVE_1F:SOUTH -> REGION_UNION_CAVE_1F"), CanUseHM(CanUseHM.SURF))
     # B1F internal
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:NORTH -> REGION_UNION_CAVE_B1F:STRENGTH"), world.logic.can_strength())
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:STRENGTH -> REGION_UNION_CAVE_B1F:NORTH"), world.logic.can_strength())
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:NORTH -> REGION_UNION_CAVE_B1F:CENTER"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:CENTER -> REGION_UNION_CAVE_B1F:NORTH"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:SOUTHWEST -> REGION_UNION_CAVE_B1F:SOUTHEAST"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_UNION_CAVE_B1F:SOUTHEAST -> REGION_UNION_CAVE_B1F:SOUTHWEST"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:NORTH -> REGION_UNION_CAVE_B1F:STRENGTH"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:STRENGTH -> REGION_UNION_CAVE_B1F:NORTH"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:NORTH -> REGION_UNION_CAVE_B1F:CENTER"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:CENTER -> REGION_UNION_CAVE_B1F:NORTH"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:SOUTHWEST -> REGION_UNION_CAVE_B1F:SOUTHEAST"),
+             CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_UNION_CAVE_B1F:SOUTHEAST -> REGION_UNION_CAVE_B1F:SOUTHWEST"),
+             CanUseHM(CanUseHM.SURF))
     # B2F internal
-    set_rule(get_entrance("REGION_UNION_CAVE_B2F:NORTH -> REGION_UNION_CAVE_B2F:SURF"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_UNION_CAVE_B2F:SURF -> REGION_UNION_CAVE_B2F:NORTH"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_UNION_CAVE_B2F:NORTH -> REGION_UNION_CAVE_B2F:SURF"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_UNION_CAVE_B2F:SURF -> REGION_UNION_CAVE_B2F:NORTH"), CanUseHM(CanUseHM.SURF))
 
     if world.options.route_23_restored:
         set_rule(get_entrance("REGION_ROUTE_23_RESTORED:SOUTH -> REGION_ROUTE_23_RESTORED:SURF"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_ROUTE_23_RESTORED:NORTH -> REGION_ROUTE_23_RESTORED:SURF"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_ROUTE_23_RESTORED:SURF -> REGION_ROUTE_23_RESTORED:SOUTH"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_ROUTE_23_RESTORED:SURF -> REGION_ROUTE_23_RESTORED:NORTH"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
 
     if world.options.flooded_mine:
         set_rule(get_entrance("REGION_CHERRYGROVE_CITY -> REGION_CHERRYGROVE_CITY:FLOODED_MINE_ENTRANCE"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_CHERRYGROVE_CITY:FLOODED_MINE_ENTRANCE -> REGION_CHERRYGROVE_CITY"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
 
 
     # Route 33
@@ -833,17 +792,17 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:ENTRANCE -> REGION_SLOWPOKE_WELL_B1F"), Has("EVENT_MET_KURT"))
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F -> REGION_SLOWPOKE_WELL_B1F:ENTRANCE"), Has("EVENT_MET_KURT"))
 
-    slowpoke_well_west_rule = world.logic.can_strength() & Has("EVENT_CLEARED_SLOWPOKE_WELL")
+    slowpoke_well_west_rule = CanUseHM(CanUseHM.STRENGTH) & Has("EVENT_CLEARED_SLOWPOKE_WELL")
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F -> REGION_SLOWPOKE_WELL_B1F:WEST"), slowpoke_well_west_rule)
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:WEST -> REGION_SLOWPOKE_WELL_B1F"), slowpoke_well_west_rule)
 
-    set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:WEST -> REGION_SLOWPOKE_WELL_B1F:CENTER"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:CENTER -> REGION_SLOWPOKE_WELL_B1F:WEST"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:WEST -> REGION_SLOWPOKE_WELL_B1F:CENTER"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_SLOWPOKE_WELL_B1F:CENTER -> REGION_SLOWPOKE_WELL_B1F:WEST"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B2F:CENTER -> REGION_SLOWPOKE_WELL_B2F:ISLANDS"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_SLOWPOKE_WELL_B2F:ISLANDS -> REGION_SLOWPOKE_WELL_B2F:CENTER"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     set_rule(get_entrance("REGION_AZALEA_TOWN -> REGION_AZALEA_GYM"), Has("EVENT_CLEARED_SLOWPOKE_WELL"))
 
@@ -869,8 +828,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     # Ilex Forest
 
     if not world.options.remove_ilex_cut_tree:
-        set_rule(get_entrance("REGION_ILEX_FOREST:NORTH -> REGION_ILEX_FOREST:SOUTH"), world.logic.can_cut())
-        set_rule(get_entrance("REGION_ILEX_FOREST:SOUTH -> REGION_ILEX_FOREST:NORTH"), world.logic.can_cut())
+        set_rule(get_entrance("REGION_ILEX_FOREST:NORTH -> REGION_ILEX_FOREST:SOUTH"), CanUseHM(CanUseHM.CUT))
+        set_rule(get_entrance("REGION_ILEX_FOREST:SOUTH -> REGION_ILEX_FOREST:NORTH"), CanUseHM(CanUseHM.CUT))
 
     set_static_rule("Celebi", Has("GS Ball") & Has("EVENT_CLEARED_SLOWPOKE_WELL") & Has("EVENT_BEAT_AZALEA_RIVAL"))
 
@@ -879,7 +838,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_location("Ilex Forest - HM01 from Farfetch'd Guy"), Has("EVENT_HERDED_FARFETCHD"))
 
     # Route 34
-    set_rule(get_entrance("REGION_ROUTE_34 -> REGION_ROUTE_34:WATER"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_34 -> REGION_ROUTE_34:WATER"), CanUseHM(CanUseHM.SURF))
 
     if world.options.randomize_phone_call_items:
         set_rule(get_location("Route 34 - Leaf Stone from Gina"), world.logic.can_phone_call())
@@ -956,7 +915,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Route 35
     set_rule(get_location("Route 35 - HP Up after delivering Kenya"), Has("EVENT_GAVE_KENYA"))
-    set_rule(get_entrance("REGION_ROUTE_35 -> REGION_ROUTE_35:FRUITTREE"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_35 -> REGION_ROUTE_35:FRUITTREE"), CanUseHM(CanUseHM.SURF))
 
     # National Park
     if world.options.national_park_access.value == NationalParkAccess.option_bicycle:
@@ -985,8 +944,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_static_rule("Sudowoodo", has_squirtbottle)
 
     # Route 36
-    set_rule(get_entrance("REGION_ROUTE_35 -> REGION_ROUTE_36:WEST"), world.logic.can_cut())
-    set_rule(get_entrance("REGION_ROUTE_36:WEST -> REGION_ROUTE_35"), world.logic.can_cut())
+    set_rule(get_entrance("REGION_ROUTE_35 -> REGION_ROUTE_36:WEST"), CanUseHM(CanUseHM.CUT))
+    set_rule(get_entrance("REGION_ROUTE_36:WEST -> REGION_ROUTE_35"), CanUseHM(CanUseHM.CUT))
 
     set_rule(get_location("EVENT_SAW_SUICUNE_ON_ROUTE_36"), Has("EVENT_RELEASED_THE_BEASTS"))
 
@@ -999,8 +958,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_ECRUTEAK_GYM -> REGION_ECRUTEAK_GYM:INTERIOR"), Has("EVENT_BURNED_TOWER_MORTY"))
     set_rule(get_entrance("REGION_ECRUTEAK_GYM -> REGION_ECRUTEAK_CITY"), Has("EVENT_BURNED_TOWER_MORTY"))
 
-    set_rule(get_location("Burned Tower 1F - Item"), world.logic.can_rock_smash())
-    set_rule(get_location("Burned Tower B1F - Item"), world.logic.can_strength())
+    set_rule(get_location("Burned Tower 1F - Item"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
+    set_rule(get_location("Burned Tower B1F - Item"), CanUseHM(CanUseHM.STRENGTH))
 
     set_rule(get_entrance("REGION_ECRUTEAK_TIN_TOWER_ENTRANCE -> REGION_ECRUTEAK_TIN_TOWER_ENTRANCE:BEHIND_SAGE"),
              Has("Clear Bell"))
@@ -1051,15 +1010,15 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_entrance("REGION_FAST_SHIP_1F -> REGION_OLIVINE_PORT:TICKET"), Has("EVENT_FAST_SHIP_LAZY_SAILOR"))
 
         if hidden():
-            set_rule(get_location("Olivine Port - Hidden Item in Buoy"), world.logic.can_surf())
+            set_rule(get_location("Olivine Port - Hidden Item in Buoy"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_entrance("REGION_OLIVINE_GYM -> REGION_OLIVINE_GYM:JASMINE"), Has("EVENT_JASMINE_RETURNED_TO_GYM"))
 
     # Route 40
-    set_rule(get_entrance("REGION_ROUTE_40 -> REGION_ROUTE_40:WATER"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_40 -> REGION_ROUTE_40:WATER"), CanUseHM(CanUseHM.SURF))
 
     if hidden():
-        set_rule(get_location("Route 40 - Hidden Item in Rock"), world.logic.can_rock_smash())
+        set_rule(get_location("Route 40 - Hidden Item in Rock"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
     # Route 41
     set_rule(get_entrance("REGION_ROUTE_41 -> REGION_ROUTE_41:NW_ISLAND"), can_surf_and_whirlpool)
@@ -1070,45 +1029,45 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_ROUTE_41:SW_ISLAND -> REGION_ROUTE_41"), can_surf_and_whirlpool)
     set_rule(get_entrance("REGION_ROUTE_41 -> REGION_ROUTE_41:SE_ISLAND"), can_surf_and_whirlpool)
     set_rule(get_entrance("REGION_ROUTE_41:SE_ISLAND -> REGION_ROUTE_41"), can_surf_and_whirlpool)
-    set_rule(get_entrance("REGION_ROUTE_41:SE_ISLAND -> REGION_ROUTE_41:SE_ISLAND:ITEM"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_ROUTE_41:SE_ISLAND:ITEM -> REGION_ROUTE_41:SE_ISLAND"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_41:SE_ISLAND -> REGION_ROUTE_41:SE_ISLAND:ITEM"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_ROUTE_41:SE_ISLAND:ITEM -> REGION_ROUTE_41:SE_ISLAND"), CanUseHM(CanUseHM.SURF))
 
     # Whirl Islands internal
     # B1F one-way + strength
     set_rule(get_entrance("REGION_WHIRL_ISLAND_B1F:SOUTHEAST -> REGION_WHIRL_ISLAND_B1F:SOUTHWEST"),
-             world.logic.can_strength())
+             CanUseHM(CanUseHM.STRENGTH))
     # SW surf connections
     set_rule(get_entrance("REGION_WHIRL_ISLAND_SW:NORTHWEST -> REGION_WHIRL_ISLAND_SW:NORTHEAST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_WHIRL_ISLAND_SW:NORTHEAST -> REGION_WHIRL_ISLAND_SW:NORTHWEST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_WHIRL_ISLAND_SW:SOUTHWEST -> REGION_WHIRL_ISLAND_SW:SOUTHEAST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_WHIRL_ISLAND_SW:SOUTHEAST -> REGION_WHIRL_ISLAND_SW:SOUTHWEST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     # B2F connections
-    set_rule(get_entrance("REGION_WHIRL_ISLAND_B2F:NORTH -> REGION_WHIRL_ISLAND_B2F:SOUTH"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_WHIRL_ISLAND_B2F:NORTH -> REGION_WHIRL_ISLAND_B2F:SOUTH"), CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_WHIRL_ISLAND_B2F:SOUTH -> REGION_WHIRL_ISLAND_B2F:NORTH"), can_surf_and_waterfall)
     set_rule(get_entrance("REGION_WHIRL_ISLAND_B2F:SOUTH -> REGION_WHIRL_ISLAND_B2F:LUGIA_CHAMBER_ENTRANCE"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_WHIRL_ISLAND_B2F:LUGIA_CHAMBER_ENTRANCE -> REGION_WHIRL_ISLAND_B2F:SOUTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     # Lugia sits across open water; surf the chamber to reach it
     set_rule(get_entrance("REGION_WHIRL_ISLAND_LUGIA_CHAMBER -> REGION_WHIRL_ISLAND_LUGIA_CHAMBER:WATER"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     set_rule(get_location("EVENT_FOUGHT_LUGIA"), Has("Silver Wing"))
     set_static_rule("Lugia", Has("Silver Wing"))
 
     # Cianwood
-    set_rule(get_entrance("REGION_CIANWOOD_CITY -> REGION_ROUTE_41"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_CIANWOOD_CITY -> REGION_ROUTE_41"), CanUseHM(CanUseHM.SURF))
     if hidden():
-        set_rule(get_location("Cianwood City - Hidden Item in West Rock"), world.logic.can_rock_smash())
-        set_rule(get_location("Cianwood City - Hidden Item in North Rock"), world.logic.can_rock_smash())
+        set_rule(get_location("Cianwood City - Hidden Item in West Rock"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
+        set_rule(get_location("Cianwood City - Hidden Item in North Rock"), CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
     set_rule(get_location("Cianwood City - HM02 from Chuck's Wife"), world.logic.gym("chuck"))
 
-    set_rule(get_entrance("REGION_CIANWOOD_GYM -> REGION_CIANWOOD_GYM:STRENGTH"), world.logic.can_strength())
+    set_rule(get_entrance("REGION_CIANWOOD_GYM -> REGION_CIANWOOD_GYM:STRENGTH"), CanUseHM(CanUseHM.STRENGTH))
 
     safe_set_location_rule("Cianwood City - Mysticalman Eusine", Has("EVENT_RELEASED_THE_BEASTS"))
 
@@ -1119,11 +1078,11 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Route 42
     if world.options.route_42_access.value == Route42Access.option_vanilla:
-        set_rule(get_entrance("REGION_ROUTE_42:WEST -> REGION_ROUTE_42:CENTER"), world.logic.can_surf())
-        set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:WEST"), world.logic.can_surf())
+        set_rule(get_entrance("REGION_ROUTE_42:WEST -> REGION_ROUTE_42:CENTER"), CanUseHM(CanUseHM.SURF))
+        set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:WEST"), CanUseHM(CanUseHM.SURF))
 
-        set_rule(get_entrance("REGION_ROUTE_42:EAST -> REGION_ROUTE_42:CENTER"), world.logic.can_surf())
-        set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:EAST"), world.logic.can_surf())
+        set_rule(get_entrance("REGION_ROUTE_42:EAST -> REGION_ROUTE_42:CENTER"), CanUseHM(CanUseHM.SURF))
+        set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:EAST"), CanUseHM(CanUseHM.SURF))
     elif world.options.route_42_access.requires_whirlpool:
         set_rule(get_entrance("REGION_ROUTE_42:WEST -> REGION_ROUTE_42:CENTER"), can_surf_and_whirlpool)
         set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:WEST"), can_surf_and_whirlpool)
@@ -1132,7 +1091,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:EAST"), can_surf_and_whirlpool)
     # else: blocked -> connection doesn't even exist
 
-    set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:CENTERFRUIT"), world.logic.can_cut())
+    set_rule(get_entrance("REGION_ROUTE_42:CENTER -> REGION_ROUTE_42:CENTERFRUIT"), CanUseHM(CanUseHM.CUT))
 
     # set_rule auto-registers the indirect connection for CanReachRegion rules.
     set_rule(get_entrance("REGION_ROUTE_42:WEST -> REGION_ROUTE_42:HEADBUTT"),
@@ -1144,7 +1103,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_location("EVENT_SAW_SUICUNE_ON_ROUTE_42"), Has("EVENT_RELEASED_THE_BEASTS"))
 
     if hidden():
-        set_rule(get_location("Route 42 - Hidden Item in Pond Rock"), world.logic.can_surf())
+        set_rule(get_location("Route 42 - Hidden Item in Pond Rock"), CanUseHM(CanUseHM.SURF))
 
     if world.options.randomize_phone_call_items:
         set_rule(get_location("Route 42 - Water Stone from Tully"), world.logic.can_phone_call())
@@ -1154,55 +1113,55 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_entrance("REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTH -> REGION_MOUNT_MORTAR_1F_OUTSIDE:NORTH"),
              can_surf_and_waterfall)
     set_rule(get_entrance("REGION_MOUNT_MORTAR_1F_OUTSIDE:NORTH -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     # 1F Outside WATERFALL_ISLAND (conditional on route_42_access)
     if world.options.route_42_access.opens_mortar_connection:
         set_rule(
             get_entrance("REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTH -> REGION_MOUNT_MORTAR_1F_OUTSIDE:WATERFALL_ISLAND"),
-            world.logic.can_surf())
+            CanUseHM(CanUseHM.SURF))
         set_rule(
             get_entrance("REGION_MOUNT_MORTAR_1F_OUTSIDE:WATERFALL_ISLAND -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTH"),
-            world.logic.can_surf())
+            CanUseHM(CanUseHM.SURF))
 
     # 1F Outside rock smash (conditional)
     if world.options.mount_mortar_access:
         set_rule(get_entrance(
             "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHWEST:ENTRANCE -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHWEST"),
-            world.logic.can_rock_smash())
+            CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
         set_rule(get_entrance(
             "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHWEST -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHWEST:ENTRANCE"),
-            world.logic.can_rock_smash())
+            CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
         set_rule(get_entrance(
             "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHEAST:ENTRANCE -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHEAST"),
-            world.logic.can_rock_smash())
+            CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
         set_rule(get_entrance(
             "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHEAST -> REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHEAST:ENTRANCE"),
-            world.logic.can_rock_smash())
+            CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
     # 1F Inside
     set_rule(get_entrance("REGION_MOUNT_MORTAR_1F_INSIDE:SOUTH -> REGION_MOUNT_MORTAR_1F_INSIDE"),
-             world.logic.can_strength())
+             CanUseHM(CanUseHM.STRENGTH))
 
     # 2F Inside (all surf)
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE:SOUTH -> REGION_MOUNT_MORTAR_2F_INSIDE:SOUTHWEST"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE:SOUTHWEST -> REGION_MOUNT_MORTAR_2F_INSIDE:SOUTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE:SOUTH -> REGION_MOUNT_MORTAR_2F_INSIDE"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE -> REGION_MOUNT_MORTAR_2F_INSIDE:SOUTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE -> REGION_MOUNT_MORTAR_2F_INSIDE:NORTH"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_2F_INSIDE:NORTH -> REGION_MOUNT_MORTAR_2F_INSIDE"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     # B1F
-    set_rule(get_entrance("REGION_MOUNT_MORTAR_B1F:SOUTH -> REGION_MOUNT_MORTAR_B1F"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_MOUNT_MORTAR_B1F -> REGION_MOUNT_MORTAR_B1F:SOUTH"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_MOUNT_MORTAR_B1F:SOUTH -> REGION_MOUNT_MORTAR_B1F"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_MOUNT_MORTAR_B1F -> REGION_MOUNT_MORTAR_B1F:SOUTH"), CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_MOUNT_MORTAR_B1F:NORTHWEST -> REGION_MOUNT_MORTAR_B1F"),
-             world.logic.can_strength() & world.logic.can_surf())
+             CanUseHM(CanUseHM.STRENGTH) & CanUseHM(CanUseHM.SURF))
 
     # Mahogany Town
     if Shopsanity.JOHTO_MARTS in world.options.shopsanity.value:
@@ -1228,7 +1187,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Route 43
     set_rule(get_entrance("REGION_ROUTE_43 -> REGION_ROUTE_43:FRUITTREE"),
-             world.logic.can_cut() & world.logic.can_surf())
+             CanUseHM(CanUseHM.CUT) & CanUseHM(CanUseHM.SURF))
 
     set_rule(get_location("Route 43 - TM36 from Guard in Gate"), Has("EVENT_CLEARED_ROCKET_HIDEOUT"))
 
@@ -1240,21 +1199,21 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     if world.options.red_gyarados_access == RedGyaradosAccess.option_whirlpool:
         set_rule(get_entrance("REGION_LAKE_OF_RAGE -> REGION_LAKE_OF_RAGE:GYARADOS"), can_surf_and_whirlpool)
     elif world.options.red_gyarados_access == RedGyaradosAccess.option_vanilla:
-        set_rule(get_entrance("REGION_LAKE_OF_RAGE -> REGION_LAKE_OF_RAGE:GYARADOS"), world.logic.can_surf())
+        set_rule(get_entrance("REGION_LAKE_OF_RAGE -> REGION_LAKE_OF_RAGE:GYARADOS"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_location("EVENT_DECIDED_TO_HELP_LANCE"), CanReachLocation("Lake of Rage - Red Scale from Gyarados"))
 
-    set_rule(get_entrance("REGION_LAKE_OF_RAGE -> REGION_LAKE_OF_RAGE:CUT"), world.logic.can_cut())
+    set_rule(get_entrance("REGION_LAKE_OF_RAGE -> REGION_LAKE_OF_RAGE:CUT"), CanUseHM(CanUseHM.CUT))
 
-    set_rule(get_entrance("REGION_LAKE_OF_RAGE:HIDDEN_POWER_HOUSE -> REGION_LAKE_OF_RAGE:CUT"), world.logic.can_cut())
-    set_rule(get_entrance("REGION_LAKE_OF_RAGE:CUT -> REGION_LAKE_OF_RAGE:HIDDEN_POWER_HOUSE"), world.logic.can_cut())
+    set_rule(get_entrance("REGION_LAKE_OF_RAGE:HIDDEN_POWER_HOUSE -> REGION_LAKE_OF_RAGE:CUT"), CanUseHM(CanUseHM.CUT))
+    set_rule(get_entrance("REGION_LAKE_OF_RAGE:CUT -> REGION_LAKE_OF_RAGE:HIDDEN_POWER_HOUSE"), CanUseHM(CanUseHM.CUT))
 
     if world.options.randomize_pokemon_requests:
         set_rule(get_location("Lake of Rage - Magikarp Prize"),
                  Has("MAGIKARP") & Has("EVENT_CLEARED_ROCKET_HIDEOUT") & world.logic.has_pokedex())
 
     # Route 44
-    set_rule(get_entrance("REGION_ROUTE_44 -> REGION_ROUTE_44:WATER"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_44 -> REGION_ROUTE_44:WATER"), CanUseHM(CanUseHM.SURF))
 
     if world.options.randomize_phone_call_items:
         set_rule(get_location("Route 44 - Poke Ball from Wilton"), world.logic.can_phone_call())
@@ -1269,13 +1228,13 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     # Ice Path
 
     set_rule(get_entrance("REGION_ICE_PATH_B1F:NORTH -> REGION_ICE_PATH_B1F:NORTH:STRENGTH"),
-             world.logic.can_strength())
+             CanUseHM(CanUseHM.STRENGTH))
     set_rule(get_entrance("REGION_ICE_PATH_B1F:NORTH:STRENGTH -> REGION_ICE_PATH_B1F:NORTH"),
-             world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_1A"), world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_2A"), world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_3A"), world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_4A"), world.logic.can_strength())
+             CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_1A"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_2A"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_3A"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_location("EVENT_BOULDER_IN_ICE_PATH_4A"), CanUseHM(CanUseHM.STRENGTH))
     ice_path_boulders = ["EVENT_BOULDER_IN_ICE_PATH_1A", "EVENT_BOULDER_IN_ICE_PATH_2A",
                          "EVENT_BOULDER_IN_ICE_PATH_3A", "EVENT_BOULDER_IN_ICE_PATH_4A"]
     set_rule(get_entrance("REGION_ICE_PATH_B2F_MAHOGANY_SIDE -> REGION_ICE_PATH_B2F_MAHOGANY_SIDE:MIDDLE"),
@@ -1283,30 +1242,30 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Blackthorn
     set_rule(get_entrance("REGION_BLACKTHORN_CITY -> REGION_BLACKTHORN_GYM_1F"), Has("EVENT_CLEARED_RADIO_TOWER"))
-    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"), world.logic.can_strength())
-    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_3"), world.logic.can_strength())
+    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"), CanUseHM(CanUseHM.STRENGTH))
+    set_rule(get_location("EVENT_BOULDER_IN_BLACKTHORN_GYM_3"), CanUseHM(CanUseHM.STRENGTH))
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_1F:MIDDLE -> REGION_BLACKTHORN_GYM_1F:LOLA"),
              Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_3"))
     set_rule(get_entrance("REGION_BLACKTHORN_GYM_1F:LOLA -> REGION_BLACKTHORN_GYM_1F:CLAIR"),
              Has("EVENT_BOULDER_IN_BLACKTHORN_GYM_1"))
-    set_rule(get_entrance("REGION_BLACKTHORN_GYM_2F -> REGION_BLACKTHORN_GYM_1F:HOLE_3"), world.logic.can_strength())
+    set_rule(get_entrance("REGION_BLACKTHORN_GYM_2F -> REGION_BLACKTHORN_GYM_1F:HOLE_3"), CanUseHM(CanUseHM.STRENGTH))
 
     set_rule(get_entrance("REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE -> REGION_DRAGONS_DEN_1F:UPPER"),
              world.logic.gym("clair"))
     set_rule(get_entrance("REGION_BLACKTHORN_CITY -> REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_BLACKTHORN_CITY:DRAGONS_DEN_ENTRANCE -> REGION_BLACKTHORN_CITY"),
-             world.logic.can_surf())
+             CanUseHM(CanUseHM.SURF))
 
     # Dragons Den B1F
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:NORTH -> REGION_DRAGONS_DEN_B1F:CENTER"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:CENTER -> REGION_DRAGONS_DEN_B1F:NORTH"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:NORTH -> REGION_DRAGONS_DEN_B1F:WEST"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:WEST -> REGION_DRAGONS_DEN_B1F:NORTH"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:NORTH -> REGION_DRAGONS_DEN_B1F:CENTER"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:CENTER -> REGION_DRAGONS_DEN_B1F:NORTH"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:NORTH -> REGION_DRAGONS_DEN_B1F:WEST"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:WEST -> REGION_DRAGONS_DEN_B1F:NORTH"), CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:WEST -> REGION_DRAGONS_DEN_B1F:SOUTH"), can_surf_and_whirlpool)
     set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTH -> REGION_DRAGONS_DEN_B1F:WEST"), can_surf_and_whirlpool)
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTH -> REGION_DRAGONS_DEN_B1F:SOUTHEAST"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTHEAST -> REGION_DRAGONS_DEN_B1F:SOUTH"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTH -> REGION_DRAGONS_DEN_B1F:SOUTHEAST"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_DRAGONS_DEN_B1F:SOUTHEAST -> REGION_DRAGONS_DEN_B1F:SOUTH"), CanUseHM(CanUseHM.SURF))
 
     # Dragon Shrine - elder kicks you out if you haven't beaten Clair
     beaten_clair = world.logic.gym("clair")
@@ -1315,7 +1274,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Route 45
     if hidden():
-        set_rule(get_location("Route 45 - Hidden Item in Southeast Pond"), world.logic.can_surf())
+        set_rule(get_location("Route 45 - Hidden Item in Southeast Pond"), CanUseHM(CanUseHM.SURF))
 
     if world.options.randomize_phone_call_items:
         set_rule(get_location("Route 45 - PP Up from Kenji"), world.logic.can_phone_call())
@@ -1342,17 +1301,17 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_entrance("REGION_ROUTE_45 -> REGION_ROUTE_45:POWER"), world.logic.can_phone_call_power())
 
     # Route 27
-    set_rule(get_entrance("REGION_ROUTE_27:WEST -> REGION_NEW_BARK_TOWN"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_ROUTE_27:WEST -> REGION_ROUTE_27:WESTWATER"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_ROUTE_27:CENTER -> REGION_ROUTE_27:EAST"), world.logic.can_surf())
-    set_rule(get_entrance("REGION_ROUTE_27:EAST -> REGION_ROUTE_27:CENTER"), world.logic.can_surf())
+    set_rule(get_entrance("REGION_ROUTE_27:WEST -> REGION_NEW_BARK_TOWN"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_ROUTE_27:WEST -> REGION_ROUTE_27:WESTWATER"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_ROUTE_27:CENTER -> REGION_ROUTE_27:EAST"), CanUseHM(CanUseHM.SURF))
+    set_rule(get_entrance("REGION_ROUTE_27:EAST -> REGION_ROUTE_27:CENTER"), CanUseHM(CanUseHM.SURF))
     set_rule(get_entrance("REGION_ROUTE_27:EAST -> REGION_ROUTE_27:EASTWHIRLPOOL"), can_surf_and_whirlpool)
-    set_rule(get_location("Route 27 - West Item across Water"), world.logic.can_surf())
+    set_rule(get_location("Route 27 - West Item across Water"), CanUseHM(CanUseHM.SURF))
 
     if world.options.randomize_phone_call_items:
         set_rule(get_location("Route 27 - Star Piece from Jose"), world.logic.can_phone_call())
 
-    set_rule(get_location("Tohjo Falls - Item"), world.logic.can_surf())
+    set_rule(get_location("Tohjo Falls - Item"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_entrance("REGION_TOHJO_FALLS:WEST -> REGION_TOHJO_FALLS:EAST"), can_surf_and_waterfall)
     set_rule(get_entrance("REGION_TOHJO_FALLS:EAST -> REGION_TOHJO_FALLS:WEST"), can_surf_and_waterfall)
@@ -1384,7 +1343,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     # Victory Road
     if world.options.victory_road_strength:
-        set_rule(get_entrance("REGION_VICTORY_ROAD:1F:ENTRANCE -> REGION_VICTORY_ROAD:1F"), world.logic.can_strength())
+        set_rule(get_entrance("REGION_VICTORY_ROAD:1F:ENTRANCE -> REGION_VICTORY_ROAD:1F"), CanUseHM(CanUseHM.STRENGTH))
 
     if johto_only() != JohtoOnly.option_on:
         has_mt_silver_requirement = world.logic.has_mt_silver_requirement()
@@ -1399,21 +1358,21 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_3 -> REGION_SILVER_CAVE_OUTSIDE"), Has("EVENT_BEAT_RED"))
 
         # Route 28
-        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE -> REGION_ROUTE_28:CUT"), world.logic.can_cut())
-        set_rule(get_entrance("REGION_ROUTE_28:CUT -> REGION_SILVER_CAVE_OUTSIDE"), world.logic.can_cut())
+        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE -> REGION_ROUTE_28:CUT"), CanUseHM(CanUseHM.CUT))
+        set_rule(get_entrance("REGION_ROUTE_28:CUT -> REGION_SILVER_CAVE_OUTSIDE"), CanUseHM(CanUseHM.CUT))
 
         # Silver Cave
-        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE -> REGION_SILVER_CAVE_OUTSIDE:SURF"), world.logic.can_surf())
-        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE:SURF -> REGION_SILVER_CAVE_OUTSIDE"), world.logic.can_surf())
+        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE -> REGION_SILVER_CAVE_OUTSIDE:SURF"), CanUseHM(CanUseHM.SURF))
+        set_rule(get_entrance("REGION_SILVER_CAVE_OUTSIDE:SURF -> REGION_SILVER_CAVE_OUTSIDE"), CanUseHM(CanUseHM.SURF))
 
         set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2 -> REGION_SILVER_CAVE_ROOM_2:WEST"), can_surf_and_waterfall)
         set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2 -> REGION_SILVER_CAVE_ROOM_2:EAST"), can_surf_and_waterfall)
-        set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:WEST -> REGION_SILVER_CAVE_ROOM_2"), world.logic.can_surf())
-        set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:EAST -> REGION_SILVER_CAVE_ROOM_2"), world.logic.can_surf())
+        set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:WEST -> REGION_SILVER_CAVE_ROOM_2"), CanUseHM(CanUseHM.SURF))
+        set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:EAST -> REGION_SILVER_CAVE_ROOM_2"), CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:WEST -> REGION_SILVER_CAVE_ROOM_2:WEST_ITEM"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
         set_rule(get_entrance("REGION_SILVER_CAVE_ROOM_2:WEST_ITEM -> REGION_SILVER_CAVE_ROOM_2:WEST"),
-                 world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
 
     if not johto_only():
 
@@ -1427,7 +1386,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
         # Viridian
         set_rule(get_location("Viridian City - TM42 from Sleepy Guy"),
-                 world.logic.can_surf(kanto=True) | world.logic.can_cut(kanto=True))
+                 CanUseHM(CanUseHM.SURF, kanto=True) | CanUseHM(CanUseHM.CUT, kanto=True))
 
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_VIRIDIAN_CITY -> REGION_VIRIDIAN_GYM"), kanto_gyms_access)
@@ -1437,14 +1396,18 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
         # Route 2
         if world.options.route_2_access.value != Route2Access.option_open:
-            set_rule(get_entrance("REGION_ROUTE_2:WEST -> REGION_ROUTE_2:NORTHEAST"), world.logic.can_cut(kanto=True))
+            set_rule(get_entrance("REGION_ROUTE_2:WEST -> REGION_ROUTE_2:NORTHEAST"),
+                     CanUseHM(CanUseHM.CUT, kanto=True))
         if world.options.route_2_access.value == Route2Access.option_vanilla:
-            set_rule(get_entrance("REGION_ROUTE_2:NORTHEAST -> REGION_ROUTE_2:WEST"), world.logic.can_cut(kanto=True))
+            set_rule(get_entrance("REGION_ROUTE_2:NORTHEAST -> REGION_ROUTE_2:WEST"),
+                     CanUseHM(CanUseHM.CUT, kanto=True))
 
-        set_rule(get_entrance("REGION_ROUTE_2:WEST -> REGION_ROUTE_2:SOUTHEAST"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_2:SOUTHEAST -> REGION_ROUTE_2:WEST"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_2:NORTHEAST -> REGION_ROUTE_2:CENTEREAST"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_2:CENTEREAST -> REGION_ROUTE_2:NORTHEAST"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_2:WEST -> REGION_ROUTE_2:SOUTHEAST"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_2:SOUTHEAST -> REGION_ROUTE_2:WEST"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_2:NORTHEAST -> REGION_ROUTE_2:CENTEREAST"),
+                 CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_2:CENTEREAST -> REGION_ROUTE_2:NORTHEAST"),
+                 CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Pewter City
         if lock_kanto_gyms:
@@ -1456,7 +1419,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             set_rule(get_entrance("REGION_ROUTE_3 -> REGION_PEWTER_CITY"), world.logic.badge("boulder"))
 
         if hidden():
-            set_rule(get_location("Mount Moon Square - Hidden Item under Rock"), world.logic.can_rock_smash())
+            set_rule(get_location("Mount Moon Square - Hidden Item under Rock"),
+                     CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
         set_rule(get_entrance("REGION_ROUTE_4:WEST -> REGION_ROUTE_4:EAST"), Has("EVENT_CLEARED_ROUTE_4"))
 
@@ -1467,11 +1431,11 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             add_rule(get_entrance("REGION_MOUNT_MOON_SQUARE -> REGION_MOUNT_MOON:SOUTH_ENTRANCE"), kanto_gyms_access)
 
         # Cerulean
-        set_rule(get_entrance("REGION_ROUTE_24 -> REGION_CERULEAN_CITY:SURF"), world.logic.can_surf(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_24 -> REGION_CERULEAN_CITY:SURF"), CanUseHM(CanUseHM.SURF, kanto=True))
         if VanillaEventChains.MISTY in world.options.vanilla_event_chains.value:
             safe_set_location_rule("Route 24 - Grunt", Has("EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM"))
 
-        set_rule(get_entrance("REGION_CERULEAN_CITY -> REGION_ROUTE_9"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_CERULEAN_CITY -> REGION_ROUTE_9"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_CERULEAN_CITY -> REGION_CERULEAN_GYM"), kanto_gyms_access)
@@ -1484,12 +1448,12 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             set_rule(get_entrance("REGION_ROUTE_24 -> REGION_ROUTE_24:ROCKET"),
                      Has("EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM"))
 
-        set_rule(get_entrance("REGION_ROUTE_9 -> REGION_CERULEAN_CITY"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_9 -> REGION_ROUTE_10_NORTH:SURF"), world.logic.can_surf(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_10_NORTH:SURF -> REGION_ROUTE_9"), world.logic.can_surf(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_9 -> REGION_CERULEAN_CITY"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_9 -> REGION_ROUTE_10_NORTH:SURF"), CanUseHM(CanUseHM.SURF, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_10_NORTH:SURF -> REGION_ROUTE_9"), CanUseHM(CanUseHM.SURF, kanto=True))
 
         # Route 25
-        set_rule(get_location("Route 25 - Item behind Cut Tree"), world.logic.can_cut(kanto=True))
+        set_rule(get_location("Route 25 - Item behind Cut Tree"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         if VanillaEventChains.MISTY in world.options.vanilla_event_chains.value:
             set_rule(get_entrance("REGION_ROUTE_25 -> REGION_ROUTE_25:MISTY_DATE"),
@@ -1509,29 +1473,29 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         # Route 12
         if world.options.route_12_access:
             set_rule(get_entrance("REGION_ROUTE_12:NORTH -> REGION_ROUTE_12:SOUTH"),
-                     Has("Squirtbottle") | world.logic.can_surf(kanto=True))
+                     Has("Squirtbottle") | CanUseHM(CanUseHM.SURF, kanto=True))
             set_rule(get_entrance("REGION_ROUTE_12:SOUTH -> REGION_ROUTE_12:NORTH"),
-                     Has("Squirtbottle") | world.logic.can_surf(kanto=True))
+                     Has("Squirtbottle") | CanUseHM(CanUseHM.SURF, kanto=True))
 
-        set_rule(get_location("Route 12 - Item behind North Cut Tree"), world.logic.can_cut(kanto=True))
+        set_rule(get_location("Route 12 - Item behind North Cut Tree"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         set_rule(get_location("Route 12 - Item behind South Cut Tree across Water"),
-                 world.logic.can_cut(kanto=True) & world.logic.can_surf(kanto=True))
+                 CanUseHM(CanUseHM.CUT, kanto=True) & CanUseHM(CanUseHM.SURF, kanto=True))
 
         if hidden():
-            set_rule(get_location("Route 12 - Hidden Item on Island"), world.logic.can_surf(kanto=True))
+            set_rule(get_location("Route 12 - Hidden Item on Island"), CanUseHM(CanUseHM.SURF, kanto=True))
 
         # Route 13
-        set_rule(get_entrance("REGION_ROUTE_13 -> REGION_ROUTE_13:CUT"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_13 -> REGION_ROUTE_13:CUT"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Route 14
-        set_rule(get_entrance("REGION_ROUTE_14 -> REGION_ROUTE_14:CUT"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_14 -> REGION_ROUTE_14:CUT"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Vermilion
         set_rule(get_entrance("REGION_VERMILION_CITY -> REGION_VERMILION_CITY:GYM_ENTRANCE"),
-                 world.logic.can_cut(kanto=True) | world.logic.can_surf(kanto=True))
+                 CanUseHM(CanUseHM.CUT, kanto=True) | CanUseHM(CanUseHM.SURF, kanto=True))
         set_rule(get_entrance("REGION_VERMILION_CITY:GYM_ENTRANCE -> REGION_VERMILION_CITY"),
-                 world.logic.can_cut(kanto=True) | world.logic.can_surf(kanto=True))
+                 CanUseHM(CanUseHM.CUT, kanto=True) | CanUseHM(CanUseHM.SURF, kanto=True))
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_VERMILION_CITY:GYM_ENTRANCE -> REGION_VERMILION_GYM"), kanto_gyms_access)
 
@@ -1556,7 +1520,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_entrance("REGION_VERMILION_PORT -> REGION_VERMILION_PORT:TICKET"), world.logic.ship_rule())
 
         if hidden():
-            set_rule(get_location("Vermilion Port - Hidden Item in Buoy"), world.logic.can_surf(kanto=True))
+            set_rule(get_location("Vermilion Port - Hidden Item in Buoy"), CanUseHM(CanUseHM.SURF, kanto=True))
 
         set_rule(get_entrance("REGION_FAST_SHIP_1F -> REGION_VERMILION_PORT:TICKET"),
                  Has("EVENT_FAST_SHIP_LAZY_SAILOR"))
@@ -1606,14 +1570,14 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                      Has("EVENT_RESTORED_POWER_TO_KANTO"))
 
         # Route 8
-        set_rule(get_entrance("REGION_ROUTE_8 -> REGION_ROUTE_8:CUT"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_8:CUT -> REGION_ROUTE_8"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_8 -> REGION_ROUTE_8:CUT"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_8:CUT -> REGION_ROUTE_8"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Celadon
         set_rule(get_entrance("REGION_CELADON_CITY -> REGION_CELADON_CITY:GYM_ENTRANCE"),
-                 world.logic.can_cut(kanto=True))
+                 CanUseHM(CanUseHM.CUT, kanto=True))
         set_rule(get_entrance("REGION_CELADON_CITY:GYM_ENTRANCE -> REGION_CELADON_CITY"),
-                 world.logic.can_cut(kanto=True))
+                 CanUseHM(CanUseHM.CUT, kanto=True))
 
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_CELADON_CITY:GYM_ENTRANCE -> REGION_CELADON_GYM"), kanto_gyms_access)
@@ -1630,8 +1594,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         set_rule(get_location("EVENT_OBTAINED_DIPLOMA"), HasNPokemon(world.pokemon_pool.diploma_count))
 
         # Route 16
-        set_rule(get_entrance("REGION_ROUTE_16 -> REGION_ROUTE_16:NORTH"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_16:NORTH -> REGION_ROUTE_16"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_16 -> REGION_ROUTE_16:NORTH"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_16:NORTH -> REGION_ROUTE_16"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Cycling Road - bike required to traverse gatehouses
         set_rule(get_entrance("REGION_ROUTE_16_GATE:EAST -> REGION_ROUTE_16_GATE:WEST"), Has("Bicycle"))
@@ -1642,11 +1606,11 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                  Has("Bicycle"))
 
         # Route 15
-        set_rule(get_location("Route 15 - Item"), world.logic.can_cut(kanto=True))
+        set_rule(get_location("Route 15 - Item"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         # Fuchsia City
-        set_rule(get_entrance("REGION_FUCHSIA_CITY -> REGION_FUCHSIA_CITY:CUT"), world.logic.can_cut(kanto=True))
-        set_rule(get_entrance("REGION_FUCHSIA_CITY:CUT -> REGION_FUCHSIA_CITY"), world.logic.can_cut(kanto=True))
+        set_rule(get_entrance("REGION_FUCHSIA_CITY -> REGION_FUCHSIA_CITY:CUT"), CanUseHM(CanUseHM.CUT, kanto=True))
+        set_rule(get_entrance("REGION_FUCHSIA_CITY:CUT -> REGION_FUCHSIA_CITY"), CanUseHM(CanUseHM.CUT, kanto=True))
 
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_FUCHSIA_CITY -> REGION_FUCHSIA_GYM"), kanto_gyms_access)
@@ -1665,13 +1629,13 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             if world.options.south_kanto_condition != SouthKantoCondition.option_enter_south_kanto:
                 set_rule(get_entrance("REGION_ROUTE_21:SOUTH -> REGION_ROUTE_21:NORTH"), south_kanto_condition)
 
-        add_rule(get_entrance("REGION_ROUTE_19:SHORE -> REGION_ROUTE_19"), world.logic.can_surf(kanto=True))
+        add_rule(get_entrance("REGION_ROUTE_19:SHORE -> REGION_ROUTE_19"), CanUseHM(CanUseHM.SURF, kanto=True))
 
         # Cinnabar
-        set_rule(get_entrance("REGION_CINNABAR_ISLAND -> REGION_ROUTE_20"), world.logic.can_surf(kanto=True))
-        set_rule(get_entrance("REGION_CINNABAR_ISLAND -> REGION_ROUTE_21:SOUTH"), world.logic.can_surf(kanto=True))
-        set_rule(get_entrance("REGION_PALLET_TOWN -> REGION_ROUTE_21:NORTH"), world.logic.can_surf(kanto=True))
-        set_rule(get_entrance("REGION_ROUTE_20:SEAFOAM -> REGION_ROUTE_20"), world.logic.can_surf(kanto=True))
+        set_rule(get_entrance("REGION_CINNABAR_ISLAND -> REGION_ROUTE_20"), CanUseHM(CanUseHM.SURF, kanto=True))
+        set_rule(get_entrance("REGION_CINNABAR_ISLAND -> REGION_ROUTE_21:SOUTH"), CanUseHM(CanUseHM.SURF, kanto=True))
+        set_rule(get_entrance("REGION_PALLET_TOWN -> REGION_ROUTE_21:NORTH"), CanUseHM(CanUseHM.SURF, kanto=True))
+        set_rule(get_entrance("REGION_ROUTE_20:SEAFOAM -> REGION_ROUTE_20"), CanUseHM(CanUseHM.SURF, kanto=True))
 
         if lock_kanto_gyms:
             set_rule(get_entrance("REGION_ROUTE_20:SEAFOAM -> REGION_SEAFOAM_GYM"), kanto_gyms_access)
@@ -1722,9 +1686,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     if world.options.grasssanity:
         for region in world.get_regions():
             if region.name in data.grass_tiles:
-                region_data = data.regions[region.name]
-                rule = world.logic.can_cut() if region_data.johto or region_data.silver_cave else world.logic.can_cut(
-                    kanto=True)
+                rule = CanUseHM(CanUseHM.CUT, region=region.name)
                 add_rule(get_entrance(f"{region.name} -> {region.name}:GRASS"), rule)
 
     if world.options.dexsanity or world.options.dexcountsanity:
@@ -1793,16 +1755,13 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         encounter_key = location.encounter_key
 
         if encounter_key.encounter_type is EncounterType.Water:
-            region_data = data.regions[location.parent_region.name]
-            rule = world.logic.can_surf() if (region_data.johto or region_data.silver_cave) else world.logic.can_surf(
-                kanto=True)
-            add_rule(location, rule)
+            add_rule(location, CanUseHM(CanUseHM.SURF, region=location.parent_region.name))
         elif encounter_key.encounter_type is EncounterType.Fish:
             add_rule(location, world.logic.fishing_rod_rules[encounter_key.fishing_rod])
         elif encounter_key.encounter_type is EncounterType.Tree:
-            add_rule(location, world.logic.can_headbutt())
+            add_rule(location, CanUseFieldMove(CanUseFieldMove.HEADBUTT))
         elif encounter_key.encounter_type is EncounterType.RockSmash:
-            add_rule(location, world.logic.can_rock_smash())
+            add_rule(location, CanUseFieldMove(CanUseFieldMove.ROCK_SMASH))
 
         if encounter_key.is_swarm:
             add_rule(location, world.logic.can_phone_call())
@@ -1829,15 +1788,13 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         if encounter_key.encounter_type is EncounterType.Water:
             region = world.get_region(encounter_key.region_name())
             parent_region = region.entrances[0].parent_region
-            region_data = data.regions[parent_region.name]
-            rule = world.logic.can_surf() if (region_data.johto or region_data.silver_cave) else world.logic.can_surf(
-                kanto=True)
+            rule = CanUseHM(CanUseHM.SURF, region=parent_region.name)
         elif encounter_key.encounter_type is EncounterType.Fish:
             rule = world.logic.fishing_rod_rules[encounter_key.fishing_rod]
         elif encounter_key.encounter_type is EncounterType.Tree:
-            rule = world.logic.can_headbutt()
+            rule = CanUseFieldMove(CanUseFieldMove.HEADBUTT)
         elif encounter_key.encounter_type is EncounterType.RockSmash:
-            rule = world.logic.can_rock_smash()
+            rule = CanUseFieldMove(CanUseFieldMove.ROCK_SMASH)
         elif encounter_key.encounter_type is EncounterType.Static:
             if not world.is_universal_tracker: continue
 
@@ -1940,7 +1897,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     for dark_area, region_names in DARK_AREA_REGIONS.items():
         if dark_area not in world.options.dark_areas:
             continue
-        flash_fn = world.logic.can_flash(kanto=True) if dark_area in KANTO_DARK_AREAS else world.logic.can_flash()
+        flash_fn = CanUseHM(CanUseHM.FLASH, kanto=True) if dark_area in KANTO_DARK_AREAS else CanUseHM(CanUseHM.FLASH)
         for region_name in region_names:
             try:
                 region = world.get_region(region_name)
@@ -1963,10 +1920,10 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     if world.options.kinda_early_surf:
         add_rule(get_entrance("REGION_GOLDENROD_MAGNET_TRAIN_STATION -> REGION_SAFFRON_MAGNET_TRAIN_STATION"),
-                 world.logic.can_surf())
-        add_rule(get_entrance("REGION_MAHOGANY_TOWN -> REGION_MAHOGANY_TOWN:EAST"), world.logic.can_surf())
-        add_rule(get_location("EVENT_JASMINE_RETURNED_TO_GYM"), world.logic.can_surf())
-        add_rule(get_entrance("REGION_RADIO_TOWER_2F -> REGION_RADIO_TOWER_2F:TAKEOVER"), world.logic.can_surf())
+                 CanUseHM(CanUseHM.SURF))
+        add_rule(get_entrance("REGION_MAHOGANY_TOWN -> REGION_MAHOGANY_TOWN:EAST"), CanUseHM(CanUseHM.SURF))
+        add_rule(get_location("EVENT_JASMINE_RETURNED_TO_GYM"), CanUseHM(CanUseHM.SURF))
+        add_rule(get_entrance("REGION_RADIO_TOWER_2F -> REGION_RADIO_TOWER_2F:TAKEOVER"), CanUseHM(CanUseHM.SURF))
 
         def safe_add_location_rule(name: str, rule: CollectionRule | Rule):
             try:
@@ -1975,19 +1932,19 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                 return
             add_rule(loc, rule)
 
-        safe_add_location_rule("Radio Tower 1F - Grunt", world.logic.can_surf())
+        safe_add_location_rule("Radio Tower 1F - Grunt", CanUseHM(CanUseHM.SURF))
         if world.options.level_scaling:
-            safe_add_location_rule("GRUNTM_3", world.logic.can_surf())
+            safe_add_location_rule("GRUNTM_3", CanUseHM(CanUseHM.SURF))
         add_rule(get_entrance("REGION_ECRUTEAK_TIN_TOWER_ENTRANCE -> REGION_ECRUTEAK_TIN_TOWER_ENTRANCE:BEHIND_SAGE"),
-                 world.logic.can_surf())
-        add_rule(get_location("EVENT_FOUGHT_SNORLAX"), world.logic.can_surf(kanto=True))
-        add_rule(get_entrance("REGION_VERMILION_CITY -> REGION_ROUTE_11"), world.logic.can_surf(kanto=True))
+                 CanUseHM(CanUseHM.SURF))
+        add_rule(get_location("EVENT_FOUGHT_SNORLAX"), CanUseHM(CanUseHM.SURF, kanto=True))
+        add_rule(get_entrance("REGION_VERMILION_CITY -> REGION_ROUTE_11"), CanUseHM(CanUseHM.SURF, kanto=True))
         add_rule(get_entrance("REGION_VERMILION_CITY -> REGION_VERMILION_CITY:DIGLETTS_CAVE_ENTRANCE"),
-                 world.logic.can_surf(kanto=True))
+                 CanUseHM(CanUseHM.SURF, kanto=True))
         if world.options.level_scaling:
-            add_rule(get_location("Snorlax"), world.logic.can_surf(kanto=True))
+            add_rule(get_location("Snorlax"), CanUseHM(CanUseHM.SURF, kanto=True))
         if world.options.static_pokemon_required:
-            add_rule(get_location("Static_Snorlax_1"), world.logic.can_surf(kanto=True))
+            add_rule(get_location("Static_Snorlax_1"), CanUseHM(CanUseHM.SURF, kanto=True))
 
 
 def verify_hm_accessibility(world: "PokemonCrystalWorld") -> None:
@@ -1996,15 +1953,16 @@ def verify_hm_accessibility(world: "PokemonCrystalWorld") -> None:
     logic = world.logic
 
     hm_rules: dict[str, CollectionRule] = {
-        "CUT": (logic.can_cut() | logic.can_cut(True)).resolve(world),
-        "FLY": logic.can_fly().resolve(world),
-        "SURF": (logic.can_surf() | logic.can_surf(True)).resolve(world),
-        "STRENGTH": (logic.can_strength() | logic.can_strength(True)).resolve(world),
-        "FLASH": (logic.can_flash(allow_ool=False) | logic.can_flash(True, allow_ool=False)).resolve(world),
-        "WHIRLPOOL": (logic.can_whirlpool() | logic.can_whirlpool(True)).resolve(world),
-        "WATERFALL": (logic.can_waterfall() | logic.can_waterfall(True)).resolve(world),
-        "HEADBUTT": logic.can_headbutt().resolve(world),
-        "ROCK_SMASH": logic.can_rock_smash().resolve(world),
+        "CUT": (CanUseHM(CanUseHM.CUT) | CanUseHM(CanUseHM.CUT, kanto=True)).resolve(world),
+        "FLY": CanUseHM(CanUseHM.FLY).resolve(world),
+        "SURF": (CanUseHM(CanUseHM.SURF) | CanUseHM(CanUseHM.SURF, kanto=True)).resolve(world),
+        "STRENGTH": (CanUseHM(CanUseHM.STRENGTH) | CanUseHM(CanUseHM.STRENGTH, kanto=True)).resolve(world),
+        "FLASH": (CanUseHM(CanUseHM.FLASH, allow_ool=False)
+                  | CanUseHM(CanUseHM.FLASH, True, allow_ool=False)).resolve(world),
+        "WHIRLPOOL": (CanUseHM(CanUseHM.WHIRLPOOL) | CanUseHM(CanUseHM.WHIRLPOOL, kanto=True)).resolve(world),
+        "WATERFALL": (CanUseHM(CanUseHM.WATERFALL) | CanUseHM(CanUseHM.WATERFALL, kanto=True)).resolve(world),
+        "HEADBUTT": CanUseFieldMove(CanUseFieldMove.HEADBUTT).resolve(world),
+        "ROCK_SMASH": CanUseFieldMove(CanUseFieldMove.ROCK_SMASH).resolve(world),
     }
 
     def can_use_hm(state: CollectionState, hm: str) -> bool:
