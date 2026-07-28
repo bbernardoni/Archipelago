@@ -2013,7 +2013,7 @@ def generate_output(world: "PokemonCrystalWorld", output_directory: str, patch: 
     world_data = {
         "item_prices": world.generated_item_values,
         "battle_tower_trainer_permutation": world.battle_tower_trainer_permutation,
-        "battle_tower_mon_seed": world.random.getrandbits(64),
+        "battle_tower_mon_seed": world.battle_tower_mon_seed,
     }
     patch.write_file("world_data.json", json.dumps(world_data).encode("utf-8"))
 

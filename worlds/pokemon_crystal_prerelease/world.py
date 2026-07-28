@@ -301,10 +301,13 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
     @classmethod
     def stage_generate_early(cls, multiworld: "MultiWorld") -> None:
         perm = list(range(BATTLE_TOWER_NUM_TRAINERS))
-        random.Random(multiworld.seed).shuffle(perm)
+        rng = random.Random(multiworld.seed)
+        rng.shuffle(perm)
+        mon_seed = rng.getrandbits(64)
         for world in multiworld.get_game_worlds(cls.game):
             if not hasattr(world, "battle_tower_trainer_permutation"):
                 world.battle_tower_trainer_permutation = perm
+            world.battle_tower_mon_seed = mon_seed
 
     def create_regions(self) -> None:
 
