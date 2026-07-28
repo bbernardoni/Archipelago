@@ -390,12 +390,12 @@ def get_item_area(location_name: str) -> str:
 
 
 item_name_groups: dict[str, set[str]] = {
-    "Sunglasses": set(ItemName.GHOST_GLASSES),
-    "Honk": set(ItemName.HONK_ATTACHMENT),
-    "Sandwich": set(ItemName.SANDWICH),
-    "Basto Ticket": set(ItemName.BASTO_TICKET),
-    "Water popper": set(ItemName.WATERGUN),
-    "Water gun": set(ItemName.WATERGUN),
+    "Sunglasses": {ItemName.GHOST_GLASSES},
+    "Honk": {ItemName.HONK_ATTACHMENT},
+    "Sandwich": {ItemName.SANDWICH},
+    "Basto Ticket": {ItemName.BASTO_TICKET},
+    "Water popper": {ItemName.WATERGUN},
+    "Water gun": {ItemName.WATERGUN},
 }
 item_name_groups.update({
     group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_group), get_item_group)
