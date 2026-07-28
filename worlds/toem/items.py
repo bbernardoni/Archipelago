@@ -414,12 +414,12 @@ class HardLogic(WrapperRule["ToemWorld"], game=GAME_NAME):
     class Resolved(WrapperRule.Resolved):
         @override
         def _evaluate(self, state: CollectionState) -> bool:
-            return state.has(ItemName.OOL_ITEM, self.player) and self.child(state)
+            return state.has(ItemName.HARD_LOGIC, self.player) and self.child(state)
 
         @override
         def item_dependencies(self) -> dict[str, set[int]]:
             deps = super().item_dependencies()
-            deps.setdefault(ItemName.OOL_ITEM, set()).add(id(self))
+            deps.setdefault(ItemName.HARD_LOGIC, set()).add(id(self))
             return deps
 
         @override

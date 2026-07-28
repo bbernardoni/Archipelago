@@ -757,6 +757,16 @@ helper_region_data: dict[str, list[HelperConnection]] = {
         HelperConnection("Asteroid from Snowman square top", RegionName.KIIRUBERG_SNOWMAN_SQUARE_TOP,
                          HardLogic(True_())),
     ],
+    RegionName.BAD_HAIR_DAY: [
+        HelperConnection("Bad hair day from Bonfire top", RegionName.BASTO_BONFIRE_TOP),
+        HelperConnection("Bad hair day from Bonfire bottom", RegionName.BASTO_BONFIRE_BOTTOM,
+                         HardLogic(True_())),
+    ],
+    RegionName.DRY_SEASON_BUS_STOP: [
+        HelperConnection("Dry season from Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
+        HelperConnection("Dry season from Harbor top", RegionName.BASTO_BUS_STOP_TOP,
+                         HardLogic(True_())),
+    ],
 
     # Compendium connections
     RegionName.SQUIRRELS: [
@@ -844,6 +854,8 @@ helper_region_data: dict[str, list[HelperConnection]] = {
         HelperConnection("Bat from Cave", RegionName.BASTO_CAVE),
         HelperConnection("Bat from Bonfire top", RegionName.BASTO_BONFIRE_TOP),
         HelperConnection("Bat from Outside castle", RegionName.BASTO_OUTSIDE_CASTLE),
+        HelperConnection("Bat from Bonfire bottom", RegionName.BASTO_BONFIRE_BOTTOM,
+                         HardLogic(True_())),
     ],
     RegionName.BEAK_BIRD: [
         HelperConnection("Beak bird from Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
@@ -855,9 +867,21 @@ helper_region_data: dict[str, list[HelperConnection]] = {
         HelperConnection("Bitling tato from Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
         HelperConnection("Bitling tato from Harbor top", RegionName.BASTO_BUS_STOP_TOP),
     ],
+    RegionName.DRILL_MOLE: [
+        HelperConnection("Drill mole from Bonfire top", RegionName.BASTO_BONFIRE_TOP),
+        HelperConnection("Drill mole from Bonfire bottom", RegionName.BASTO_BONFIRE_BOTTOM,
+                         HardLogic(True_())),
+    ],
+    RegionName.NIGHT_LIZARD: [
+        HelperConnection("Night lizard from Bonfire top", RegionName.BASTO_BONFIRE_TOP),
+        HelperConnection("Night lizard from Bonfire bottom", RegionName.BASTO_BONFIRE_BOTTOM,
+                         HardLogic(True_())),
+    ],
     RegionName.WATER_STRIDER: [
         HelperConnection("Water strider from Lily pad pond left", RegionName.BASTO_LILY_PAD_POND_LEFT),
         HelperConnection("Water strider from Outside castle", RegionName.BASTO_OUTSIDE_CASTLE),
+        HelperConnection("Water strider from Lily pad pond right", RegionName.BASTO_LILY_PAD_POND_RIGHT,
+                         HardLogic(True_())),
     ],
 
     # Item connections
@@ -895,6 +919,11 @@ helper_region_data: dict[str, list[HelperConnection]] = {
     RegionName.STORIES_OF_SNOW_TAPE: [
         HelperConnection("Visit Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
         HelperConnection("Visit Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP),
+    ],
+    RegionName.SONG_OF_THE_SEA: [
+        HelperConnection("Visit Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
+        HelperConnection("Visit Harbor top", RegionName.BASTO_BUS_STOP_TOP,
+                         HardLogic(True_())),
     ],
 }
 helper_connections: dict[str, Connection] = {

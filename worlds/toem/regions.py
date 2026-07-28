@@ -145,12 +145,14 @@ class RegionName:
     FASHION_SHOW = f"{Area.LOGCITY} - Fashion show"
     BALLOON_ANIMAL = f"{Area.KIIRUBERG} - Balloon animal"
     ASTEROID = f"{Area.KIIRUBERG} - Asteroid"
+    BAD_HAIR_DAY = f"{Area.BASTO} - Bad hair day"
+    DRY_SEASON_BUS_STOP = f"{Area.BASTO} - Dry season (Harbor)"
     # Compendium regions
     SQUIRRELS = f"{Area.OAKLAVILLE} - Squirrels"
     SERO = f"{Area.OAKLAVILLE} - Sero"
     TATO_FLY = f"{Area.OAKLAVILLE} - Tato fly"
     SEAGULLS = f"{Area.STANHAMN} - Seagulls"
-    SUNDAY_SWAN = f"{Area.STANHAMN} - Sunday Swan"
+    SUNDAY_SWAN = f"{Area.STANHAMN} - Sunday swan"
     FIA = f"{Area.STANHAMN} - Fia"
     FRAS = f"{Area.STANHAMN} - Fräs"
     PIGEON = f"{Area.LOGCITY} - Pigeon"
@@ -163,17 +165,20 @@ class RegionName:
     GOAT = f"{Area.KIIRUBERG} - Goat"
     OWL = f"{Area.KIIRUBERG} - Owl"
     BAT = f"{Area.BASTO} - Bat"
-    BEAK_BIRD = f"{Area.BASTO} - Beak Bird"
-    BITLING_TATO = f"{Area.BASTO} - Bitling Tato"
-    WATER_STRIDER = f"{Area.BASTO} - Water Strider"
+    BEAK_BIRD = f"{Area.BASTO} - Beak bird"
+    BITLING_TATO = f"{Area.BASTO} - Bitling tato"
+    DRILL_MOLE = f"{Area.BASTO} - Drill mole"
+    NIGHT_LIZARD = f"{Area.BASTO} - Night lizard"
+    WATER_STRIDER = f"{Area.BASTO} - Water strider"
     # Item regions
     GHOST_GLASSES = f"{Area.OAKLAVILLE} - Ghost glasses"
     # Achievement regions
     GOOD_BOY = "Pet a pet"
-    MAXIMUM_VACATION = f"{Area.BASTO} - Maximum Vacation"
+    MAXIMUM_VACATION = f"{Area.BASTO} - Maximum vacation"
     # Cassette regions
-    BIG_CITY_TAPE = f"{Area.LOGCITY} - Big City cassette"
+    BIG_CITY_TAPE = f"{Area.LOGCITY} - Big city cassette"
     STORIES_OF_SNOW_TAPE = f"{Area.KIIRUBERG} - Stories of snow cassette"
+    SONG_OF_THE_SEA = f"{Area.BASTO} - Song of the sea cassette"
 
 oaklaville_regions = (
     RegionName.OAKLAVILLE_BUS_STOP, RegionName.OAKLAVILLE_OUTSIDE_HOTEL, RegionName.OAKLAVILLE_HOTEL,

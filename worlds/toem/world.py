@@ -68,7 +68,7 @@ class ToemWorld(World):
 
     is_ut: bool
     ut_can_gen_without_yaml: ClassVar = True
-    glitches_item_name: ClassVar = ItemName.OOL_ITEM
+    glitches_item_name: ClassVar = ItemName.HARD_LOGIC
     deferred_entrances: dict[str, tuple[Entrance, Region]]
     found_entrances_datastorage_key = "Slot:{player}:TraversedEntrances"
 
