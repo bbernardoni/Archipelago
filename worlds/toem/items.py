@@ -111,7 +111,7 @@ class ItemName:
 
     # Items
     CLOGS = "Clogs"
-    AWARD_MASK = "Award Mask"
+    AWARD_MASK = "Award mask"
     FINGER = "Foam finger"
     TRIPOD = "Tripod"
     COWBOY_HAT = "Cowboy hat"
@@ -142,7 +142,7 @@ class ItemName:
     SCARF = "Scarf"
     SKI_GOGGLES = "Ski goggles"
     SPACE_HELMET = "Space helmet"
-    BASTO_TICKET = "Viking Express Ticket"
+    BASTO_TICKET = "Viking express ticket"
     WATERGUN = "Water popper attachment"
     SUN_HAT = "Sun hat"
     MELONEAR = "Melonear"
@@ -390,8 +390,16 @@ def get_item_area(location_name: str) -> str:
 
 
 item_name_groups: dict[str, set[str]] = {
-    group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_group), get_item_group)
+    "Sunglasses": set(ItemName.GHOST_GLASSES),
+    "Honk": set(ItemName.HONK_ATTACHMENT),
+    "Sandwich": set(ItemName.SANDWICH),
+    "Basto Ticket": set(ItemName.BASTO_TICKET),
+    "Water popper": set(ItemName.WATERGUN),
+    "Water gun": set(ItemName.WATERGUN),
 }
+item_name_groups.update({
+    group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_group), get_item_group)
+})
 item_name_groups.update({
     group: set(item_names) for group, item_names in groupby(sorted(item_table, key=get_item_area), get_item_area)
 })
