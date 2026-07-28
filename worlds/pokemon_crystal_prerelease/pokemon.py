@@ -195,7 +195,8 @@ def randomize_request_pokemon(world: "PokemonCrystalWorld"):
 
 
 def fill_trade_locations(world: "PokemonCrystalWorld"):
-    if not world.options.trades_required: return
+    # Trades that aren't required still exist under UT, gated behind glitched logic.
+    if not world.options.trades_required and not world.is_universal_tracker: return
 
     for trade_id, trade in world.generated_trades.items():
         try:

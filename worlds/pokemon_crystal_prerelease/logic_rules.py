@@ -5,9 +5,10 @@ from typing_extensions import override
 
 from BaseClasses import CollectionState
 from NetUtils import JSONMessagePart
-from rule_builder.rules import Rule
+from rule_builder.rules import Rule, Has, False_
 
 from .data import data as crystal_data
+from .items import PokemonCrystalGlitchedToken
 
 if TYPE_CHECKING:
     from .world import PokemonCrystalWorld
@@ -209,3 +210,14 @@ class HasDexCount(Rule["PokemonCrystalWorld"], game=GAME):
         @override
         def _describe(self, state: CollectionState | None) -> str:
             return f"{self.count} Pokedex registrations"
+
+
+@dataclasses.dataclass()
+class GlitchedLogic(Rule["PokemonCrystalWorld"], game=GAME):
+    """Out-of-logic access, only ever satisfiable while Universal Tracker is generating."""
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        if not getattr(world.multiworld, "generation_is_fake", False):
+            return False_().resolve(world)
+        return Has(PokemonCrystalGlitchedToken.TOKEN_NAME).resolve(world)

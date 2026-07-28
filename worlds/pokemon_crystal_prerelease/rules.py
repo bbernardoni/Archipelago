@@ -5,11 +5,11 @@ from BaseClasses import CollectionState, Entrance
 from rule_builder.rules import Rule, Has, HasAll, HasAny, HasFromListUnique, True_, False_, And, Or, \
     CanReachRegion, CanReachLocation
 from worlds.generic.Rules import add_rule as _ap_add_rule, CollectionRule
-from .battle_tower_data import BATTLE_TOWER_NUM_TIERS
-from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest
+from .battle_tower_data import BATTLE_TOWER_NUM_TIERS, BATTLE_TOWER_UBERS_TIER
+from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic
 from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType
 from .evolution import evolution_location_name
-from .items import PokemonCrystalGlitchedToken, item_const_name_to_label
+from .items import item_const_name_to_label
 from .options import Goal, JohtoOnly, Route32Condition, UndergroundsRequirePower, Route2Access, \
     BlackthornDarkCaveAccess, NationalParkAccess, Route22AccessRequirement, Route3Access, BreedingMethodsRequired, \
     MtSilverRequirement, FreeFlyLocation, HMBadgeRequirements, VictoryRoadRequirement, EliteFourRequirement, \
@@ -240,7 +240,6 @@ class PokemonCrystalLogic:
 
         self.player = world.player
         self.options = world.options
-        self.is_universal_tracker = world.is_universal_tracker
 
         if self.options.randomize_badges == RandomizeBadges.option_vanilla:
             self.badge_items = {
@@ -378,8 +377,8 @@ class PokemonCrystalLogic:
         if self.options.require_flash == RequireFlash.option_not_required and allow_ool:
             return True_()
         rule = self._can_use_hm("FLASH", "HM05 Flash", "Teach FLASH", kanto)
-        if self.is_universal_tracker and allow_ool and self.options.require_flash == RequireFlash.option_logically_required:
-            rule = rule | Has(PokemonCrystalGlitchedToken.TOKEN_NAME)
+        if allow_ool and self.options.require_flash == RequireFlash.option_logically_required:
+            rule = rule | GlitchedLogic()
         return rule
 
     def can_whirlpool(self, kanto: bool = False) -> Rule:
@@ -972,7 +971,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     if WildEncounterMethodsRequired.BUG_CATCHING_CONTEST not in world.options.wild_encounter_methods_required and world.is_universal_tracker:
         for i in range(len(world.generated_contest)):
-            set_rule(get_location(f"Bug Catching Contest Slot {i + 1}"), Has(PokemonCrystalGlitchedToken.TOKEN_NAME))
+            set_rule(get_location(f"Bug Catching Contest Slot {i + 1}"), GlitchedLogic())
 
     # Sudowoodo
     has_squirtbottle = Has("Squirtbottle")
@@ -1696,8 +1695,9 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             set_rule(get_location(location), Has(chamber_event))
             set_rule(get_location(f"{location}_Encounter"), Has(chamber_event))
 
+    trade_gate: Rule = True_() if world.options.trades_required else GlitchedLogic()
     for trade_id in world.generated_trades:
-        safe_set_location_rule(trade_id, HasTradeRequest(trade_id) & world.logic.has_pokedex())
+        safe_set_location_rule(trade_id, HasTradeRequest(trade_id) & world.logic.has_pokedex() & trade_gate)
 
     if world.options.randomize_lucky_number_show:
         prize_labels = ["Radio Tower 1F - Lucky Number Show 1st Prize",
@@ -1711,10 +1711,9 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             safe_set_location_rule(prize_labels[i], Has(f"Lucky Number Trade {i + 1}"))
 
     if world.options.require_itemfinder:
-        if world.options.require_itemfinder == RequireItemfinder.option_logically_required and world.is_universal_tracker:
-            rule = Has("Itemfinder") | Has(PokemonCrystalGlitchedToken.TOKEN_NAME)
-        else:
-            rule = Has("Itemfinder")
+        rule = Has("Itemfinder")
+        if world.options.require_itemfinder == RequireItemfinder.option_logically_required:
+            rule = rule | GlitchedLogic()
 
         for location in world.multiworld.get_locations(world.player):
             if "Hidden" in location.tags:
@@ -1772,8 +1771,10 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
         # sanity location and the logical event in that sub-region share access.
         for tier_idx in range(BATTLE_TOWER_NUM_TIERS):
             required = min(tier_idx + 1, pool_size)
-            set_rule(get_entrance(f"Battle Tower -> Battle Tower Tier {tier_idx + 1}"),
-                     HasFromListUnique(*milestones, count=required))
+            rule = HasFromListUnique(*milestones, count=required)
+            if tier_idx + 1 >= BATTLE_TOWER_UBERS_TIER:
+                rule = rule & (Has("Battle Tower Ubers Pass") | GlitchedLogic())
+            set_rule(get_entrance(f"Battle Tower -> Battle Tower Tier {tier_idx + 1}"), rule)
         if progressive:
             for tier_idx in range(BATTLE_TOWER_NUM_TIERS):
                 add_rule(get_entrance(f"Battle Tower -> Battle Tower Tier {tier_idx + 1}"),
@@ -1842,7 +1843,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
             location = get_location(f"{encounter_key.region_name()}_1")
             if encounter_access is LogicalAccess.OutOfLogic:
-                add_rule(location, Has(PokemonCrystalGlitchedToken.TOKEN_NAME))
+                add_rule(location, GlitchedLogic())
             continue
 
         region_name = encounter_key.region_name()
@@ -1873,15 +1874,14 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                                           "ENGINE_UNLOCKED_UNOWNS_S_TO_W", "ENGINE_UNLOCKED_UNOWNS_X_TO_Z"))
 
             if encounter_access is LogicalAccess.OutOfLogic:
-                add_rule(location, Has(PokemonCrystalGlitchedToken.TOKEN_NAME))
+                add_rule(location, GlitchedLogic())
 
     def evolution_rule(evolved_from: str,
                        evolutions: list[tuple[EvolutionData, LogicalAccess, str | None]]) -> Rule:
         options: list[Rule] = []
         for evo, access, item_label in evolutions:
             ool = access is LogicalAccess.OutOfLogic
-            # An out-of-logic evolution only counts when the universal-tracker glitch token is held.
-            gate: Rule = Has(PokemonCrystalGlitchedToken.TOKEN_NAME) if ool else True_()
+            gate: Rule = GlitchedLogic() if ool else True_()
             if evo.evo_type in (EvolutionType.Level, EvolutionType.Stats):
                 gyms = ((evo.level - 1) // world.options.evolution_gym_levels) + 1
                 inner = True_() if ool else HasFromListUnique(*world.logic.gym_events.values(), count=gyms)
@@ -1918,7 +1918,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             if access is LogicalAccess.InLogic:
                 gate: Rule = True_()
             elif access is LogicalAccess.OutOfLogic:
-                gate = Has(PokemonCrystalGlitchedToken.TOKEN_NAME)
+                gate = GlitchedLogic()
             else:
                 continue
             ditto: Rule = Has("DITTO") if requires_ditto else True_()
@@ -1930,7 +1930,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                  HasAll("EVENT_UNLOCKED_DAY_CARE", "EVENT_UNLOCKED_DAY_CARE_YARD"))
 
         if world.options.breeding_methods_required == BreedingMethodsRequired.option_with_ditto:
-            add_rule(get_entrance("Menu -> Breeding"), Has("DITTO") | Has(PokemonCrystalGlitchedToken.TOKEN_NAME))
+            add_rule(get_entrance("Menu -> Breeding"), Has("DITTO") | GlitchedLogic())
 
     for base_form_id, breeders in world.logic.breeding.items():
         logical_access = [access for _, access, _ in breeders]
