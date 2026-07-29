@@ -29,8 +29,6 @@ def load_ut_slot_data(world: "PokemonCrystalWorld"):
         world.options.dexcountsanity.value = world.ut_slot_data["dexcountsanity_option"]
     if "enable_mischief_option" in world.ut_slot_data:
         world.options.enable_mischief.value = world.ut_slot_data["enable_mischief_option"]
-    if "trap_weights_option" in world.ut_slot_data:
-        world.options.trap_weights.value = world.ut_slot_data["trap_weights_option"]
 
     world.generated_dexcountsanity = world.ut_slot_data["dexcountsanity_counts"]
     world.generated_dexsanity = {get_pokemon_id_by_rom_id(id) for id in world.ut_slot_data["dexsanity_pokemon"]}

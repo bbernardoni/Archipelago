@@ -1377,7 +1377,6 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
             trap.label: self.options.trap_weights.get(trap.label, 0) for trap in crystal_data.items.values() if
             trap.classification & ItemClassification.trap
         }
-        slot_data["trap_weights_option"] = dict(self.options.trap_weights.value)
 
         if not self.options.remote_items and self.options.filler_trap_percentage:
             slot_data["trap_locations"] = {str(location.address): location.item.code for location in
