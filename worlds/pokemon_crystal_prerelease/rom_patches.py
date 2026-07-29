@@ -230,4 +230,27 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    # ReceiveArchipelagoItemBattle enqueues in-battle traps into wBattleTrapQueue and immediately
+    # frees the server slot and increments the item index, so the trap counts as received. That
+    # queue is only drained by CheckMoveTraps (reached by opening FIGHT) or HandleStatusTrap at a
+    # residual-damage turn boundary, and the Dude's catch tutorial is auto-input driven straight
+    # to ITEM -> Poke Ball -> guaranteed catch: it reaches neither, then ExitBattle zeroes the
+    # queue and the trap is gone. Bail out of the battle receive path for BATTLETYPE_TUTORIAL,
+    # alongside the existing link and Battle Tower guards, so the slot stays pending and the
+    # overworld path delivers it once the tutorial script ends.
+    RomPatch(
+        name="no_item_delivery_during_catch_tutorial",
+        entries=[
+            # ReceiveArchipelagoItemBattle (7d:7466): ld a, [wLinkMode] -> jp stub
+            RomPatchEntry(bank=0x7D, address=0x7466, data=[0xC3, 0xF0, 0x7F]),
+            # Stub in bank $7d end-of-bank free space ($773d-$7fff)
+            RomPatchEntry(bank=0x7D, address=0x7FF0, data=[
+                0xFA, 0x37, 0xD2,  # ld a, [wBattleType]
+                0xFE, 0x03,        # cp BATTLETYPE_TUTORIAL
+                0xC8,              # ret z
+                0xFA, 0xDC, 0xC2,  # ld a, [wLinkMode]              ; overwritten instruction
+                0xC3, 0x69, 0x74,  # jp ReceiveArchipelagoItemBattle + 3
+            ]),
+        ],
+    ),
 ]
