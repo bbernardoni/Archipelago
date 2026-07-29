@@ -264,6 +264,8 @@ class ToemWorld(World):
                                     and _exit.parent_region
                                     and _exit.connected_region):
                                 disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
+                else:
+                    raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps.")
 
                 self.transitions = {
                     str(connection_name_to_id[from_]): connection_name_to_id[to_]
