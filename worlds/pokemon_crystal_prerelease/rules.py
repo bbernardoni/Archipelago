@@ -7,7 +7,7 @@ from rule_builder.rules import Rule, Has, HasAll, HasAny, HasFromListUnique, Tru
 from worlds.generic.Rules import add_rule as _ap_add_rule, CollectionRule
 from .battle_tower_data import BATTLE_TOWER_NUM_TIERS, BATTLE_TOWER_UBERS_TIER
 from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic, \
-    CanUseHM, CanUseFieldMove, HasHMBadge, HasBadges, HasGyms
+    CanUseHM, CanUseFieldMove, HasHMBadge, HasBadges, HasGyms, ResolvedRule
 from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType
 from .evolution import evolution_location_name
 from .items import item_const_name_to_label
@@ -455,20 +455,16 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
 
     def add_rule(spot, rule, combine="and"):
         if isinstance(rule, Rule):
+            old = spot.access_rule
+            if isinstance(old, Rule.Resolved):
+                # Recombine through And/Or so the merged rule is flattened and deduped.
+                nested = And if combine == "and" else Or
+                world.set_rule(spot, nested(ResolvedRule(old), rule))
+                return
             rule = rule.resolve(world)
             world.register_rule_dependencies(rule)
             if isinstance(spot, Entrance):
                 world._register_rule_indirects(rule, spot)
-            old = spot.access_rule
-            if isinstance(old, Rule.Resolved):
-                nested = And.Resolved if combine == "and" else Or.Resolved
-                combined = nested((old, rule), player=world.player,
-                                  caching_enabled=getattr(world, "rule_caching_enabled", False))
-                spot.access_rule = combined
-                world.register_rule_dependencies(combined)
-                if isinstance(spot, Entrance):
-                    world._register_rule_indirects(combined, spot)
-                return
         _ap_add_rule(spot, rule, combine)
 
     def get_entrance(entrance: str):

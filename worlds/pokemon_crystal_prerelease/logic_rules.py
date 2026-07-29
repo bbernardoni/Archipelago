@@ -225,6 +225,17 @@ class GlitchedLogic(Rule["PokemonCrystalWorld"], game=GAME):
 
 
 @dataclasses.dataclass()
+class ResolvedRule(Rule["PokemonCrystalWorld"], game=GAME):
+    """Wraps an already-resolved rule so it can be recombined through And/Or's optimiser."""
+
+    resolved: Rule.Resolved
+
+    @override
+    def _instantiate(self, world: "PokemonCrystalWorld") -> Rule.Resolved:
+        return self.resolved
+
+
+@dataclasses.dataclass()
 class HasBadges(Rule["PokemonCrystalWorld"], game=GAME):
     """Player has `count` distinct badges, or only Johto's eight when `johto_only`."""
 
