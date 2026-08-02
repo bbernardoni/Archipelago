@@ -604,6 +604,10 @@ def get_fly_regions(world: "PokemonCrystalWorld") -> list[FlyRegion]:
     if world.options.johto_only:
         fly_regions = [region for region in fly_regions if region.johto]
 
+    if world.options.randomize_fly_destinations:
+        # shuffled destinations fill flypoint slots by id, so the pool has to stay contiguous
+        fly_regions = [region for region in fly_regions if region.id <= len(fly_regions)]
+
     return fly_regions
 
 
@@ -619,11 +623,8 @@ def get_free_fly_locations(world: "PokemonCrystalWorld"):
         if not world.options.remove_ilex_cut_tree and world.options.route_32_condition.value != Route32Condition.option_any_badge:
             # Goldenrod
             location_pool = [region for region in location_pool if region.name != "Goldenrod City"]
-    if world.options.johto_only:
-        location_pool = [region for region in location_pool if region.johto]
-    if world.options.johto_only.value == JohtoOnly.option_on:
-        # Mt. Silver
-        location_pool = [region for region in location_pool if region.name != "Silver Cave"]
+    available_regions = set(get_fly_regions(world))
+    location_pool = [region for region in location_pool if region in available_regions]
 
     if world.options.randomize_starting_town:
         world.options.free_fly_blocklist.value.add(world.starting_town.name)
@@ -698,16 +699,18 @@ def randomize_fly_destinations(world: "PokemonCrystalWorld"):
 
     if world.options.johto_only.value == JohtoOnly.option_off:
         eligible_landmarks = Landmark.all()
-        num_flypoints = len({fly_region for fly_region in data.fly_regions})
     else:
         eligible_landmarks = Landmark.johto_only()
-        num_flypoints = len({fly_region for fly_region in data.fly_regions if fly_region.johto})
+
+    num_flypoints = len(get_fly_regions(world))
 
     if world.options.johto_only.value == JohtoOnly.option_on \
             or world.options.randomize_fly_unlocks.value == RandomizeFlyUnlocks.option_exclude_silver_cave:
         eligible_landmarks.remove(Landmark.Route28)
         eligible_landmarks.remove(Landmark.SilverCave)
-        num_flypoints -= 1
+        # option_on already drops Silver Cave from the pool
+        if world.options.johto_only.value != JohtoOnly.option_on:
+            num_flypoints -= 1
 
     flyable_flypoints = {
         l: [flypoint for flypoint in flypoints if flyable_filter(flypoint)]

@@ -1148,7 +1148,7 @@ def _init() -> None:
         FlyRegion(21, "Fuchsia City", "FUCHSIA", "REGION_FUCHSIA_CITY:FLY", "REGION_FUCHSIA_CITY", False,
                   unlock_sources=("REGION_FUCHSIA_CITY:CUT",)),
         FlyRegion(22, "Cinnabar Island", "CINNABAR", "REGION_CINNABAR_ISLAND", "REGION_CINNABAR_ISLAND", False),
-        FlyRegion(23, "Indigo Plateau", "INDIGO", "REGION_ROUTE_23", "REGION_ROUTE_23", False)
+        FlyRegion(23, "Indigo Plateau", "INDIGO", "REGION_ROUTE_23", "REGION_ROUTE_23", True)
     ]
 
     items = {}

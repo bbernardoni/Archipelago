@@ -7,7 +7,8 @@ class JohtoOnlyTest(PokemonCrystalTestBase):
     }
 
     def test_victory_road_access(self):
-        self.collect_all_but(["HM07 Waterfall", "EVENT_BEAT_ELITE_FOUR"])
+        # collect_all_but hands out placed events, so the Indigo flypoint has to be held back
+        self.collect_all_but(["HM07 Waterfall", "EVENT_BEAT_ELITE_FOUR", "EVENT_VISITED_INDIGO"])
         self.assertBeatable(False)
         self.collect_by_name("HM07 Waterfall")
         self.assertBeatable(True)
@@ -34,7 +35,7 @@ class JohtoOnlyExtraBadgesTest(PokemonCrystalTestBase):
             self.assertTrue(self.get_item_by_name(badge))
 
     def test_victory_road_badges(self):
-        self.collect_all_but(["Earth Badge", "EVENT_BEAT_ELITE_FOUR"])
+        self.collect_all_but(["Earth Badge", "EVENT_BEAT_ELITE_FOUR", "EVENT_VISITED_INDIGO"])
         self.assertBeatable(False)
         self.collect_by_name("Earth Badge")
         self.assertBeatable(True)

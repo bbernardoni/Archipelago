@@ -4682,6 +4682,9 @@
       "REGION_INDIGO_PLATEAU_POKECENTER_1F",
       "REGION_VICTORY_ROAD:3F"
     ],
+    "events": [
+      "EVENT_VISITED_INDIGO"
+    ],
     "signs": [
       "Route23IndigoPlateauSign"
     ]
