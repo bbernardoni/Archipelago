@@ -21,6 +21,7 @@ from .data import data, load_json_data
 from .item_data import GRASS_OFFSET, POKEDEX_OFFSET, POKEDEX_COUNT_OFFSET, FLAG_ITEM_OFFSET
 from .items import item_const_name_to_id
 from .options import ProvideShopHints, JohtoOnly
+from .phone import PHONE_TRAP_COUNT
 from .pokemon_data import ALL_UNOWN
 from .rematch_trainer_data import REMATCH_TRAINER_LOCATION_BASE, NUM_REMATCH_TRAINER_LOCATIONS
 
@@ -631,12 +632,12 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
             if not self.phone_trap_locations:
                 phone_result = await bizhawk.guarded_read(
                     ctx.bizhawk_ctx,
-                    [(data.rom_addresses["AP_Setting_Phone_Trap_Locations"], 0x20, "ROM")],
+                    [(data.rom_addresses["AP_Setting_Phone_Trap_Locations"], PHONE_TRAP_COUNT * 2, "ROM")],
                     [overworld_guard]
                 )
                 if phone_result is not None:
                     read_locations = []
-                    for i in range(0, 16):
+                    for i in range(0, PHONE_TRAP_COUNT):
                         loc = int.from_bytes(phone_result[0][i * 2:(i + 1) * 2], "little")
                         read_locations.append(loc)
                     self.phone_trap_locations = read_locations

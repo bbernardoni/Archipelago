@@ -253,6 +253,63 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    # ReceiveArchipelagoItemBattle pushes the trap-link slot into wBattleTrapQueue without the
+    # IsBattleTrapId check the server-item path runs first, so a linked phone/tutorial/ice/shuffle
+    # trap arriving while a battle menu is open lands in a queue that only CheckMoveTraps and
+    # HandleStatusTrap drain. Neither matches a non-battle trap id, so ClearBattleTrapSlot never
+    # pops it: the trap is lost and every later battle trap is stuck behind the dead head entry.
+    # Gate the enqueue on IsBattleTrapId and apply non-battle traps immediately via ReceiveFlagItem,
+    # which is what the flag item path already does with them.
+    RomPatch(
+        name="traplink_battle_queue_rejects_non_battle_traps",
+        entries=[
+            # ReceiveArchipelagoItemBattle.check_traplink (7d:74ed): farcall EnqueueBattleTrap
+            # -> farcall stub, by retargeting the ld hl (7d:74f6). Both live in bank $43, so the
+            # macro's ld a, BANK() at 7d:74f4 is already correct.
+            RomPatchEntry(bank=0x7D, address=0x74F6, data=[0x21, 0x80, 0x7F]),
+            # Stub in bank $43 end-of-bank free space ($724c-$7fff)
+            RomPatchEntry(bank=0x43, address=0x7F80, data=[
+                0xCD, 0x5E, 0x6C,  # call IsBattleTrapId           ; b = trap id, preserved
+                0x30, 0x03,        # jr nc, .non_battle
+                0xC3, 0x8B, 0x6C,  # jp EnqueueBattleTrap          ; carry = enqueued, as before
+                0x78,              # .non_battle: ld a, b
+                0xEA, 0xEA, 0xD6,  # ld [wArchipelagoFlagItemId], a
+                0x3E, 0x01,        # ld a, 1
+                0xEA, 0x13, 0xD1,  # ld [wItemQuantityChange], a
+                0xCD, 0x9E, 0x52,  # call ReceiveFlagItem
+                0x37,              # scf                           ; caller sounds it, frees the slot
+                0xC9,              # ret
+            ]),
+        ],
+    ),
+    # MoveMonWOMail_InsertMon_SaveGame - the save Crystal runs when a mon is moved in PC storage -
+    # is a full save, but SaveArchipelagoData/SaveBackupArchipelagoData were only ever added to
+    # _SaveGameData, so it skips them. sArchipelagoData lives inside sGameData, which SaveChecksum
+    # covers, so the file ends up with a valid checksum over an AP block left behind by the previous
+    # full save: nothing flags it, and TryLoadSaveFile restores it as-is on the next continue. That
+    # rolls back the grass/sign/battle tower/rematch location flags, the PC gift box, the EnergyLink
+    # handshake and wItemQueue while the rest of the file stays current - and a rolled back item
+    # queue re-delivers local items, so without remote items the player's own traps fire again.
+    # Fold the two AP writes into the SavePokemonData/SaveBackupPokemonData call sites, which sit
+    # exactly where _SaveGameData runs them and, crucially, ahead of both checksum writes.
+    RomPatch(
+        name="pc_storage_save_writes_archipelago_data",
+        entries=[
+            # MoveMonWOMail_InsertMon_SaveGame (05:49c0): call SavePokemonData (05:49e6) -> call stub
+            RomPatchEntry(bank=0x05, address=0x49E6, data=[0xCD, 0xE2, 0x7F]),
+            # call SaveBackupPokemonData (05:49f8) -> call stub
+            RomPatchEntry(bank=0x05, address=0x49F8, data=[0xCD, 0xE9, 0x7F]),
+            # Stubs in bank $05 end-of-bank free space ($7fe2-$7fff, only $1e bytes - 14 used here)
+            RomPatchEntry(bank=0x05, address=0x7FE2, data=[
+                0xCD, 0xE5, 0x4C,  # call SavePokemonData            ; overwritten instruction
+                0xCD, 0xFA, 0x4C,  # call SaveArchipelagoData        ; before SaveChecksum at 05:49ec
+                0xC9,              # ret
+                0xCD, 0xA7, 0x4D,  # call SaveBackupPokemonData      ; overwritten instruction
+                0xCD, 0xBC, 0x4D,  # call SaveBackupArchipelagoData  ; before SaveBackupChecksum
+                0xC9,              # ret
+            ]),
+        ],
+    ),
     RomPatch(
         name="flooded_mine_border_block",
         entries=[
