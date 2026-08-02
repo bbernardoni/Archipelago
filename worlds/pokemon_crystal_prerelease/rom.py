@@ -112,30 +112,32 @@ def get_base_patch_hashes() -> dict[str, str]:
     return {str(revision): hashlib.sha256(pkgutil.get_data(__name__, path)).hexdigest()
             for revision, path in BASE_PATCH_FILES.items()}
 
-# Index is offset from AP_Spawns; cities without a pokecenter are omitted.
-POKECENTER_SPAWN_ENTRIES: list[tuple[int, str]] = [
-    (1, "VIRIDIAN_POKECENTER_1F"),
-    (2, "PEWTER_POKECENTER_1F"),
-    (3, "CERULEAN_POKECENTER_1F"),
-    (4, "ROUTE_10_POKECENTER_1F"),
-    (5, "VERMILION_POKECENTER_1F"),
-    (6, "LAVENDER_POKECENTER_1F"),
-    (7, "SAFFRON_POKECENTER_1F"),
-    (8, "CELADON_POKECENTER_1F"),
-    (9, "FUCHSIA_POKECENTER_1F"),
-    (10, "CINNABAR_POKECENTER_1F"),
-    (11, "INDIGO_PLATEAU_POKECENTER_1F"),
-    (13, "CHERRYGROVE_POKECENTER_1F"),
-    (14, "VIOLET_POKECENTER_1F"),
-    (15, "ROUTE_32_POKECENTER_1F"),
-    (16, "AZALEA_POKECENTER_1F"),
-    (17, "CIANWOOD_POKECENTER_1F"),
-    (18, "GOLDENROD_POKECENTER_1F"),
-    (19, "OLIVINE_POKECENTER_1F"),
-    (20, "ECRUTEAK_POKECENTER_1F"),
-    (21, "MAHOGANY_POKECENTER_1F"),
-    (23, "BLACKTHORN_POKECENTER_1F"),
-    (24, "SILVER_CAVE_POKECENTER_1F"),
+# Index is offset from AP_Spawns; cities without a pokecenter are omitted. Coords are the tile in
+# front of the nurse - the 9x7 Indigo Plateau pokecenter puts its counter three block rows lower
+# than the standard 5x4 one, so the usual (3, 3) is solid wall there.
+POKECENTER_SPAWN_ENTRIES: list[tuple[int, str, int, int]] = [
+    (1, "VIRIDIAN_POKECENTER_1F", 3, 3),
+    (2, "PEWTER_POKECENTER_1F", 3, 3),
+    (3, "CERULEAN_POKECENTER_1F", 3, 3),
+    (4, "ROUTE_10_POKECENTER_1F", 3, 3),
+    (5, "VERMILION_POKECENTER_1F", 3, 3),
+    (6, "LAVENDER_POKECENTER_1F", 3, 3),
+    (7, "SAFFRON_POKECENTER_1F", 3, 3),
+    (8, "CELADON_POKECENTER_1F", 3, 3),
+    (9, "FUCHSIA_POKECENTER_1F", 3, 3),
+    (10, "CINNABAR_POKECENTER_1F", 3, 3),
+    (11, "INDIGO_PLATEAU_POKECENTER_1F", 3, 9),
+    (13, "CHERRYGROVE_POKECENTER_1F", 3, 3),
+    (14, "VIOLET_POKECENTER_1F", 3, 3),
+    (15, "ROUTE_32_POKECENTER_1F", 3, 3),
+    (16, "AZALEA_POKECENTER_1F", 3, 3),
+    (17, "CIANWOOD_POKECENTER_1F", 3, 3),
+    (18, "GOLDENROD_POKECENTER_1F", 3, 3),
+    (19, "OLIVINE_POKECENTER_1F", 3, 3),
+    (20, "ECRUTEAK_POKECENTER_1F", 3, 3),
+    (21, "MAHOGANY_POKECENTER_1F", 3, 3),
+    (23, "BLACKTHORN_POKECENTER_1F", 3, 3),
+    (24, "SILVER_CAVE_POKECENTER_1F", 3, 3),
 ]
 
 
@@ -1824,9 +1826,9 @@ def generate_output(world: "PokemonCrystalWorld", output_directory: str, patch: 
 
     if world.options.randomize_entrances:
         post_flypoint_base = data.rom_addresses["AP_Spawns"]
-        for index, map_const in POKECENTER_SPAWN_ENTRIES:
+        for index, map_const, x, y in POKECENTER_SPAWN_ENTRIES:
             group, map_id = data.map_constants[map_const]
-            write_bytes([group, map_id, 3, 3], post_flypoint_base + index * 4)
+            write_bytes([group, map_id, x, y], post_flypoint_base + index * 4)
 
     if world.options.randomize_fly_unlocks or world.options.remote_items:
         write_bytes([1], data.rom_addresses["AP_Setting_FlyUnlocksShuffled"] + 2)
