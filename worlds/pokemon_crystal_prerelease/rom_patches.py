@@ -253,4 +253,11 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    RomPatch(
+        name="flooded_mine_border_block",
+        entries=[
+            # FloodedMine_MapAttributes (25:670d): border block $00 -> $09
+            RomPatchEntry(bank=0x25, address=0x670D, data=[0x09]),
+        ],
+    ),
 ]
