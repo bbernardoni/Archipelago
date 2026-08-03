@@ -197,7 +197,7 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
     encounter_region_name_list: list[str]
     encounter_region_levels_list = list[int]
 
-    shop_locations_by_spheres: list[set[PokemonCrystalLocation]]
+    shop_locations_by_spheres: list[list[PokemonCrystalLocation]]
 
     itempool: list[PokemonCrystalItem]
     pre_fill_items: list[PokemonCrystalItem]
@@ -337,9 +337,9 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
         randomize_static_pokemon(self)
         randomize_wild_pokemon(self)
 
-        self.pokemon_pool.ensure_base_pools()
-
         randomize_trade_received_pokemon(self)
+
+        self.pokemon_pool.ensure_base_pools()
 
         if self.options.randomize_lucky_number_show and not self.is_universal_tracker:
             from .utils import should_include_region
@@ -622,7 +622,7 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
                 if "shopsanity" in loc.tags and loc.parent_region.name not in exclude_shops
             }
 
-            shop_locations: dict[int, list[set[PokemonCrystalLocation]]] = defaultdict(list)
+            shop_locations: dict[int, list[list[PokemonCrystalLocation]]] = defaultdict(list)
             for sphere in multiworld.get_spheres():
                 sphere_relevant = sphere & relevant_shop_locations
                 if not sphere_relevant:
@@ -630,8 +630,8 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
                 shop_locations_in_sphere: dict[int, set[PokemonCrystalLocation]] = defaultdict(set)
                 for location in sphere_relevant:
                     shop_locations_in_sphere[location.player].add(location)
-                for player, locations in shop_locations_in_sphere.items():
-                    shop_locations[player].append(locations)
+                for player, locations in sorted(shop_locations_in_sphere.items()):
+                    shop_locations[player].append(sorted(locations, key=lambda loc: loc.name))
 
             for world in multiworld.get_game_worlds(cls.game):
                 if world.options.shopsanity:
@@ -1252,8 +1252,9 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
             Goal.UNOWN_HUNT: 5,
             Goal.BATTLE_TOWER: 6,
         }
-        slot_data["goal_option"] = list(self.options.goal.value)
-        slot_data["goal"] = [goal_ids[g] for g in self.options.goal.value]
+        goal_names = sorted(self.options.goal.value)
+        slot_data["goal_option"] = goal_names
+        slot_data["goal"] = [goal_ids[g] for g in goal_names]
 
         slot_data["battle_tower_trainer_permutation"] = self.battle_tower_trainer_permutation
         slot_data["er_pairings"] = list(self.er_pairings)
@@ -1263,7 +1264,7 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
         slot_data["tea_south"] = 1 if SaffronGatehouseTea.SOUTH in self.options.saffron_gatehouse_tea.value else 0
         slot_data["tea_west"] = 1 if SaffronGatehouseTea.WEST in self.options.saffron_gatehouse_tea.value else 0
         slot_data["dexsanity_count"] = len(self.generated_dexsanity)
-        slot_data["dexsanity_pokemon"] = [self.generated_pokemon[poke].id for poke in self.generated_dexsanity]
+        slot_data["dexsanity_pokemon"] = [self.generated_pokemon[poke].id for poke in sorted(self.generated_dexsanity)]
         slot_data["logically_available_pokemon_count"] = len(
             self.pokemon_pool.get_filtered(self.options.dexsanity_logic))
         slot_data["diploma_count"] = len(self.pokemon_pool.all_available)
@@ -1593,7 +1594,7 @@ class PokemonCrystalWorld(CachedRuleBuilderWorld):
             get_dexsanity_trade_hint_data(dexsanity_hint_data)
             player_hint_data |= {
                 self.location_name_to_id[f"Pokedex - {self.generated_pokemon[pokemon_id].friendly_name}"]: ", ".join(
-                    methods)
+                    sorted(methods))
                 for pokemon_id, methods in dexsanity_hint_data.items()}
 
         hint_data[self.player] = player_hint_data

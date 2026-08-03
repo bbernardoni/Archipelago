@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from .data import LogicalAccess, EncounterType
+from .data import data as crystal_data, LogicalAccess, EncounterType
 from .options import Goal, PokemonSourceLogic, WildEncounterMethodsRequired
 
 if TYPE_CHECKING:
@@ -37,11 +37,11 @@ class PokemonPool:
         self._filtered_cache.clear()
 
     def ensure_base_pools(self) -> None:
-        """Compute wilds + statics + evolution/breeding fixed-point.
+        """Compute wilds + statics + trades + evolution/breeding fixed-point.
 
         Populates `world.logic.evolution` and `world.logic.breeding` as a side
-        effect. Must be called before trade randomization, since trade randomization
-        consumes get_filtered() which depends on the populated evolution/breeding data.
+        effect. Received trade species must be randomized before this is called;
+        requested species are randomized later and consume get_filtered().
         """
         if self._base_pool is not None:
             return
@@ -49,6 +49,7 @@ class PokemonPool:
         pool = set[str]()
         pool.update(self._compute_wilds())
         pool.update(self._compute_statics())
+        pool.update(self._compute_trade_pokemon())
 
         previous_size = -1
         while previous_size != len(pool):
@@ -62,12 +63,11 @@ class PokemonPool:
     def all_available(self) -> set[str]:
         """Full set of logically available Pokemon (replaces logic.available_pokemon).
 
-        Includes wilds, statics, evolutions, breeding, and trade-received Pokemon.
-        Should only be accessed after trade randomization is complete.
+        Includes wilds, statics, trades, evolutions, and breeding.
         """
         if self._all_available is None:
             self.ensure_base_pools()
-            self._all_available = set(self._base_pool) | self._compute_trade_pokemon()
+            self._all_available = set(self._base_pool)
         return self._all_available
 
     @property
@@ -87,7 +87,12 @@ class PokemonPool:
         return len(self.get_filtered(world.options.dexsanity_logic))
 
     def get_filtered(self, source_logic: PokemonSourceLogic, exclude_unown: bool = False) -> set[str]:
-        """Pokemon available under a source-logic filter, falling back to the full pool if empty."""
+        """Pokemon available under a source-logic filter.
+
+        Falls back to the pool for all of the option's valid source keys if empty,
+        matching the effective_sources fallback (request logic excludes Trades, so
+        trade-only Pokemon must not leak into its fallback pool).
+        """
         key = (frozenset(source_logic.value), exclude_unown)
         if key not in self._filtered_cache:
             self._filtered_cache[key] = self._compute_filtered(source_logic, exclude_unown)
@@ -158,9 +163,8 @@ class PokemonPool:
         if exclude_unown:
             pool.discard("UNOWN")
         if not pool and allow_fallback:
-            pool = set(self._base_pool)
-            if exclude_unown:
-                pool.discard("UNOWN")
+            all_sources = type(source_logic)(["_All"])
+            pool = self._compute_filtered(all_sources, exclude_unown, allow_fallback=False)
         return pool
 
     def _compute_wilds(self) -> set[str]:
@@ -216,13 +220,13 @@ class PokemonPool:
         return breeding_pokemon
 
     def _compute_trade_pokemon(self) -> set[str]:
+        from .utils import should_include_region
         world = self._world
         pool = set[str]()
         if world.options.trades_required:
-            for trade_id, trade in world.generated_trades.items():
-                try:
-                    world.get_location(trade_id)
-                    pool.add(trade.received_pokemon)
-                except KeyError:
+            for region_data in crystal_data.regions.values():
+                if not should_include_region(region_data, world):
                     continue
+                for trade_id in region_data.trades:
+                    pool.add(world.generated_trades[trade_id].received_pokemon)
         return pool

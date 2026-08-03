@@ -1889,7 +1889,7 @@ def generate_output(world: "PokemonCrystalWorld", output_directory: str, patch: 
 
     if world.options.randomize_static_pokemon or world.options.randomize_evolution:
         mystery_egg_pokemon = world.generated_static[EncounterKey.static("EggTogepi")].pokemon
-        togepi_evo_tree = get_pokemon_evolutions(world, mystery_egg_pokemon)
+        togepi_evo_tree = sorted(get_pokemon_evolutions(world, mystery_egg_pokemon))
         for i, pokemon in enumerate(togepi_evo_tree):
             write_bytes([world.generated_pokemon[pokemon].id], data.rom_addresses["AP_TogepiEvoTree"] + i)
         write_bytes([0xff], data.rom_addresses["AP_TogepiEvoTree"] + len(togepi_evo_tree))
