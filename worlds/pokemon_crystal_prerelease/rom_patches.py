@@ -310,6 +310,30 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    # SaveAfterLinkTrade - the save wonder trade runs to commit the party across the trade - only
+    # writes SavePokemonData before recomputing both checksums, skipping SavePlayerData and
+    # SaveArchipelagoData. sPlayerData holds wArchipelagoItemIndex, the cursor for server-delivered
+    # items, so the file validates with a cursor from the previous full save. On the next continue
+    # TryLoadSaveFile rewinds it and the client re-delivers everything received since - with remote
+    # items that includes the player's own traps, so phone traps and friends fire again (and get
+    # re-broadcast over TrapLink). Retarget the two SavePokemonData calls to stubs that save player
+    # data first, then chain into the pc_storage stubs above for the pokemon + AP data writes.
+    RomPatch(
+        name="wonder_trade_save_writes_player_data",
+        entries=[
+            # SaveAfterLinkTrade (05:48f5): call SavePokemonData (05:4904) -> call stub
+            RomPatchEntry(bank=0x05, address=0x4904, data=[0xCD, 0xF0, 0x7F]),
+            # call SaveBackupPokemonData (05:490a) -> call stub
+            RomPatchEntry(bank=0x05, address=0x490A, data=[0xCD, 0xF6, 0x7F]),
+            # Stubs at $7ff0, after the pc_storage stubs ($7fe2-$7fef); 12 of the 16 free bytes used
+            RomPatchEntry(bank=0x05, address=0x7FF0, data=[
+                0xCD, 0xC5, 0x4C,  # call SavePlayerData             ; before SaveChecksum at 05:4907
+                0xC3, 0xE2, 0x7F,  # jp $7fe2                        ; SavePokemonData + SaveArchipelagoData
+                0xCD, 0x86, 0x4D,  # call SaveBackupPlayerData       ; before SaveBackupChecksum
+                0xC3, 0xE9, 0x7F,  # jp $7fe9                        ; backup pokemon + AP data
+            ]),
+        ],
+    ),
     RomPatch(
         name="flooded_mine_border_block",
         entries=[
