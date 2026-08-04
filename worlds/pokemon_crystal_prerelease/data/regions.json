@@ -8148,6 +8148,9 @@
       "REGION_VIOLET_CITY",
       "REGION_POKECENTER_2F"
     ],
+    "statics": [
+      "EggTogepi"
+    ],
     "events": [
       "EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"
     ]

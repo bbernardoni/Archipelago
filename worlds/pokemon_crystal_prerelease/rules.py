@@ -682,6 +682,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     set_rule(get_location("Violet City - Northeast Item across Water"), CanUseHM(CanUseHM.SURF))
 
     set_rule(get_location("EVENT_GOT_TOGEPI_EGG_FROM_ELMS_AIDE"), Has(world.logic.gym_events["falkner"]))
+    set_static_rule("EggTogepi", Has(world.logic.gym_events["falkner"]))
 
     set_rule(get_entrance("REGION_RUINS_OF_ALPH_OUTSIDE -> REGION_RUINS_OF_ALPH_OUTSIDE:SOUTH"),
              CanUseHM(CanUseHM.SURF))
