@@ -1,7 +1,8 @@
 from .bases import PokemonCrystalTestBase
 
 from ..data import data
-from ..rom import _build_reverse_conn_lookup, _resolve_arrival, write_entrance_pairings
+from ..rom import _resolve_arrival, write_entrance_pairings
+from ..utils import build_reverse_conn_lookup
 
 
 def _simulate_elevator_writes(world):
@@ -27,7 +28,7 @@ def _simulate_elevator_writes(world):
 def _lift_entry_failures(world):
     """Return doors that land in a lift room but whose origin matches no floor's entry map (offset 4)."""
     conns = data.entrance_connections
-    reverse_lookup = _build_reverse_conn_lookup(conns)
+    reverse_lookup = build_reverse_conn_lookup(conns)
     map_consts = data.map_constants
     resolve = lambda tgt: _resolve_arrival(conns, map_consts, reverse_lookup, tgt)
     lift_maps = {map_consts[k] for k in map_consts if k.endswith("_DEPT_STORE_ELEVATOR")}

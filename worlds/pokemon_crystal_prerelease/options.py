@@ -2916,6 +2916,8 @@ class CrystalPlandoConnections(PlandoConnections):
     arrival side: its first region is where the player ends up.
 
     Direction "both" forces the reverse pairing too; "entrance" forces only one direction.
+    With coupled_entrances enabled every pairing is forced to "both", since coupling already
+    makes the return trip mirror the way in.
     Requires randomize_entrances to include the relevant categories.
 
     Example (cafe door leads to the elevator room):

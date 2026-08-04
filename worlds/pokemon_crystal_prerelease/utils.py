@@ -1,8 +1,9 @@
 import logging
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from Options import Toggle
-from .data import data, StartingTown, FlyRegion, RegionData, Landmark, FlypointWarp
+from .data import data, StartingTown, FlyRegion, RegionData, Landmark, FlypointWarp, EntranceConnection
 from .mart_data import CUSTOM_MART_SLOT_NAMES
 from .options import FreeFlyLocation, Route32Condition, JohtoOnly, RandomizeBadges, UndergroundsRequirePower, \
     Route3Access, VictoryRoadRequirement, EliteFourRequirement, Goal, Route44AccessRequirement, BlackthornDarkCaveAccess, RedRequirement, \
@@ -48,6 +49,7 @@ def __adjust_option_problems(world: "PokemonCrystalWorld"):
     __adjust_options_south_kanto_access(world)
     __adjust_options_lance_requires_elite_four(world)
     __adjust_options_vanilla_misty_chain(world)
+    __adjust_options_coupled_plando_direction(world)
 
 
 def __adjust_options_vanilla_misty_chain(world: "PokemonCrystalWorld"):
@@ -63,6 +65,23 @@ def __adjust_options_vanilla_misty_chain(world: "PokemonCrystalWorld"):
             "Pokemon Crystal: The vanilla Misty event chain is incompatible with vanilla badges and "
             "regional HM badge requirements. Disabling the Misty event chain for player %s.",
             world.player_name)
+
+
+def __adjust_options_coupled_plando_direction(world: "PokemonCrystalWorld"):
+    # Coupling forces the return trip to mirror the way in, so a one-directional pairing has
+    # no valid placement: the target left behind at the source can never be paired (its reverse
+    # exit is already connected), and neither can the exit whose target the pairing consumed.
+    if not (world.options.coupled_entrances and world.options.plando_connections):
+        return
+    one_way = [conn for conn in world.options.plando_connections.value if conn.direction != "both"]
+    if not one_way:
+        return
+    world.options.plando_connections.value = [
+        conn._replace(direction="both") for conn in world.options.plando_connections.value]
+    logging.warning(
+        "Pokemon Crystal: plando_connections direction '%s' is incompatible with Coupled Entrances. "
+        "Forcing direction 'both' for %d pairing(s) for player %s.",
+        one_way[0].direction, len(one_way), world.player_name)
 
 
 def __adjust_options_lance_requires_elite_four(world: "PokemonCrystalWorld"):
@@ -840,3 +859,23 @@ def write_appp_tokens(patch, byte_array, address):
 
 def write_rom_bytes(rom, byte_array, address):
     rom[address:address + len(byte_array)] = bytes(byte_array)
+
+
+def build_reverse_conn_lookup(conns: Mapping[str, EntranceConnection]) -> dict[str, str]:
+    conn_names = set(conns.keys())
+    lookup: dict[str, str] = {}
+    for name, conn in conns.items():
+        exact = f"{conn.entrance_region} -> {conn.exit_region}"
+        if exact in conn_names:
+            lookup[name] = exact
+            continue
+
+        dst = conn.entrance_region
+        src_base = conn.exit_region.split(":")[0]
+        if ":" in dst:
+            dst_base = dst.split(":")[0]
+            suffix = dst[len(dst_base):]  # includes the leading ":"
+            candidate = f"{dst_base} -> {src_base}{suffix}"
+            if candidate in conn_names:
+                lookup[name] = candidate
+    return lookup

@@ -4,13 +4,14 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Region, ItemClassification
 from entrance_rando import EntranceType
-from .data import data, RegionData, EncounterMon, StaticPokemon, LogicalAccess, EncounterKey, FishingRodType, FishTimeOfDay, \
+from .data import data, RegionData, EncounterMon, StaticPokemon, LogicalAccess, EncounterKey, FishingRodType, \
     TreeRarity, EncounterType
 from .items import PokemonCrystalItem
 from .locations import PokemonCrystalLocation
 from .options import FreeFlyLocation, JohtoOnly, BlackthornDarkCaveAccess, Goal, Route42Access, LevelCurve, \
-    WildEncounterMethodsRequired, RandomizeFlyUnlocks
+    WildEncounterMethodsRequired
 from .pokemon_data import SWARM_REGISTRATIONS
+from .entrance_rando import build_er_group_lookup, er_group_for_connection, ER_SPLIT_CATEGORIES
 from .utils import get_fly_regions, should_include_region
 
 if TYPE_CHECKING:
@@ -75,70 +76,6 @@ LOGIC_EXCLUDE_STATICS = [
 
 E4_LOCKED = list(set(CHAMPION_LOCKED + KANTO_LOCKED))
 REMATCHES = list(set(MAP_LOCKED + ROCKETHQ_LOCKED + RADIO_LOCKED + E4_LOCKED + KANTO_LOCKED))
-
-
-# Group IDs for ER pool assignment. Integers are arbitrary but must be stable
-# within a single world-generation run.
-_ER_GROUP_MIXED = 0
-_ER_GROUP_ONEWAY = 1
-# Isolated per-category groups get IDs >= _ER_GROUP_ISOLATED_BASE. One ID per
-# category in `isolated_categories`, assigned in sorted order for determinism.
-_ER_GROUP_ISOLATED_BASE = 2
-
-
-def _build_isolated_group_map(isolated_categories: set[str]) -> dict[str, int]:
-    """Assign a stable integer group ID to each category in the isolated set."""
-    return {
-        cat: _ER_GROUP_ISOLATED_BASE + i
-        for i, cat in enumerate(sorted(isolated_categories))
-    }
-
-
-def _er_group_for_connection(
-    category: str,
-    isolated_group_map: dict[str, int],
-) -> int:
-    """Return the randomization_group for a connection with the given category.
-
-    Caller must only invoke this for connections that are actually being
-    randomized (category in randomize_entrances).
-    """
-    if category == "One-Way":
-        return _ER_GROUP_ONEWAY
-    if category in isolated_group_map:
-        return isolated_group_map[category]
-    return _ER_GROUP_MIXED
-
-
-def _build_er_group_lookup(
-    randomize: set[str],
-    mix: set[str],
-) -> tuple[dict[int, list[int]], bool, dict[str, int]]:
-    """Build target_group_lookup and isolated_group_map for randomize_entrances().
-
-    Returns:
-        target_group_lookup: maps each source group ID to the list of target
-            group IDs it may match with. Each group maps to itself only (closed
-            pools are strict).
-        preserve_group_order: always False (no soft-preference fallback).
-        isolated_group_map: category -> group ID for isolated categories. Used
-            by the caller to assign connections to the right group.
-    """
-    randomized_non_oneway = randomize - {"One-Way"}
-    isolated_categories = randomized_non_oneway - mix
-    isolated_group_map = _build_isolated_group_map(isolated_categories)
-
-    lookup: dict[int, list[int]] = {}
-    # Mixed pool exists only if at least one randomized non-one-way category is
-    # also in mix_entrances. (One-Way never joins the mixed pool.)
-    if randomized_non_oneway & mix:
-        lookup[_ER_GROUP_MIXED] = [_ER_GROUP_MIXED]
-    if "One-Way" in randomize:
-        lookup[_ER_GROUP_ONEWAY] = [_ER_GROUP_ONEWAY]
-    for gid in isolated_group_map.values():
-        lookup[gid] = [gid]
-
-    return lookup, False, isolated_group_map
 
 
 def _generate_curve_levels(n: int, min_level: int, max_level: int, shape: int) -> list[int]:
@@ -419,7 +356,9 @@ def create_regions(world: "PokemonCrystalWorld") -> dict[str, Region]:
 
     randomize = world.options.randomize_entrances.value  # frozenset of category strings
     mix = world.options.mix_entrances.value              # frozenset of category strings
-    _, _, isolated_group_map = _build_er_group_lookup(set(randomize), set(mix))
+    # create_regions uses the structural split; connect_entrances reassigns every group
+    # from the split that is actually viable for this seed before ER runs.
+    _, _, isolated_group_map = build_er_group_lookup(set(randomize), set(mix), ER_SPLIT_CATEGORIES)
 
     # Pin certain pokecenter entrances to vanilla so the player always has pokecenter access.
     vanilla_pokecenter: set[str] = set()
@@ -466,8 +405,8 @@ def create_regions(world: "PokemonCrystalWorld") -> dict[str, Region]:
                     entrance.randomization_type = EntranceType.ONE_WAY
                 else:
                     entrance.randomization_type = EntranceType.TWO_WAY
-                entrance.randomization_group = _er_group_for_connection(
-                    conn.category, isolated_group_map)
+                entrance.randomization_group = er_group_for_connection(
+                    conn, isolated_group_map, ER_SPLIT_CATEGORIES)
                 world.er_entrances.append((entrance, regions[dest]))
 
     if world.options.skip_elite_four:

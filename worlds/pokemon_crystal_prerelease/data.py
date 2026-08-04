@@ -758,6 +758,11 @@ class MapEnvironment(IntEnum):
         raise ValueError(f"Invalid map environment string: {map_env_string}")
 
 
+# Maps the player walks around on outdoors. Everything else is inside a building,
+# cave or gate, which is what tells the two sides of a door apart.
+OUTDOOR_ENVIRONMENTS = frozenset({MapEnvironment.Town, MapEnvironment.Route})
+
+
 class Landmark(IntEnum):
     Special = 0
     NewBarkTown = auto()
@@ -1646,7 +1651,6 @@ def _init() -> None:
         name: tuple(pair) for name, pair in data_json["map_constants"].items()
     }
 
-    outdoor_environments = (MapEnvironment.Town, MapEnvironment.Route)
     flypoints: dict[Landmark, list[FlypointWarp]] = defaultdict(list)
     for map_name, map_data in maps.items():
         if data_json["warps"].get(map_name, None) is None: continue
@@ -1657,7 +1661,7 @@ def _init() -> None:
                                                          warp["warp_type"]
                                                          )
                                             for warp in data_json["warps"][map_name]
-                                            if map_data.environment in outdoor_environments
+                                            if map_data.environment in OUTDOOR_ENVIRONMENTS
                                             )
 
     spawnpoints: list[SpawnPoint] = [SpawnPoint(*entry) for entry in data_json["spawnpoints"]]

@@ -34,7 +34,7 @@ from .phone_data import done_cmd
 from .pokemon_data import ALL_UNOWN
 from .rom_patches import ROM_PATCHES
 from .utils import convert_to_ingame_text, rom_offset_to_address, write_appp_tokens, write_rom_bytes, \
-    replace_map_tiles, parse_time
+    replace_map_tiles, parse_time, build_reverse_conn_lookup
 
 if TYPE_CHECKING:
     from .world import PokemonCrystalWorld
@@ -483,26 +483,6 @@ def write_customizable_options(options: PokemonCrystalOptions,
                 pass
 
 
-def _build_reverse_conn_lookup(conns: Mapping[str, EntranceConnection]) -> dict[str, str]:
-    conn_names = set(conns.keys())
-    lookup: dict[str, str] = {}
-    for name, conn in conns.items():
-        exact = f"{conn.entrance_region} -> {conn.exit_region}"
-        if exact in conn_names:
-            lookup[name] = exact
-            continue
-
-        dst = conn.entrance_region
-        src_base = conn.exit_region.split(":")[0]
-        if ":" in dst:
-            dst_base = dst.split(":")[0]
-            suffix = dst[len(dst_base):]  # includes the leading ":"
-            candidate = f"{dst_base} -> {src_base}{suffix}"
-            if candidate in conn_names:
-                lookup[name] = candidate
-    return lookup
-
-
 def _resolve_arrival(conns, map_consts, reverse_lookup, target_name):
     """Resolve a pairing target to (warp, group, map) arrival data."""
     if target_name.endswith(" (one-way target)"):
@@ -599,7 +579,7 @@ def suppress_route_23_restored_wilds(write_bytes) -> None:
 def write_entrance_pairings(world: "PokemonCrystalWorld", write_bytes) -> None:
     conns = data.entrance_connections
     map_consts = data.map_constants
-    reverse_lookup = _build_reverse_conn_lookup(conns)
+    reverse_lookup = build_reverse_conn_lookup(conns)
 
     resolve = lambda tgt: _resolve_arrival(conns, map_consts, reverse_lookup, tgt)
 
