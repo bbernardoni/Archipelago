@@ -334,6 +334,27 @@ ROM_PATCHES: list[RomPatch] = [
             ]),
         ],
     ),
+    # Under trainersanity AdjustPaletteIfTrainersanity tints an uncollected trainer PAL_OW_EMOTE and
+    # only recomputes it when the object struct is (re)loaded, so every other trainersanity NPC runs
+    # special UpdateTrainerSpritePalettes right after handing over its item. Mt. Mortar's Kiyo never
+    # does: on the path where the Tyrogue is actually given, the givepoke menus refresh the sprites
+    # for free and hide it, but with a full party the script only ever opens text boxes and Kiyo
+    # stays highlighted until the map is reloaded. Retarget the setevent that follows the item to a
+    # stub that sets the flag and repaints.
+    RomPatch(
+        name="mount_mortar_kiyo_trainersanity_palette",
+        entries=[
+            # MountMortarB1FKiyoScript.Item (1f:6285): setevent EVENT_ITEM_FROM_BLACKBELT_KIYO
+            # (1f:628f) -> sjump stub
+            RomPatchEntry(bank=0x1F, address=0x628F, data=[0x03, 0xF8, 0x7F]),
+            # Stub in bank $1f end-of-bank free space ($77ae-$7fff)
+            RomPatchEntry(bank=0x1F, address=0x7FF8, data=[
+                0x33, 0xD0, 0x04,  # setevent EVENT_ITEM_FROM_BLACKBELT_KIYO  ; overwritten command
+                0x0F, 0xAC, 0x00,  # special UpdateTrainerSpritePalettes
+                0x91,              # end                                     ; as .done
+            ]),
+        ],
+    ),
     RomPatch(
         name="flooded_mine_border_block",
         entries=[
