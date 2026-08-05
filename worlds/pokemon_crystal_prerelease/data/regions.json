@@ -2928,9 +2928,6 @@
       "REGION_ROUTE_42:WEST",
       "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHWEST"
     ],
-    "signs": [
-      "MtMortarSign1"
-    ],
     "wild_encounters": {
       "grass": "MOUNT_MORTAR_1F_OUTSIDE"
     }
@@ -3000,9 +2997,6 @@
     "exits": [
       "REGION_ROUTE_42:EAST",
       "REGION_MOUNT_MORTAR_1F_OUTSIDE:SOUTHEAST"
-    ],
-    "signs": [
-      "MtMortarSign2"
     ],
     "wild_encounters": {
       "grass": "MOUNT_MORTAR_1F_OUTSIDE"
@@ -5813,7 +5807,8 @@
       "ROUTE_42_ULTRA_BALL"
     ],
     "signs": [
-      "Route42Sign1"
+      "Route42Sign1",
+      "MtMortarSign1"
     ],
     "wild_encounters": {
       "surfing": "ROUTE_42",
@@ -5879,7 +5874,8 @@
       "WATER_STONE_FROM_TULLY"
     ],
     "signs": [
-      "Route42Sign2"
+      "Route42Sign2",
+      "MtMortarSign2"
     ],
     "wild_encounters": {
       "grass": "ROUTE_42",
