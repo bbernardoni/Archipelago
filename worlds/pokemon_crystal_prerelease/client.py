@@ -36,6 +36,9 @@ TRADE_BYTES = math.ceil(len(data.trades) / 8)
 SIGN_BYTES = math.ceil(len(data.unown_signs) / 8)
 BATTLE_TOWER_TRAINER_BYTES = math.ceil(BATTLE_TOWER_NUM_TRAINERS / 8)
 REMATCH_TRAINER_BYTES = math.ceil(NUM_REMATCH_TRAINER_LOCATIONS / 8)
+NUM_FLYPOINTS = max(fly_region.spawn_flag for fly_region in data.fly_regions) + 1
+FLYPOINT_BYTES = math.ceil(NUM_FLYPOINTS / 8)
+FLYPOINT_MASK = (1 << NUM_FLYPOINTS) - 1
 _WARP_IDS_JSON = load_json_data("warp_ids.json")
 WARP_BYTES = _WARP_IDS_JSON["flag_bytes"]
 WARP_ID_BY_BIT_POSITION = {w["bit_byte"] * 8 + w["bit_index"]: w["id"] for w in _WARP_IDS_JSON["warps"]}
@@ -73,6 +76,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
     local_hints: list[str]
     local_trades_completed: set[int]
     local_warps_visited: set[int]
+    local_fly_unlocks: int
     local_battle_tower_tiers: set[int]
     phone_trap_locations: list[int]
     current_map: list[int]
@@ -104,6 +108,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
         self.local_hints = []
         self.local_trades_completed = set()
         self.local_warps_visited = set()
+        self.local_fly_unlocks = 0
         self.local_battle_tower_tiers = set()
         self.phone_trap_locations = list()
         self.current_map = [0, 0]
@@ -205,6 +210,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
         sync_goal_events_key = f"pokemon_crystal_sync_goal_events_{ctx.team}_{ctx.slot}"
         unlocked_unowns_key = f"pokemon_crystal_unlocked_unowns_{ctx.team}_{ctx.slot}"
         warps_key = f"pokemon_crystal_warps_{ctx.team}_{ctx.slot}"
+        fly_unlocks_key = f"pokemon_crystal_fly_unlocks_{ctx.team}_{ctx.slot}"
         battle_tower_key = f"pokemon_crystal_battle_tower_{ctx.team}_{ctx.slot}"
 
         if not self.notify_setup_complete:
@@ -372,6 +378,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
                  (data.ram_addresses["wArchipelagoTrackerSlot"], 1, "WRAM"),
                  (data.ram_addresses["wUnlockedUnowns"], 1, "WRAM"),
                  (data.ram_addresses["wWarpFlags"], WARP_BYTES, "WRAM"),
+                 (data.ram_addresses["wVisitedSpawns"], FLYPOINT_BYTES, "WRAM"),
                  (data.ram_addresses["wArchipelagoBattleTowerCompletedTiers"], 2, "WRAM"),
                  (data.ram_addresses["wArchipelagoBattleTowerTrainerFlags"], BATTLE_TOWER_TRAINER_BYTES, "WRAM"),
                  (data.ram_addresses["wArchipelagoRematchTrainerFlags"], REMATCH_TRAINER_BYTES, "WRAM"), ],
@@ -392,9 +399,10 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
             tracker_slot_bytes = read_result[9]
             local_unlocked_unowns = read_result[10][0]
             warp_flag_bytes = read_result[11]
-            battle_tower_bytes = read_result[12]
-            battle_tower_trainer_bytes = read_result[13]
-            rematch_trainer_bytes = read_result[14]
+            visited_spawn_bytes = read_result[12]
+            battle_tower_bytes = read_result[13]
+            battle_tower_trainer_bytes = read_result[14]
+            rematch_trainer_bytes = read_result[15]
 
             local_checked_locations = set()
             bitflag_locals = {attr_name: {flag: False for flag in flag_list}
@@ -533,6 +541,8 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
                         if warp_id is not None:
                             local_warps_visited.add(warp_id)
 
+            local_fly_unlocks = int.from_bytes(visited_spawn_bytes, "little") & FLYPOINT_MASK
+
             packages = []
 
             if local_seen_pokemon != self.local_seen_pokemon:
@@ -573,6 +583,15 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
                     "operations": [{"operation": "update", "value": list(local_warps_visited)}, ]
                 })
 
+            if local_fly_unlocks != self.local_fly_unlocks:
+                packages.append({
+                    "cmd": "Set",
+                    "key": fly_unlocks_key,
+                    "default": 0,
+                    "want_reply": False,
+                    "operations": [{"operation": "or", "value": local_fly_unlocks}, ]
+                })
+
             if ctx.items_handling & 0b010 and local_battle_tower_tiers != self.local_battle_tower_tiers:
                 packages.append({
                     "cmd": "Set",
@@ -589,6 +608,7 @@ class PokemonCrystalClient(WonderTradeMixin, BizHawkClient):
                 self.local_caught_pokemon = local_caught_pokemon
                 self.local_trades_completed = local_trades_completed
                 self.local_warps_visited = local_warps_visited
+                self.local_fly_unlocks = local_fly_unlocks
                 self.local_battle_tower_tiers = local_battle_tower_tiers
 
             if ctx.slot_data["dexcountsanity_counts"] and has_pokedex:
