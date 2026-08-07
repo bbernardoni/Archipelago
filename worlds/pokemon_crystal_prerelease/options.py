@@ -1163,7 +1163,7 @@ class RandomizePhoneCallItems(Toggle):
     Shuffles gift items from phone trainers (Fire Stone, Pink Bow, Star Piece, etc.) into
     the AP item pool.
 
-    You need a Pokegear to register phone numbers and a Phone Card to make and receive calls.
+    You need the Pokegear to register phone numbers and a Phone Card to make and receive calls.
 
     Trainers that ask to see a Pokemon to swap numbers (e.g. Tiffany wanting Clefairy) only
     appear if Randomize Pokemon Requests is also on.
@@ -1176,8 +1176,9 @@ class Momsanity(Toggle):
     Adds 10 locations for the items Mom buys you at different money thresholds
     while she's saving your money.
 
-    Logically requires access to Mom and giving the Mystery Egg to Elm. Each item
-    logically requires an increasing number of accessible gyms, starting at zero.
+    Logically requires access to Mom, and either giving the Mystery Egg to Elm or
+    reaching Route 31 (where Mom calls you). Each item logically requires an
+    increasing number of accessible gyms, starting at zero.
 
     Items that go in your bag will be deposited into the PC. Items which do not go
     in your bag will be in the BANK OF MOM collection box in the PC.
