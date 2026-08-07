@@ -4,7 +4,7 @@ from ..data import EncounterType, FishTimeOfDay, FishingRodType, EncounterKey, d
 
 class FishTimeOfDayDisabledTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": False,
+        "time_of_day_encounters": False,
     }
 
     def test_fish_keys_have_no_time_of_day(self):
@@ -32,7 +32,7 @@ class FishTimeOfDayDisabledTest(PokemonCrystalTestBase):
 
 class FishTimeOfDayEnabledTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": True,
+        "time_of_day_encounters": True,
     }
 
     def test_only_vanilla_differing_rods_have_tod_split(self):
@@ -117,7 +117,7 @@ class FishTimeSlotsMetadataTest(PokemonCrystalTestBase):
 
 class FishTimeOfDayRandomizedTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": True,
+        "time_of_day_encounters": True,
         "randomize_wilds": "completely_random",
     }
 

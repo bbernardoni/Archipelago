@@ -8,7 +8,8 @@ from worlds.generic.Rules import add_rule as _ap_add_rule, CollectionRule
 from .battle_tower_data import BATTLE_TOWER_NUM_TIERS, BATTLE_TOWER_UBERS_TIER
 from .logic_rules import HasNPokemon, HasDexCount, HasSpeciesDex, HasRequestSlot, HasTradeRequest, GlitchedLogic, \
     CanUseHM, CanUseFieldMove, HasHMBadge, HasBadges, HasGyms, ResolvedRule
-from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType
+from .data import data, EvolutionType, EvolutionData, FishingRodType, EncounterKey, LogicalAccess, EncounterType, \
+    FishTimeOfDay
 from .evolution import evolution_location_name
 from .items import item_const_name_to_label
 from .options import Goal, JohtoOnly, Route32Condition, UndergroundsRequirePower, Route2Access, \
@@ -1724,6 +1725,23 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
     precollected_tod = world.precollected_tod
     pokegear_name = "Pokegear" if world.options.randomize_pokegear else "EVENT_GOT_POKEGEAR"
 
+    def has_tod(tod_item: str) -> Rule:
+        if tod_item == precollected_tod:
+            return Has(tod_item)
+        return Has(tod_item) & Has(pokegear_name)
+
+    def time_of_day_rule(encounter_key: EncounterKey) -> Rule | None:
+        if not world.options.unlockable_time_of_day or encounter_key.time_of_day is None:
+            return None
+        if encounter_key.encounter_type is EncounterType.Grass:
+            return has_tod(encounter_key.time_of_day.name)
+        if encounter_key.encounter_type is EncounterType.Fish:
+            # the game uses the day fishing group during morn as well
+            if encounter_key.time_of_day is FishTimeOfDay.Day:
+                return Or(has_tod("Morn"), has_tod("Day"))
+            return has_tod(encounter_key.time_of_day.name)
+        return None
+
     for location in world.multiworld.get_locations(world.player):
         if "wilds scaling" not in location.tags:
             continue
@@ -1744,14 +1762,9 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             if registration_event is not None:
                 add_rule(location, Has(registration_event))
 
-        if (world.options.unlockable_time_of_day
-                and encounter_key.encounter_type is EncounterType.Grass
-                and encounter_key.time_of_day is not None):
-            tod_item = encounter_key.time_of_day.name
-            if tod_item == precollected_tod:
-                add_rule(location, Has(tod_item))
-            else:
-                add_rule(location, Has(tod_item) & Has(pokegear_name))
+        tod_rule = time_of_day_rule(encounter_key)
+        if tod_rule is not None:
+            add_rule(location, tod_rule)
 
     for encounter_key, encounter_access in world.logic.wild_regions.items():
 
@@ -1779,6 +1792,7 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
             continue
 
         region_name = encounter_key.region_name()
+        tod_rule = time_of_day_rule(encounter_key)
         registration_event = SWARM_TRAINER_REGISTRATION.get(encounter_key.region_id) \
             if encounter_key.is_swarm else None
         for i, encounter in enumerate(world.generated_wild[encounter_key]):
@@ -1792,14 +1806,8 @@ def set_rules(world: "PokemonCrystalWorld") -> None:
                 if registration_event is not None:
                     add_rule(location, Has(registration_event))
 
-            if (world.options.unlockable_time_of_day
-                    and encounter_key.encounter_type is EncounterType.Grass
-                    and encounter_key.time_of_day is not None):
-                tod_item = encounter_key.time_of_day.name
-                if tod_item == precollected_tod:
-                    add_rule(location, Has(tod_item))
-                else:
-                    add_rule(location, Has(tod_item) & Has(pokegear_name))
+            if tod_rule is not None:
+                add_rule(location, tod_rule)
 
             if encounter.pokemon == "UNOWN":
                 add_rule(location, HasAny("ENGINE_UNLOCKED_UNOWNS_A_TO_K", "ENGINE_UNLOCKED_UNOWNS_L_TO_R",

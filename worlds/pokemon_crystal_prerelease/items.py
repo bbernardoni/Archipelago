@@ -174,7 +174,7 @@ def get_classification_override(world: "PokemonCrystalWorld", item_data) -> Item
             and not options.rematchsanity
             and WildEncounterMethodsRequired.SWARM not in options.wild_encounter_methods_required
             and options.free_fly_location < FreeFlyLocation.option_free_fly_and_map_card
-            and not (options.unlockable_time_of_day and options.land_time_of_day_encounters)):
+            and not (options.unlockable_time_of_day and options.time_of_day_encounters)):
         return ItemClassification.useful
 
     if name == "Bicycle" and options.johto_only and not options.national_park_access:

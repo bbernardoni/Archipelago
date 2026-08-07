@@ -1331,14 +1331,15 @@ class ForceFullyEvolved(NamedRange):
     }
 
 
-class LandTimeOfDayEncounters(Toggle):
+class TimeOfDayEncounters(Toggle):
     """
-    When enabled, land encounters vary by time of day (morning/day/night).
+    When enabled, land encounters vary by time of day (morning/day/night), and
+    fishing encounters that vary by time of day in vanilla vary by day/night.
     Each time period is randomized independently.
 
     When disabled, all time periods use the same encounters.
     """
-    display_name = "Land Time of Day Encounters"
+    display_name = "Time of Day Encounters"
 
 
 class UnlockableTimeOfDay(Toggle):
@@ -1346,7 +1347,7 @@ class UnlockableTimeOfDay(Toggle):
     When enabled, the player must find Morn, Day, and Nite items to access
     land encounters for those time periods. You start with one of these at random.
 
-    Requires Land Time of Day Encounters to be enabled.
+    Requires Time of Day Encounters to be enabled.
     """
     display_name = "Unlockable Time of Day"
 
@@ -3027,7 +3028,7 @@ class PokemonCrystalOptions(PerGameCommonOptions):
     wild_encounter_blocklist: WildEncounterBlocklist
     wild_match_mode: WildMatchMode
     encounter_grouping: EncounterGrouping
-    land_time_of_day_encounters: LandTimeOfDayEncounters
+    time_of_day_encounters: TimeOfDayEncounters
     unlockable_time_of_day: UnlockableTimeOfDay
     force_fully_evolved: ForceFullyEvolved
     encounter_slot_distribution: EncounterSlotDistribution
@@ -3236,7 +3237,7 @@ OPTION_GROUPS = [
         [RandomizeWilds,
          WildEncounterBlocklist,
          WildMatchMode,
-         LandTimeOfDayEncounters,
+         TimeOfDayEncounters,
          RandomizeStaticPokemon,
          StaticBlocklist,
          UniqueStaticPokemon,

@@ -4,7 +4,7 @@ from ..data import EncounterType, GrassTimeOfDay
 
 class GrassTimeOfDayDisabledTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": False,
+        "time_of_day_encounters": False,
     }
 
     def test_grass_keys_have_no_time_of_day(self):
@@ -34,7 +34,7 @@ class GrassTimeOfDayDisabledTest(PokemonCrystalTestBase):
 
 class GrassTimeOfDayEnabledTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": True,
+        "time_of_day_encounters": True,
     }
 
     def test_grass_keys_have_all_three_time_periods(self):
@@ -71,7 +71,7 @@ class GrassTimeOfDayEnabledTest(PokemonCrystalTestBase):
 
 class GrassTimeOfDayRandomizedTest(PokemonCrystalTestBase):
     options = {
-        "land_time_of_day_encounters": True,
+        "time_of_day_encounters": True,
         "randomize_wilds": "completely_random",
     }
 

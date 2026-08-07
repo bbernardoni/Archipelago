@@ -52,8 +52,8 @@ if TYPE_CHECKING:
     from .world import PokemonCrystalWorld
 
 
-def filter_land_time_of_day(world: "PokemonCrystalWorld"):
-    if not world.options.land_time_of_day_encounters:
+def filter_time_of_day(world: "PokemonCrystalWorld"):
+    if not world.options.time_of_day_encounters:
         def keep(key: EncounterKey) -> bool:
             if key.encounter_type is EncounterType.Grass:
                 return key.time_of_day == GrassTimeOfDay.Day
