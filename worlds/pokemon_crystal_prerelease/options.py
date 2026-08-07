@@ -412,7 +412,7 @@ class ItemPoolFill(Choice):
     - Vanilla: weighted similarly to vanilla.
     - Balanced: all weighted equally.
     - Youngster: weighted to reflect a young trainer (weak items).
-    - Cooltrainer: weighted to relfect a cooltrainer (strong items).
+    - Cooltrainer: weighted to reflect a cooltrainer (strong items).
     - Shuckle: weighted to reflect a Shuckle (🐢).
     """
     display_name = "Item Pool Fill"
