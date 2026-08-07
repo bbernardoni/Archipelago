@@ -362,4 +362,14 @@ ROM_PATCHES: list[RomPatch] = [
             RomPatchEntry(bank=0x25, address=0x670D, data=[0x09]),
         ],
     ),
+    # The town map draws the landmark name from hlcoord 9, 0, leaving 11 tiles before the screen
+    # edge. "FLOODED MINE" is 12 and spills off the right; every other 12+ char landmark name uses
+    # the soft linebreak. Swap the space for one.
+    RomPatch(
+        name="flooded_mine_landmark_name_wrap",
+        entries=[
+            # FloodedMineName + 7 (72:6a3e): " " ($7f) -> "¯" ($1f)
+            RomPatchEntry(bank=0x72, address=0x6A3E, data=[0x1F]),
+        ],
+    ),
 ]
