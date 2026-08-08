@@ -1,3 +1,4 @@
+import time
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from typing_extensions import override
@@ -229,6 +230,7 @@ class ToemWorld(World):
             else:
                 if self.options.entrance_randomization == EntranceRandomization.option_within_region:
                     group_lookup = within_region_groups
+                start_time = time.perf_counter()
                 for i in range(TOEM_MAX_GER_ATTEMPTS):
                     failed = False
                     try:
@@ -237,6 +239,8 @@ class ToemWorld(World):
                         if self.options.include_basto and self.options.accessibility != Accessibility.option_minimal:
                             for event_name in event_table:
                                 if not self.get_location(event_name).can_reach(er_state.collection_state):
+                                    import logging
+                                    logging.info("GER event access failure")
                                     failed = True
                                     break
                     except EntranceRandomizationError as err:
@@ -253,7 +257,11 @@ class ToemWorld(World):
                                     and _exit.parent_region
                                     and _exit.connected_region):
                                 disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
+                else:
+                    raise EntranceRandomizationError(f"Toem failed GER after {TOEM_MAX_GER_ATTEMPTS} attemps.")
 
+                end_time = time.perf_counter()
+                self.benchmark_time = end_time - start_time
                 self.transitions = {
                     str(connection_name_to_id[from_]): connection_name_to_id[to_]
                     for from_, to_ in er_state.pairings
