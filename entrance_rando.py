@@ -476,7 +476,7 @@ def randomize_entrances(
         # when in MORE_EXITS, only speculative sweep if there are more new entrances to place than placable exits
         if exit_requirement == ExitRequirement.MORE_EXITS:
             new_entrances = 0
-            for entrance in er_state.entrance_lookup.others:
+            for entrance in itertools.chain(er_state.entrance_lookup.others, er_state.entrance_lookup.dead_ends):
                 # only count coupled two way entrances if their matching exit isn't a placeable exit
                 coupled_lookup = er_state.entrance_lookup.coupled_lookup
                 if entrance not in coupled_lookup or coupled_lookup[entrance] not in placeable_exits:
