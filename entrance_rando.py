@@ -6,7 +6,7 @@ from collections import deque
 from collections.abc import Callable, Iterable
 from enum import IntEnum
 
-from BaseClasses import CollectionState, Entrance, Region, EntranceType
+from BaseClasses import CollectionState, Entrance, Region, EntranceType, Item, Location
 from Options import Accessibility
 from worlds.AutoWorld import World
 
@@ -229,19 +229,95 @@ class ERPlacementState:
         self.pairings.append((source_exit.name, target_entrance.name))
         self.entrance_lookup.remove(target_entrance)
 
+    def _sweep_for_advancements(self, state: CollectionState, new_region: Region,
+                                unchecked_advancements: list[Entrance], unreachable_advancements: list[Entrance]) -> None:
+        unchecked_advancements = unchecked_advancements.copy()
+        unreachable_advancements = set(unreachable_advancements)
+        new_advancements = unreachable_advancements & set(new_region.locations)
+        unchecked_advancements.extend(new_advancements)
+        unreachable_advancements.difference_update(new_advancements)
+
+        regions_stale = True
+        while regions_stale:
+            # update_reachable_regions
+            state.stale[self.world.player] = False
+            queue = deque(
+                connection for connection in state.blocked_connections[self.world.player]
+                if connection.connected_region
+            )
+            reachable_regions = state.reachable_regions[self.world.player]
+            blocked_connections = state.blocked_connections[self.world.player]
+            # run BFS on all connections, and keep track of those blocked by missing items
+            while queue:
+                connection = queue.popleft()
+                new_region = connection.connected_region
+                if not new_region:
+                    continue
+                if new_region in reachable_regions:
+                    blocked_connections.remove(connection)
+                elif connection.can_reach(state):
+                    reachable_regions.add(new_region)
+                    blocked_connections.remove(connection)
+                    blocked_connections.update(new_region.exits)
+                    queue.extend(new_region.exits)
+                    state.path[new_region] = (new_region.name, state.path.get(connection, None))
+                    self.world.reached_region(state, new_region)
+                    new_advancements = unreachable_advancements & set(new_region.locations)
+                    unchecked_advancements.extend(new_advancements)
+                    unreachable_advancements.difference_update(new_advancements)
+
+                    # Retry connections if the new region can unblock them
+                    entrances = state.multiworld.indirect_connections.get(new_region)
+                    if entrances is not None:
+                        relevant_entrances = entrances.intersection(blocked_connections)
+                        relevant_entrances.difference_update(queue)
+                        queue.extend(relevant_entrances)
+
+            # sweep_for_advancements
+            advancements_stale = True
+            while advancements_stale:
+                advancements_stale = False
+
+                # Accessibility of each location is checked first because a player's region accessibility cache becomes
+                # stale whenever one of their own items is collected into the state.
+                reachable_locations: list[Location] = []
+                unreachable_locations: list[Location] = []
+                for location in unchecked_advancements:
+                    if location.can_reach(state):
+                        # Locations containing items that do not belong to `player` could be collected immediately
+                        # because they won't stale `player`'s region accessibility cache, but, for simplicity, all the
+                        # items at reachable locations are collected in a single loop.
+                        reachable_locations.append(location)
+                    else:
+                        unreachable_locations.append(location)
+                unchecked_advancements = unreachable_locations
+
+                # Collect the items from the reachable locations.
+                for advancement in reachable_locations:
+                    state.advancements.add(advancement)
+                    item = advancement.item
+                    assert isinstance(item, Item), "tried to collect advancement Location with no Item"
+                    if state.collect(item, True, advancement):
+                        # The player the item belongs to may be able to reach additional locations in the next sweep
+                        # iteration.
+                        advancements_stale = True
+            regions_stale = state.stale[self.world.player]
+
     def test_speculative_connection(self, source_exit: Entrance, target_entrance: Entrance,
-                                    usable_exits: set[Entrance], placeable_exits: set[Entrance]) -> bool:
+                                    usable_exits: set[Entrance], placeable_exits: set[Entrance],
+                                    unchecked_advancements: list[Entrance], unreachable_advancements: list[Entrance]) -> bool:
         copied_state = self.collection_state.copy()
         # simulated connection. A real connection is unsafe because the region graph is shallow-copied and would
         # propagate back to the real multiworld.
         copied_state.reachable_regions[self.world.player].add(target_entrance.connected_region)
         copied_state.blocked_connections[self.world.player].remove(source_exit)
         copied_state.blocked_connections[self.world.player].update(target_entrance.connected_region.exits)
-        stale = True
-        while stale:
-            copied_state.update_reachable_regions(self.world.player)
-            copied_state.sweep_for_advancements(self.world.get_locations())
-            stale = copied_state.stale[self.world.player]
+        self._sweep_for_advancements(copied_state, target_entrance.connected_region, unchecked_advancements, unreachable_advancements)
+        #stale = True
+        #while stale:
+        #    copied_state.update_reachable_regions(self.world.player)
+        #    copied_state.sweep_for_advancements(self.world.get_locations())
+        #    stale = copied_state.stale[self.world.player]
         # test that at there is at least one new placeable exit
         available_randomized_exits = copied_state.blocked_connections[self.world.player]
         for _exit in available_randomized_exits:
@@ -479,6 +555,17 @@ def randomize_entrances(
         nonlocal perform_validity_check
         placeable_exits = er_state.find_placeable_exits(perform_validity_check, exits)
         placeable_exits_set = set(placeable_exits)
+
+        tested_entrances = set()
+        unchecked_advancements = []
+        unreachable_advancements = []
+        for location in world.get_locations():
+            if location.advancement and location not in er_state.collection_state.advancements:
+                if location.parent_region.can_reach(er_state.collection_state):
+                    unchecked_advancements.append(location)
+                else:
+                    unreachable_advancements.append(location)
+
         for source_exit in placeable_exits:
             target_groups = target_group_lookup[source_exit.randomization_group]
             for target_entrance in er_state.entrance_lookup.get_targets(target_groups, dead_end, preserve_group_order):
@@ -491,8 +578,11 @@ def randomize_entrances(
                 exit_requirement_satisfied = (not perform_validity_check or exit_requirement == ExitRequirement.NONE
                                               or target_entrance.connected_region not in er_state.placed_regions)
                 if exit_requirement_satisfied and source_exit.can_connect_to(target_entrance, dead_end, er_state):
+                    if target_entrance in tested_entrances:
+                        continue
                     if (needs_speculative_sweep(dead_end, exit_requirement, placeable_exits_set)
-                            and not er_state.test_speculative_connection(source_exit, target_entrance, exits_set, placeable_exits_set)):
+                            and not er_state.test_speculative_connection(source_exit, target_entrance, exits_set, placeable_exits_set, unchecked_advancements, unreachable_advancements)):
+                        tested_entrances.add(target_entrance)
                         continue
                     do_placement(source_exit, target_entrance)
                     return True
