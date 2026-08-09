@@ -48,6 +48,7 @@ class EntranceLookup:
 
     dead_ends: GroupLookup
     others: GroupLookup
+    coupled_lookup: dict[Entrance, Entrance]
     _random: random.Random
     _expands_graph_cache: dict[Entrance, bool]
     _coupled: bool
@@ -62,6 +63,37 @@ class EntranceLookup:
         self._usable_exits = usable_exits
         for target in targets:
             self.add(target)
+
+        self.coupled_lookup = {}
+        if coupled:
+            for source_exit in usable_exits:
+                if source_exit.randomization_type == EntranceType.TWO_WAY:
+                    for reverse_entrance in source_exit.parent_region.entrances:
+                        if reverse_entrance.name == source_exit.name:
+                            if reverse_entrance.parent_region:
+                                raise EntranceRandomizationError(
+                                    f"Could not find a valid reverse entrance for exit {source_exit.name} "
+                                    f"because the reverse entrance is already parented to "
+                                    f"{reverse_entrance.parent_region.name}.")
+                            self.coupled_lookup[source_exit] = reverse_entrance
+                            break
+                    else:
+                        raise EntranceRandomizationError(f"Two way exit {source_exit.name} had no corresponding "
+                                                        f"entrance in {source_exit.parent_region.name}")
+            for target_entrance in targets:
+                if target_entrance.randomization_type == EntranceType.TWO_WAY:
+                    for reverse_exit in target_entrance.connected_region.exits:
+                        if reverse_exit.name == target_entrance.name:
+                            if reverse_exit.connected_region:
+                                raise EntranceRandomizationError(
+                                    f"Could not find a valid reverse exit for entrance {target_entrance.name} "
+                                    f"because the reverse exit is already connected to "
+                                    f"{reverse_exit.connected_region.name}.")
+                            self.coupled_lookup[target_entrance] = reverse_exit
+                            break
+                    else:
+                        raise EntranceRandomizationError(f"Two way entrance {target_entrance.name} had no corresponding "
+                                                        f"exit in {target_entrance.connected_region.name}.")
 
     def _can_expand_graph(self, entrance: Entrance) -> bool:
         """
@@ -230,7 +262,7 @@ class ERPlacementState:
         self.entrance_lookup.remove(target_entrance)
 
     def test_speculative_connection(self, source_exit: Entrance, target_entrance: Entrance,
-                                    usable_exits: set[Entrance], required_exit_count: int) -> bool:
+                                    usable_exits: set[Entrance], placeable_exits: set[Entrance]) -> bool:
         copied_state = self.collection_state.copy()
         # simulated connection. A real connection is unsafe because the region graph is shallow-copied and would
         # propagate back to the real multiworld.
@@ -242,8 +274,7 @@ class ERPlacementState:
             copied_state.update_reachable_regions(self.world.player)
             copied_state.sweep_for_advancements(self.world.get_locations())
             stale = copied_state.stale[self.world.player]
-        # test that at there are at least required_exit_count placable randomized exits
-        placeable_exit_count = 0
+        # test that at there is at least one new placeable exit
         available_randomized_exits = copied_state.blocked_connections[self.world.player]
         for _exit in available_randomized_exits:
             if _exit.connected_region:
@@ -254,13 +285,14 @@ class ERPlacementState:
             # make sure we are only paying attention to usable exits
             if _exit not in usable_exits:
                 continue
+            # only check for new placeable exits
+            if _exit in placeable_exits:
+                continue
             # technically this should be is_valid_source_transition, but that may rely on side effects from
             # on_connect, which have not happened here (because we didn't do a real connection, and if we did, we would
             # not want them to persist). can_reach is a close enough approximation most of the time.
             if _exit.can_reach(copied_state):
-                placeable_exit_count += 1
-                if placeable_exit_count >= required_exit_count:
-                    return True
+                return True
         return False
 
     def connect(
@@ -273,34 +305,11 @@ class ERPlacementState:
 
         :returns: The newly placed exits and the dummy entrance(s) which were removed from the graph
         """
-        source_region = source_exit.parent_region
-        target_region = target_entrance.connected_region
-
         self._connect_one_way(source_exit, target_entrance)
         # if we're doing coupled randomization place the reverse transition as well.
         if self.coupled and source_exit.randomization_type == EntranceType.TWO_WAY:
-            for reverse_entrance in source_region.entrances:
-                if reverse_entrance.name == source_exit.name:
-                    if reverse_entrance.parent_region:
-                        raise EntranceRandomizationError(
-                            f"Could not perform coupling on {source_exit.name} -> {target_entrance.name} "
-                            f"because the reverse entrance is already parented to "
-                            f"{reverse_entrance.parent_region.name}.")
-                    break
-            else:
-                raise EntranceRandomizationError(f"Two way exit {source_exit.name} had no corresponding entrance in "
-                                                 f"{source_exit.parent_region.name}")
-            for reverse_exit in target_region.exits:
-                if reverse_exit.name == target_entrance.name:
-                    if reverse_exit.connected_region:
-                        raise EntranceRandomizationError(
-                            f"Could not perform coupling on {source_exit.name} -> {target_entrance.name} "
-                            f"because the reverse exit is already connected to "
-                            f"{reverse_exit.connected_region.name}.")
-                    break
-            else:
-                raise EntranceRandomizationError(f"Two way entrance {target_entrance.name} had no corresponding exit "
-                                                 f"in {target_region.name}.")
+            reverse_entrance = self.entrance_lookup.coupled_lookup[source_exit]
+            reverse_exit = self.entrance_lookup.coupled_lookup[target_entrance]
             self._connect_one_way(reverse_exit, reverse_entrance)
             return [source_exit, reverse_exit], [target_entrance, reverse_entrance]
         return [source_exit], [target_entrance]
@@ -436,39 +445,70 @@ def randomize_entrances(
                 er_state.collection_state.sweep_for_advancements()
                 stale = er_state.collection_state.stale[world.player]
 
-    def needs_speculative_sweep(dead_end: bool, exit_requirement: ExitRequirement, placeable_exits: list[Entrance]) -> bool:
+    def needs_speculative_sweep(dead_end: bool, exit_requirement: ExitRequirement, placeable_exits: set[Entrance]) -> bool:
         # in certain stages of randomization we either expect or don't care if the search space shrinks.
         # we should never speculative sweep here.
         if dead_end or exit_requirement == ExitRequirement.NONE or not perform_validity_check:
             return False
 
-        # TODO speculative sweep is expensive.
-        return len(placeable_exits) < len(er_state.entrance_lookup.others)
+        # when in NEW_REGIONS mode, only speculative sweep if we are placing the last exit
+        if exit_requirement == ExitRequirement.NEW_REGIONS:
+            if len(placeable_exits) > 1:
+                return False
+
+            # edge case - if all dead ends have pre-placed progression or indirect connections, they are pulled forward
+            # into the non dead end stage. In this case, and only this case, it's possible that the last connection may
+            # actually be placeable in stage 1. We need to skip speculative sweep in this case because we expect the
+            # graph to get capped off.
+
+            # check to see if we are proposing the last placement
+            if not coupled:
+                # in uncoupled, this check is easy as there will only be one target.
+                is_last_placement = len(er_state.entrance_lookup) == 1
+            else:
+                # a bit harder, there may be 1 or 2 targets depending on if the exit to place is one way or two way.
+                # if it is two way, we can safely assume that one of the targets is the logical pair of the exit.
+                desired_target_count = 2 if next(iter(placeable_exits)).randomization_type == EntranceType.TWO_WAY else 1
+                is_last_placement = len(er_state.entrance_lookup) == desired_target_count
+            # if it's not the last placement, we need a sweep
+            return not is_last_placement
+
+        # when in MORE_EXITS, only speculative sweep if there are more new entrances to place than placable exits
+        if exit_requirement == ExitRequirement.MORE_EXITS:
+            new_entrances = 0
+            for entrance in er_state.entrance_lookup.others:
+                # only count coupled two way entrances if their matching exit isn't a placeable exit
+                coupled_lookup = er_state.entrance_lookup.coupled_lookup
+                if entrance not in coupled_lookup or coupled_lookup[entrance] not in placeable_exits:
+                    new_entrances += 1
+                    if new_entrances > len(placeable_exits):
+                        return True
+        return False
 
     def find_pairing(dead_end: bool, exit_requirement: ExitRequirement) -> bool:
         nonlocal perform_validity_check
         placeable_exits = er_state.find_placeable_exits(perform_validity_check, exits)
+        placeable_exits_set = set(placeable_exits)
         for source_exit in placeable_exits:
             target_groups = target_group_lookup[source_exit.randomization_group]
             for target_entrance in er_state.entrance_lookup.get_targets(target_groups, dead_end, preserve_group_order):
-                # TODO rewrite
                 # when requiring new exits, ideally we would like to make it so that every placement increases
-                # (or keeps the same number of) reachable exits. The goal is to continue to expand the search space
-                # so that we do not crash. In the interest of performance and bias reduction, generally, just checking
-                # that we are going to a new region is a good approximation. however, we should take extra care on the
-                # very last exit and check whatever exits we open up are functionally accessible.
-                # this requirement can be ignored on a beaten minimal, islands are no issue there.
+                # (or keeps the same number of) reachable exits (MORE_EXITS mode). The goal is to continue to expand the
+                # search space so that we do not crash. However, there are some cases where we need to place entrances
+                # that decrease reachable exits in order to satisfy future entrance access rules. If there are no valid
+                # placements in MORE_EXITS mode, we switch to NEW_REGIONS mode that just checks that we are going to a
+                # new region and that we have at least one reachable exit.
                 exit_requirement_satisfied = (not perform_validity_check or exit_requirement == ExitRequirement.NONE
                                               or target_entrance.connected_region not in er_state.placed_regions)
                 if exit_requirement_satisfied and source_exit.can_connect_to(target_entrance, dead_end, er_state):
-                    required_exit_count = len(placeable_exits) if exit_requirement == ExitRequirement.MORE_EXITS else 1
-                    if (needs_speculative_sweep(dead_end, exit_requirement, placeable_exits)
-                            and not er_state.test_speculative_connection(source_exit, target_entrance, exits_set, required_exit_count)):
+                    if (needs_speculative_sweep(dead_end, exit_requirement, placeable_exits_set)
+                            and not er_state.test_speculative_connection(source_exit, target_entrance, exits_set, placeable_exits_set)):
                         continue
                     do_placement(source_exit, target_entrance)
                     return True
         else:
-            # TODO desc
+            # in the stage where we are looking for more (or the same number of) reachable exits, just move on to the
+            # next stage.
             if exit_requirement == ExitRequirement.MORE_EXITS:
                 return False
 
