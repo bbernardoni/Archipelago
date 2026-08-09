@@ -664,7 +664,12 @@ class PokemonCrystalWorld(EntranceRandoMixin, CachedRuleBuilderWorld):
         if not self.is_universal_tracker:
             verify_hm_accessibility(self)
 
+        import time
+        start_time = time.perf_counter()
         self._shuffle_entrances()
+        self.benchmark_time = time.perf_counter() - start_time
+        logging.info(f"GER took {self.benchmark_time}.")
+        pass
 
 
     @staticmethod
