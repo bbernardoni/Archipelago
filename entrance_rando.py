@@ -48,7 +48,6 @@ class EntranceLookup:
 
     dead_ends: GroupLookup
     others: GroupLookup
-    coupled_lookup: dict[Entrance, Entrance]
     _random: random.Random
     _expands_graph_cache: dict[Entrance, bool]
     _coupled: bool
@@ -63,37 +62,6 @@ class EntranceLookup:
         self._usable_exits = usable_exits
         for target in targets:
             self.add(target)
-
-        self.coupled_lookup = {}
-        if coupled:
-            for source_exit in usable_exits:
-                if source_exit.randomization_type == EntranceType.TWO_WAY:
-                    for reverse_entrance in source_exit.parent_region.entrances:
-                        if reverse_entrance.name == source_exit.name:
-                            if reverse_entrance.parent_region:
-                                raise EntranceRandomizationError(
-                                    f"Could not find a valid reverse entrance for exit {source_exit.name} "
-                                    f"because the reverse entrance is already parented to "
-                                    f"{reverse_entrance.parent_region.name}.")
-                            self.coupled_lookup[source_exit] = reverse_entrance
-                            break
-                    else:
-                        raise EntranceRandomizationError(f"Two way exit {source_exit.name} had no corresponding "
-                                                        f"entrance in {source_exit.parent_region.name}")
-            for target_entrance in targets:
-                if target_entrance.randomization_type == EntranceType.TWO_WAY:
-                    for reverse_exit in target_entrance.connected_region.exits:
-                        if reverse_exit.name == target_entrance.name:
-                            if reverse_exit.connected_region:
-                                raise EntranceRandomizationError(
-                                    f"Could not find a valid reverse exit for entrance {target_entrance.name} "
-                                    f"because the reverse exit is already connected to "
-                                    f"{reverse_exit.connected_region.name}.")
-                            self.coupled_lookup[target_entrance] = reverse_exit
-                            break
-                    else:
-                        raise EntranceRandomizationError(f"Two way entrance {target_entrance.name} had no corresponding "
-                                                        f"exit in {target_entrance.connected_region.name}.")
 
     def _can_expand_graph(self, entrance: Entrance) -> bool:
         """
@@ -305,11 +273,34 @@ class ERPlacementState:
 
         :returns: The newly placed exits and the dummy entrance(s) which were removed from the graph
         """
+        source_region = source_exit.parent_region
+        target_region = target_entrance.connected_region
+
         self._connect_one_way(source_exit, target_entrance)
         # if we're doing coupled randomization place the reverse transition as well.
         if self.coupled and source_exit.randomization_type == EntranceType.TWO_WAY:
-            reverse_entrance = self.entrance_lookup.coupled_lookup[source_exit]
-            reverse_exit = self.entrance_lookup.coupled_lookup[target_entrance]
+            for reverse_entrance in source_region.entrances:
+                if reverse_entrance.name == source_exit.name:
+                    if reverse_entrance.parent_region:
+                        raise EntranceRandomizationError(
+                            f"Could not perform coupling on {source_exit.name} -> {target_entrance.name} "
+                            f"because the reverse entrance is already parented to "
+                            f"{reverse_entrance.parent_region.name}.")
+                    break
+            else:
+                raise EntranceRandomizationError(f"Two way exit {source_exit.name} had no corresponding entrance in "
+                                                 f"{source_exit.parent_region.name}")
+            for reverse_exit in target_region.exits:
+                if reverse_exit.name == target_entrance.name:
+                    if reverse_exit.connected_region:
+                        raise EntranceRandomizationError(
+                            f"Could not perform coupling on {source_exit.name} -> {target_entrance.name} "
+                            f"because the reverse exit is already connected to "
+                            f"{reverse_exit.connected_region.name}.")
+                    break
+            else:
+                raise EntranceRandomizationError(f"Two way entrance {target_entrance.name} had no corresponding exit "
+                                                 f"in {target_region.name}.")
             self._connect_one_way(reverse_exit, reverse_entrance)
             return [source_exit, reverse_exit], [target_entrance, reverse_entrance]
         return [source_exit], [target_entrance]
@@ -478,8 +469,7 @@ def randomize_entrances(
             new_entrances = 0
             for entrance in itertools.chain(er_state.entrance_lookup.others, er_state.entrance_lookup.dead_ends):
                 # only count coupled two way entrances if their matching exit isn't a placeable exit
-                coupled_lookup = er_state.entrance_lookup.coupled_lookup
-                if entrance not in coupled_lookup or coupled_lookup[entrance] not in placeable_exits:
+                if entrance.connected_region not in er_state.placed_regions:
                     new_entrances += 1
                     if new_entrances > len(placeable_exits):
                         return True
