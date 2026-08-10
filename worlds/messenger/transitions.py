@@ -96,7 +96,11 @@ def shuffle_transitions(world: "MessengerWorld", keep_logic: bool = False) -> No
     if plando:
         connect_plando(world, plando, keep_logic)
 
+    import time
+    start_time = time.perf_counter()
     result = randomize_entrances(world, coupled, {0: [0]})
+    end_time = time.perf_counter()
+    world.benchmark_time = end_time - start_time
 
     world.transitions = sorted(result.placements, key=lambda entrance: TRANSITIONS.index(entrance.parent_region.name))
 

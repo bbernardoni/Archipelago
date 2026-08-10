@@ -451,7 +451,11 @@ class StardewValleyWorld(World):
 
     def connect_entrances(self) -> None:
         no_target_groups = {0: [0]}
+        import time
+        start_time = time.perf_counter()
         placement = entrance_rando.randomize_entrances(self, coupled=True, target_group_lookup=no_target_groups)
+        end_time = time.perf_counter()
+        self.benchmark_time = end_time - start_time
         self.randomized_entrances = prepare_mod_data(placement)
 
     def generate_basic(self):
