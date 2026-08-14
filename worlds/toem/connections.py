@@ -861,6 +861,7 @@ class ToemEntrance(Entrance):
         living_room_entrances = {ConnectionName.PLAYER_ROOM_EXIT, ConnectionName.HOMELANDA_HOUSE_ENTRANCE}
         if self.name in living_room_entrances and other.name in living_room_entrances:
             return False
+        return super().can_connect_to(other, dead_end, er_state)
         if not dead_end:
             if other.name in {ConnectionName.OAKLAVILLE_TRAIL_UP, ConnectionName.RAVE_ENTRANCE,
                               ConnectionName.FASHION_SHOW_BACKSTAGE_ENTRANCE}:
