@@ -32,5 +32,8 @@ class Hook(BaseHook):
 
         shutil.rmtree(os.path.join(OUT_DIR, "benchmark"))
         print()
-        print(f"Successful GER avg time (out of {len(times)}): {sum(times)/len(times):.4f} s")
-        print(f"Max: {max(times)} s")
+        if len(times) > 0:
+            print(f"Successful GER avg time (out of {len(times)}): {sum(times)/len(times):.4f} s")
+            print(f"Max: {max(times)} s")
+        else:
+            print("No times found")

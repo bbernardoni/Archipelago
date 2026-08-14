@@ -561,8 +561,11 @@ class HKWorld(RandomizerCoreWorld):
                     else:
                         logger.debug(f"Try {index} for group {group} failed, "
                                      f"{leftovers}/{filtered_entrances} unplaced.")
-
+        import time
+        start_time = time.perf_counter()
         _connect_entrances("global", None)
+        end_time = time.perf_counter()
+        self.benchmark_time = end_time - start_time
 
         if self.options.accessibility != "minimal":
             all_state = self.multiworld.get_all_state(allow_partial_entrances=True)
