@@ -363,8 +363,8 @@ class ERAlgorithm(IntEnum):
     EXPANDING = 0
     """
     Prioritizes entrances that don't decrease placeable exits via running a speculative sweep at the cost
-     of performance. Will provide a lower failure rate for worlds with complicated rules and target_group_lookups.
-     """
+    of performance. Will provide a lower failure rate for worlds with complicated rules and target_group_lookups.
+    """
     FAST = 1
     """
     Prioritizes speed using a faster and less accurate heuristic for picking entrances that will expand the
