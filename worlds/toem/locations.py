@@ -781,7 +781,8 @@ location_table: dict[str, LocationData] = {
     LocationName.ITEM_DIVING_HELMET: LocationData(RegionName.STANHAMN_FISHING_TOWER, LocationGroup.ITEM),
     LocationName.ITEM_RUBBER_BOOTS: LocationData(RegionName.STANHAMN_DOCKS_RIGHT, LocationGroup.ITEM),
     LocationName.ITEM_SANDWICH: LocationData(RegionName.STANHAMN_PIRATE_DRAWBRIDGE, LocationGroup.ITEM,
-            Has(ItemName.GHOST_GLASSES) & CanReachRegion(RegionName.STANHAMN_OUTSIDE_HYDROPLANT)),
+            HasAll(ItemName.GHOST_GLASSES, ItemName.HONK_ATTACHMENT) &
+            CanReachRegion(RegionName.STANHAMN_OUTSIDE_HYDROPLANT)),
     LocationName.ITEM_PIRATE_HAT: LocationData(RegionName.STANHAMN_UNDERWATER, LocationGroup.ITEM,
             Has(ItemName.OLD_KEY)),
     LocationName.ITEM_PAPER_HAT: LocationData(RegionName.STANHAMN_PIRATE_DRAWBRIDGE, LocationGroup.ITEM,
@@ -987,8 +988,8 @@ location_table: dict[str, LocationData] = {
             Has(ItemName.ICE_CREAM, 4) | HardLogic(Has(ItemName.ICE_CREAM))),
     LocationName.QUEST_BROKEN_DREAMS: LocationData(RegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.QUEST,
             (Has(ItemName.ICE_CREAM, 4) | HardLogic(Has(ItemName.ICE_CREAM))) &
-            (Has(EventName.BASTO_LILY_PAD_POND_LEFT_DAY)) |
-            HardLogic(HasAny(ItemName.HONK_ATTACHMENT, ItemName.WATERGUN))),
+            (Has(EventName.BASTO_LILY_PAD_POND_LEFT_DAY) |
+            HardLogic(HasAny(ItemName.HONK_ATTACHMENT, ItemName.WATERGUN)))),
     LocationName.QUEST_DRY_SEASON: LocationData(RegionName.BASTO_LILY_PAD_POND_LEFT, LocationGroup.QUEST,
             Has(ItemName.WATERGUN) & CanReachAllRegions(RegionName.DRY_SEASON_BUS_STOP, RegionName.BASTO_CAMP,
                 RegionName.BASTO_BONFIRE_TOP, RegionName.BASTO_CARNIVAL, RegionName.BASTO_JUNGLE,
