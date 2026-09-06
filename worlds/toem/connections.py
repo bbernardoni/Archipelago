@@ -790,7 +790,7 @@ helper_region_data: dict[str, list[HelperConnection]] = {
         HelperConnection("Seagulls from Outside hydroplant (before honking)", RegionName.STANHAMN_OUTSIDE_HYDROPLANT,
                          HardLogic(True_())),
         HelperConnection("Seagulls from Pirate Drawbridge (if sandwich present)", RegionName.STANHAMN_PIRATE_DRAWBRIDGE,
-                         HardLogic(CanReachLocation(LocationName.ITEM_SANDWICH))),
+                    HardLogic(Has(ItemName.GHOST_GLASSES) & CanReachRegion(RegionName.STANHAMN_OUTSIDE_HYDROPLANT))),
     ],
     RegionName.SUNDAY_SWAN: [
         HelperConnection("Sunday swan from Docks left", RegionName.STANHAMN_DOCKS_LEFT),
