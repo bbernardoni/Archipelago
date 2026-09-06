@@ -1,0 +1,3978 @@
+{
+    "Start game": {
+        "name": "Start game",
+        "id": 1,
+        "group": 0,
+        "src_region_name": "Menu - Start menu",
+        "dst_region_name": "Homelanda - Player room",
+        "rule": {}
+    },
+    "Player room exit": {
+        "name": "Player room exit",
+        "id": 2,
+        "group": 1,
+        "src_region_name": "Homelanda - Player room",
+        "dst_region_name": "Homelanda - Living room",
+        "rule": {}
+    },
+    "Player room entrance": {
+        "name": "Player room entrance",
+        "id": 3,
+        "group": 1,
+        "src_region_name": "Homelanda - Living room",
+        "dst_region_name": "Homelanda - Player room",
+        "rule": {}
+    },
+    "Homelanda house exit": {
+        "name": "Homelanda house exit",
+        "id": 4,
+        "group": 1,
+        "src_region_name": "Homelanda - Living room",
+        "dst_region_name": "Homelanda - Bus stop",
+        "rule": {}
+    },
+    "Homelanda house entrance": {
+        "name": "Homelanda house entrance",
+        "id": 5,
+        "group": 1,
+        "src_region_name": "Homelanda - Bus stop",
+        "dst_region_name": "Homelanda - Living room",
+        "rule": {}
+    },
+    "Oaklaville bus stop": {
+        "name": "Oaklaville bus stop",
+        "id": 6,
+        "group": 0,
+        "src_region_name": "Homelanda - Bus stop",
+        "dst_region_name": "Oaklaville - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 1,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Progressive stamp",
+                        "count": {
+                            "resolver": "FromWorldAttr",
+                            "name": "progressive_stamp_requirements.Homelanda"
+                        }
+                    }
+                },
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 0,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Homelanda stamp",
+                        "count": {
+                            "resolver": "FromOption",
+                            "option": "worlds.toem.options.HomelandaStampRequirement",
+                            "field": "value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "Stanhamn bus stop": {
+        "name": "Stanhamn bus stop",
+        "id": 7,
+        "group": 0,
+        "src_region_name": "Oaklaville - Bus stop",
+        "dst_region_name": "Stanhamn - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 1,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Progressive stamp",
+                        "count": {
+                            "resolver": "FromWorldAttr",
+                            "name": "progressive_stamp_requirements.Oaklaville"
+                        }
+                    }
+                },
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 0,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Oaklaville stamp",
+                        "count": {
+                            "resolver": "FromOption",
+                            "option": "worlds.toem.options.OaklavilleStampRequirement",
+                            "field": "value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "Oaklaville bus stop exit": {
+        "name": "Oaklaville bus stop exit",
+        "id": 8,
+        "group": 2,
+        "src_region_name": "Oaklaville - Bus stop",
+        "dst_region_name": "Oaklaville - Outside hotel",
+        "rule": {}
+    },
+    "Outside hotel down": {
+        "name": "Outside hotel down",
+        "id": 9,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Oaklaville - Bus stop",
+        "rule": {}
+    },
+    "Outside hotel left": {
+        "name": "Outside hotel left",
+        "id": 10,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Oaklaville - Ghost cup game",
+        "rule": {}
+    },
+    "Outside hotel right": {
+        "name": "Outside hotel right",
+        "id": 11,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Oaklaville - Camp",
+        "rule": {}
+    },
+    "Hotel entrance": {
+        "name": "Hotel entrance",
+        "id": 12,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Oaklaville - Hotel",
+        "rule": {}
+    },
+    "Hotel exit": {
+        "name": "Hotel exit",
+        "id": 13,
+        "group": 2,
+        "src_region_name": "Oaklaville - Hotel",
+        "dst_region_name": "Oaklaville - Outside hotel",
+        "rule": {}
+    },
+    "Hotel elevator entrance": {
+        "name": "Hotel elevator entrance",
+        "id": 14,
+        "group": 2,
+        "src_region_name": "Oaklaville - Hotel",
+        "dst_region_name": "Oaklaville - Hotel elevator",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Hotel chef",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Hotel elevator exit": {
+        "name": "Hotel elevator exit",
+        "id": 15,
+        "group": 2,
+        "src_region_name": "Oaklaville - Hotel elevator",
+        "dst_region_name": "Oaklaville - Hotel",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Hotel chef",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Ghost cup game right": {
+        "name": "Ghost cup game right",
+        "id": 16,
+        "group": 2,
+        "src_region_name": "Oaklaville - Ghost cup game",
+        "dst_region_name": "Oaklaville - Outside hotel",
+        "rule": {}
+    },
+    "Mushroom house entrance": {
+        "name": "Mushroom house entrance",
+        "id": 17,
+        "group": 2,
+        "src_region_name": "Oaklaville - Ghost cup game",
+        "dst_region_name": "Oaklaville - Mushroom house",
+        "rule": {}
+    },
+    "Ghost cup game left": {
+        "name": "Ghost cup game left",
+        "id": 18,
+        "group": 2,
+        "src_region_name": "Oaklaville - Ghost cup game",
+        "dst_region_name": "Oaklaville - Hide and seek",
+        "rule": {}
+    },
+    "Mushroom house exit": {
+        "name": "Mushroom house exit",
+        "id": 19,
+        "group": 2,
+        "src_region_name": "Oaklaville - Mushroom house",
+        "dst_region_name": "Oaklaville - Ghost cup game",
+        "rule": {}
+    },
+    "Hide and seek right": {
+        "name": "Hide and seek right",
+        "id": 20,
+        "group": 2,
+        "src_region_name": "Oaklaville - Hide and seek",
+        "dst_region_name": "Oaklaville - Ghost cup game",
+        "rule": {}
+    },
+    "Hide and seek left": {
+        "name": "Hide and seek left",
+        "id": 21,
+        "group": 2,
+        "src_region_name": "Oaklaville - Hide and seek",
+        "dst_region_name": "Oaklaville - Graveyard",
+        "rule": {}
+    },
+    "Graveyard right": {
+        "name": "Graveyard right",
+        "id": 22,
+        "group": 2,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville - Hide and seek",
+        "rule": {}
+    },
+    "Skeleton house entrance": {
+        "name": "Skeleton house entrance",
+        "id": 23,
+        "group": 2,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville - Skeleton house",
+        "rule": {}
+    },
+    "Skeleton house exit": {
+        "name": "Skeleton house exit",
+        "id": 24,
+        "group": 2,
+        "src_region_name": "Oaklaville - Skeleton house",
+        "dst_region_name": "Oaklaville - Graveyard",
+        "rule": {}
+    },
+    "Skeleton house balcony exit": {
+        "name": "Skeleton house balcony exit",
+        "id": 25,
+        "group": 2,
+        "src_region_name": "Oaklaville - Skeleton house",
+        "dst_region_name": "Oaklaville - Skeleton house balcony",
+        "rule": {}
+    },
+    "Skeleton house balcony entrance": {
+        "name": "Skeleton house balcony entrance",
+        "id": 26,
+        "group": 2,
+        "src_region_name": "Oaklaville - Skeleton house balcony",
+        "dst_region_name": "Oaklaville - Skeleton house",
+        "rule": {}
+    },
+    "Scout camp left": {
+        "name": "Scout camp left",
+        "id": 27,
+        "group": 2,
+        "src_region_name": "Oaklaville - Camp",
+        "dst_region_name": "Oaklaville - Outside hotel",
+        "rule": {}
+    },
+    "Scout camp up": {
+        "name": "Scout camp up",
+        "id": 28,
+        "group": 2,
+        "src_region_name": "Oaklaville - Camp",
+        "dst_region_name": "Oaklaville - Trail bottom",
+        "rule": {}
+    },
+    "Scout camp right": {
+        "name": "Scout camp right",
+        "id": 29,
+        "group": 2,
+        "src_region_name": "Oaklaville - Camp",
+        "dst_region_name": "Oaklaville - Playground",
+        "rule": {}
+    },
+    "Oaklaville trail log from top": {
+        "name": "Oaklaville trail log from top",
+        "id": 30,
+        "group": 0,
+        "src_region_name": "Oaklaville - Trail top",
+        "dst_region_name": "Oaklaville - Trail bottom",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Log blocking a path",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Oaklaville trail up": {
+        "name": "Oaklaville trail up",
+        "id": 31,
+        "group": 2,
+        "src_region_name": "Oaklaville - Trail top",
+        "dst_region_name": "Oaklaville - Lookout",
+        "rule": {}
+    },
+    "Oaklaville trail log from bottom": {
+        "name": "Oaklaville trail log from bottom",
+        "id": 32,
+        "group": 0,
+        "src_region_name": "Oaklaville - Trail bottom",
+        "dst_region_name": "Oaklaville - Trail top",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Log blocking a path",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Oaklaville trail down": {
+        "name": "Oaklaville trail down",
+        "id": 33,
+        "group": 2,
+        "src_region_name": "Oaklaville - Trail bottom",
+        "dst_region_name": "Oaklaville - Camp",
+        "rule": {}
+    },
+    "Lookout exit": {
+        "name": "Lookout exit",
+        "id": 34,
+        "group": 2,
+        "src_region_name": "Oaklaville - Lookout",
+        "dst_region_name": "Oaklaville - Trail top",
+        "rule": {}
+    },
+    "Playground left": {
+        "name": "Playground left",
+        "id": 35,
+        "group": 2,
+        "src_region_name": "Oaklaville - Playground",
+        "dst_region_name": "Oaklaville - Camp",
+        "rule": {}
+    },
+    "Playground right": {
+        "name": "Playground right",
+        "id": 36,
+        "group": 2,
+        "src_region_name": "Oaklaville - Playground",
+        "dst_region_name": "Oaklaville - Outside rave bottom",
+        "rule": {}
+    },
+    "Rave bouncer from top": {
+        "name": "Rave bouncer from top",
+        "id": 37,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside rave top",
+        "dst_region_name": "Oaklaville - Outside rave bottom",
+        "rule": {
+            "rule": "And",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Ghost glasses",
+                        "count": 1
+                    }
+                },
+                {
+                    "rule": "CanReachRegion",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "region_name": "Oaklaville - Outside rave bottom"
+                    }
+                }
+            ]
+        }
+    },
+    "Rave entrance": {
+        "name": "Rave entrance",
+        "id": 38,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside rave top",
+        "dst_region_name": "Oaklaville - Rave",
+        "rule": {}
+    },
+    "Rave bouncer from bottom": {
+        "name": "Rave bouncer from bottom",
+        "id": 39,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside rave bottom",
+        "dst_region_name": "Oaklaville - Outside rave top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Ghost glasses",
+                "count": 1
+            }
+        }
+    },
+    "Outside rave left": {
+        "name": "Outside rave left",
+        "id": 40,
+        "group": 2,
+        "src_region_name": "Oaklaville - Outside rave bottom",
+        "dst_region_name": "Oaklaville - Playground",
+        "rule": {}
+    },
+    "Rave exit": {
+        "name": "Rave exit",
+        "id": 41,
+        "group": 2,
+        "src_region_name": "Oaklaville - Rave",
+        "dst_region_name": "Oaklaville - Outside rave top",
+        "rule": {}
+    },
+    "Logcity bus stop": {
+        "name": "Logcity bus stop",
+        "id": 42,
+        "group": 0,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Logcity - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 1,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Progressive stamp",
+                        "count": {
+                            "resolver": "FromWorldAttr",
+                            "name": "progressive_stamp_requirements.Stanhamn"
+                        }
+                    }
+                },
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 0,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Stanhamn stamp",
+                        "count": {
+                            "resolver": "FromOption",
+                            "option": "worlds.toem.options.StanhamnStampRequirement",
+                            "field": "value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "Photo guild hut entrance": {
+        "name": "Photo guild hut entrance",
+        "id": 43,
+        "group": 3,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn - Photo guild hut",
+        "rule": {}
+    },
+    "Stanhamn bus stop left": {
+        "name": "Stanhamn bus stop left",
+        "id": 44,
+        "group": 3,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn - Pirate Drawbridge",
+        "rule": {}
+    },
+    "Stanhamn bus stop right": {
+        "name": "Stanhamn bus stop right",
+        "id": 45,
+        "group": 3,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn - Docks left",
+        "rule": {}
+    },
+    "Raft up": {
+        "name": "Raft up",
+        "id": 46,
+        "group": 3,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn - Outside hydroplant",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Honk attachment",
+                        "count": 1
+                    }
+                },
+                {
+                    "rule": "CanReachLocation",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "location_name": "Quest - Power shortage?!",
+                        "parent_region_name": "",
+                        "skip_indirect_connection": false
+                    }
+                }
+            ]
+        }
+    },
+    "Photo guild hut exit": {
+        "name": "Photo guild hut exit",
+        "id": 47,
+        "group": 3,
+        "src_region_name": "Stanhamn - Photo guild hut",
+        "dst_region_name": "Stanhamn - Bus stop",
+        "rule": {}
+    },
+    "Pirate Drawbridge right": {
+        "name": "Pirate Drawbridge right",
+        "id": 48,
+        "group": 3,
+        "src_region_name": "Stanhamn - Pirate Drawbridge",
+        "dst_region_name": "Stanhamn - Bus stop",
+        "rule": {}
+    },
+    "Pirate Drawbridge left": {
+        "name": "Pirate Drawbridge left",
+        "id": 49,
+        "group": 3,
+        "src_region_name": "Stanhamn - Pirate Drawbridge",
+        "dst_region_name": "Stanhamn - Hippo beach",
+        "rule": {}
+    },
+    "Hippo beach right": {
+        "name": "Hippo beach right",
+        "id": 50,
+        "group": 3,
+        "src_region_name": "Stanhamn - Hippo beach",
+        "dst_region_name": "Stanhamn - Pirate Drawbridge",
+        "rule": {}
+    },
+    "Hippo beach manhole": {
+        "name": "Hippo beach manhole",
+        "id": 51,
+        "group": 3,
+        "src_region_name": "Stanhamn - Hippo beach",
+        "dst_region_name": "Stanhamn - Underwater",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Diving helmet",
+                    "Honk attachment"
+                ]
+            }
+        }
+    },
+    "Hippo beach left": {
+        "name": "Hippo beach left",
+        "id": 52,
+        "group": 3,
+        "src_region_name": "Stanhamn - Hippo beach",
+        "dst_region_name": "Stanhamn - Outside lighthouse",
+        "rule": {}
+    },
+    "Underwater exit": {
+        "name": "Underwater exit",
+        "id": 53,
+        "group": 3,
+        "src_region_name": "Stanhamn - Underwater",
+        "dst_region_name": "Stanhamn - Hippo beach",
+        "rule": {}
+    },
+    "Outside lighthouse right": {
+        "name": "Outside lighthouse right",
+        "id": 54,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside lighthouse",
+        "dst_region_name": "Stanhamn - Hippo beach",
+        "rule": {}
+    },
+    "Outside lighthouse up": {
+        "name": "Outside lighthouse up",
+        "id": 55,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside lighthouse",
+        "dst_region_name": "Stanhamn - King fish beach",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Honk attachment",
+                "count": 1
+            }
+        }
+    },
+    "Lighthouse entrance": {
+        "name": "Lighthouse entrance",
+        "id": 56,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside lighthouse",
+        "dst_region_name": "Stanhamn - Lighthouse",
+        "rule": {}
+    },
+    "Lighthouse exit": {
+        "name": "Lighthouse exit",
+        "id": 57,
+        "group": 3,
+        "src_region_name": "Stanhamn - Lighthouse",
+        "dst_region_name": "Stanhamn - Outside lighthouse",
+        "rule": {}
+    },
+    "Lighthouse roof entrance": {
+        "name": "Lighthouse roof entrance",
+        "id": 58,
+        "group": 3,
+        "src_region_name": "Stanhamn - Lighthouse",
+        "dst_region_name": "Stanhamn - Lighthouse roof",
+        "rule": {}
+    },
+    "Lighthouse roof exit": {
+        "name": "Lighthouse roof exit",
+        "id": 59,
+        "group": 3,
+        "src_region_name": "Stanhamn - Lighthouse roof",
+        "dst_region_name": "Stanhamn - Lighthouse",
+        "rule": {}
+    },
+    "King fish beach exit": {
+        "name": "King fish beach exit",
+        "id": 60,
+        "group": 3,
+        "src_region_name": "Stanhamn - King fish beach",
+        "dst_region_name": "Stanhamn - Outside lighthouse",
+        "rule": {}
+    },
+    "Docks left exit": {
+        "name": "Docks left exit",
+        "id": 61,
+        "group": 3,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn - Bus stop",
+        "rule": {}
+    },
+    "Viking express Stamhamn stop": {
+        "name": "Viking express Stamhamn stop",
+        "id": 62,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Basto - Harbor bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Viking express ticket",
+                "count": 1
+            }
+        }
+    },
+    "Docks drawbridge from left": {
+        "name": "Docks drawbridge from left",
+        "id": 63,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn - Docks right",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Power shortage?!",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Docks right exit": {
+        "name": "Docks right exit",
+        "id": 64,
+        "group": 3,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn - Fishing tower",
+        "rule": {}
+    },
+    "Docks drawbridge from right": {
+        "name": "Docks drawbridge from right",
+        "id": 65,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn - Docks left",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Power shortage?!",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Fishing tower left": {
+        "name": "Fishing tower left",
+        "id": 66,
+        "group": 3,
+        "src_region_name": "Stanhamn - Fishing tower",
+        "dst_region_name": "Stanhamn - Docks right",
+        "rule": {}
+    },
+    "Fishing tower up": {
+        "name": "Fishing tower up",
+        "id": 67,
+        "group": 3,
+        "src_region_name": "Stanhamn - Fishing tower",
+        "dst_region_name": "Stanhamn - Ghost drawbridge bottom",
+        "rule": {}
+    },
+    "Ghost drawbridge left": {
+        "name": "Ghost drawbridge left",
+        "id": 68,
+        "group": 3,
+        "src_region_name": "Stanhamn - Ghost drawbridge top",
+        "dst_region_name": "Stanhamn - Outside hydroplant",
+        "rule": {}
+    },
+    "Ghost drawbridge from top": {
+        "name": "Ghost drawbridge from top",
+        "id": 69,
+        "group": 0,
+        "src_region_name": "Stanhamn - Ghost drawbridge top",
+        "dst_region_name": "Stanhamn - Ghost drawbridge bottom",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Power shortage?!",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Ghost drawbridge down": {
+        "name": "Ghost drawbridge down",
+        "id": 70,
+        "group": 3,
+        "src_region_name": "Stanhamn - Ghost drawbridge bottom",
+        "dst_region_name": "Stanhamn - Fishing tower",
+        "rule": {}
+    },
+    "Ghost drawbridge from bottom": {
+        "name": "Ghost drawbridge from bottom",
+        "id": 71,
+        "group": 0,
+        "src_region_name": "Stanhamn - Ghost drawbridge bottom",
+        "dst_region_name": "Stanhamn - Ghost drawbridge top",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Power shortage?!",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Raft down": {
+        "name": "Raft down",
+        "id": 72,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside hydroplant",
+        "dst_region_name": "Stanhamn - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Honk attachment",
+                        "count": 1
+                    }
+                },
+                {
+                    "rule": "CanReachLocation",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "location_name": "Quest - Power shortage?!",
+                        "parent_region_name": "",
+                        "skip_indirect_connection": false
+                    }
+                }
+            ]
+        }
+    },
+    "Hydroplant entrance": {
+        "name": "Hydroplant entrance",
+        "id": 73,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside hydroplant",
+        "dst_region_name": "Stanhamn - Hydroplant",
+        "rule": {}
+    },
+    "Outside hydroplant right": {
+        "name": "Outside hydroplant right",
+        "id": 74,
+        "group": 3,
+        "src_region_name": "Stanhamn - Outside hydroplant",
+        "dst_region_name": "Stanhamn - Ghost drawbridge top",
+        "rule": {}
+    },
+    "Hydroplant exit": {
+        "name": "Hydroplant exit",
+        "id": 75,
+        "group": 3,
+        "src_region_name": "Stanhamn - Hydroplant",
+        "dst_region_name": "Stanhamn - Outside hydroplant",
+        "rule": {}
+    },
+    "Kiiruberg bus stop": {
+        "name": "Kiiruberg bus stop",
+        "id": 76,
+        "group": 0,
+        "src_region_name": "Logcity - Bus stop",
+        "dst_region_name": "Kiiruberg - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 1,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Progressive stamp",
+                        "count": {
+                            "resolver": "FromWorldAttr",
+                            "name": "progressive_stamp_requirements.Logcity"
+                        }
+                    }
+                },
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 0,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Logcity stamp",
+                        "count": {
+                            "resolver": "FromOption",
+                            "option": "worlds.toem.options.LogcityStampRequirement",
+                            "field": "value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "Escalator up": {
+        "name": "Escalator up",
+        "id": 77,
+        "group": 4,
+        "src_region_name": "Logcity - Bus stop",
+        "dst_region_name": "Logcity - Clock tower",
+        "rule": {}
+    },
+    "Logcity bus stop entrance": {
+        "name": "Logcity bus stop entrance",
+        "id": 78,
+        "group": 4,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity - Bus stop",
+        "rule": {}
+    },
+    "Clock tower left": {
+        "name": "Clock tower left",
+        "id": 79,
+        "group": 4,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity - Cross walk",
+        "rule": {}
+    },
+    "Clock tower up": {
+        "name": "Clock tower up",
+        "id": 80,
+        "group": 4,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity - Outside fashion show",
+        "rule": {}
+    },
+    "Clock tower right": {
+        "name": "Clock tower right",
+        "id": 81,
+        "group": 4,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity - Outside cafe",
+        "rule": {}
+    },
+    "Cross walk right": {
+        "name": "Cross walk right",
+        "id": 82,
+        "group": 4,
+        "src_region_name": "Logcity - Cross walk",
+        "dst_region_name": "Logcity - Clock tower",
+        "rule": {}
+    },
+    "Cross walk up": {
+        "name": "Cross walk up",
+        "id": 83,
+        "group": 4,
+        "src_region_name": "Logcity - Cross walk",
+        "dst_region_name": "Logcity - Overpass",
+        "rule": {}
+    },
+    "Overpass down": {
+        "name": "Overpass down",
+        "id": 84,
+        "group": 4,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity - Cross walk",
+        "rule": {}
+    },
+    "News house entrance": {
+        "name": "News house entrance",
+        "id": 85,
+        "group": 4,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity - News house",
+        "rule": {}
+    },
+    "Overpass up": {
+        "name": "Overpass up",
+        "id": 86,
+        "group": 4,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity - Skate park",
+        "rule": {}
+    },
+    "Overpass right": {
+        "name": "Overpass right",
+        "id": 87,
+        "group": 4,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity - Outside fashion show",
+        "rule": {}
+    },
+    "News house exit": {
+        "name": "News house exit",
+        "id": 88,
+        "group": 4,
+        "src_region_name": "Logcity - News house",
+        "dst_region_name": "Logcity - Overpass",
+        "rule": {}
+    },
+    "Skate park down": {
+        "name": "Skate park down",
+        "id": 89,
+        "group": 4,
+        "src_region_name": "Logcity - Skate park",
+        "dst_region_name": "Logcity - Overpass",
+        "rule": {}
+    },
+    "Skate park right": {
+        "name": "Skate park right",
+        "id": 90,
+        "group": 4,
+        "src_region_name": "Logcity - Skate park",
+        "dst_region_name": "Logcity - Ratskullz alley",
+        "rule": {}
+    },
+    "Skate park taxi": {
+        "name": "Skate park taxi",
+        "id": 91,
+        "group": 4,
+        "src_region_name": "Logcity - Skate park",
+        "dst_region_name": "Logcity - Outside cafe",
+        "rule": {}
+    },
+    "Ratskullz alley exit": {
+        "name": "Ratskullz alley exit",
+        "id": 92,
+        "group": 4,
+        "src_region_name": "Logcity - Ratskullz alley",
+        "dst_region_name": "Logcity - Skate park",
+        "rule": {}
+    },
+    "Fashion show entrance": {
+        "name": "Fashion show entrance",
+        "id": 93,
+        "group": 4,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity - Fashion show bottom",
+        "rule": {}
+    },
+    "Outside fashion show down": {
+        "name": "Outside fashion show down",
+        "id": 94,
+        "group": 4,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity - Clock tower",
+        "rule": {}
+    },
+    "Outside fashion show left": {
+        "name": "Outside fashion show left",
+        "id": 95,
+        "group": 4,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity - Overpass",
+        "rule": {}
+    },
+    "Outside fashion show right": {
+        "name": "Outside fashion show right",
+        "id": 96,
+        "group": 4,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity - Outside gallery",
+        "rule": {}
+    },
+    "Fashion show security from top": {
+        "name": "Fashion show security from top",
+        "id": 97,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show top",
+        "dst_region_name": "Logcity - Fashion show bottom",
+        "rule": {
+            "rule": "And",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Reporter hat",
+                        "count": 1
+                    }
+                },
+                {
+                    "rule": "CanReachRegion",
+                    "options": [],
+                    "filtered_resolution": false,
+                    "args": {
+                        "region_name": "Logcity - Fashion show bottom"
+                    }
+                }
+            ]
+        }
+    },
+    "Fashion show backstage entrance": {
+        "name": "Fashion show backstage entrance",
+        "id": 98,
+        "group": 4,
+        "src_region_name": "Logcity - Fashion show top",
+        "dst_region_name": "Logcity - Fashion show backstage",
+        "rule": {}
+    },
+    "Fashion show security from bottom": {
+        "name": "Fashion show security from bottom",
+        "id": 99,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show bottom",
+        "dst_region_name": "Logcity - Fashion show top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Reporter hat",
+                "count": 1
+            }
+        }
+    },
+    "Fashion show exit": {
+        "name": "Fashion show exit",
+        "id": 100,
+        "group": 4,
+        "src_region_name": "Logcity - Fashion show bottom",
+        "dst_region_name": "Logcity - Outside fashion show",
+        "rule": {}
+    },
+    "Fashion show backstage exit": {
+        "name": "Fashion show backstage exit",
+        "id": 101,
+        "group": 4,
+        "src_region_name": "Logcity - Fashion show backstage",
+        "dst_region_name": "Logcity - Fashion show top",
+        "rule": {}
+    },
+    "Cafe entrance": {
+        "name": "Cafe entrance",
+        "id": 102,
+        "group": 4,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity - Cafe",
+        "rule": {}
+    },
+    "Outside cafe left": {
+        "name": "Outside cafe left",
+        "id": 103,
+        "group": 4,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity - Clock tower",
+        "rule": {}
+    },
+    "Outside cafe up": {
+        "name": "Outside cafe up",
+        "id": 104,
+        "group": 4,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity - Outside gallery",
+        "rule": {}
+    },
+    "Outside cafe taxi": {
+        "name": "Outside cafe taxi",
+        "id": 105,
+        "group": 4,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity - Skate park",
+        "rule": {}
+    },
+    "Cafe exit": {
+        "name": "Cafe exit",
+        "id": 106,
+        "group": 4,
+        "src_region_name": "Logcity - Cafe",
+        "dst_region_name": "Logcity - Outside cafe",
+        "rule": {}
+    },
+    "Gallery entrance": {
+        "name": "Gallery entrance",
+        "id": 107,
+        "group": 4,
+        "src_region_name": "Logcity - Outside gallery",
+        "dst_region_name": "Logcity - Gallery",
+        "rule": {}
+    },
+    "Outside gallery show down": {
+        "name": "Outside gallery show down",
+        "id": 108,
+        "group": 4,
+        "src_region_name": "Logcity - Outside gallery",
+        "dst_region_name": "Logcity - Outside cafe",
+        "rule": {}
+    },
+    "Outside gallery show left": {
+        "name": "Outside gallery show left",
+        "id": 109,
+        "group": 4,
+        "src_region_name": "Logcity - Outside gallery",
+        "dst_region_name": "Logcity - Outside fashion show",
+        "rule": {}
+    },
+    "Gallery exit": {
+        "name": "Gallery exit",
+        "id": 110,
+        "group": 4,
+        "src_region_name": "Logcity - Gallery",
+        "dst_region_name": "Logcity - Outside gallery",
+        "rule": {}
+    },
+    "Mountain top bus stop": {
+        "name": "Mountain top bus stop",
+        "id": 111,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Bus stop",
+        "dst_region_name": "Mountain Top - Bus stop",
+        "rule": {
+            "rule": "Or",
+            "options": [],
+            "filtered_resolution": false,
+            "children": [
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 1,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Progressive stamp",
+                        "count": {
+                            "resolver": "FromWorldAttr",
+                            "name": "progressive_stamp_requirements.Kiiruberg"
+                        }
+                    }
+                },
+                {
+                    "rule": "Has",
+                    "options": [
+                        {
+                            "option": "worlds.toem.options.ProgressiveStamps",
+                            "value": 0,
+                            "operator": "eq"
+                        }
+                    ],
+                    "filtered_resolution": false,
+                    "args": {
+                        "item_name": "Kiiruberg stamp",
+                        "count": {
+                            "resolver": "FromOption",
+                            "option": "worlds.toem.options.KiirubergStampRequirement",
+                            "field": "value"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "Kiiruberg bus stop up": {
+        "name": "Kiiruberg bus stop up",
+        "id": 112,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Bus stop",
+        "dst_region_name": "Kiiruberg - Birthday party bottom",
+        "rule": {}
+    },
+    "Birthday party rope from bottom": {
+        "name": "Birthday party rope from bottom",
+        "id": 113,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Birthday party top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Balloon house entrance": {
+        "name": "Balloon house entrance",
+        "id": 114,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Balloon house",
+        "rule": {}
+    },
+    "Birthday party down": {
+        "name": "Birthday party down",
+        "id": 115,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Bus stop",
+        "rule": {}
+    },
+    "Birthday party left": {
+        "name": "Birthday party left",
+        "id": 116,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Frozen pond",
+        "rule": {}
+    },
+    "Birthday party right": {
+        "name": "Birthday party right",
+        "id": 117,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Ski lift base",
+        "rule": {}
+    },
+    "Birthday party rope from top": {
+        "name": "Birthday party rope from top",
+        "id": 118,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Birthday party bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Birthday party up": {
+        "name": "Birthday party up",
+        "id": 119,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Snowman square bottom",
+        "rule": {}
+    },
+    "Balloon house exit": {
+        "name": "Balloon house exit",
+        "id": 120,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Balloon house",
+        "dst_region_name": "Kiiruberg - Birthday party bottom",
+        "rule": {}
+    },
+    "Old man's house entrance": {
+        "name": "Old man's house entrance",
+        "id": 121,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Frozen pond",
+        "dst_region_name": "Kiiruberg - Old man's house",
+        "rule": {}
+    },
+    "Frozen pond right": {
+        "name": "Frozen pond right",
+        "id": 122,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Frozen pond",
+        "dst_region_name": "Kiiruberg - Birthday party bottom",
+        "rule": {}
+    },
+    "Old man's house exit": {
+        "name": "Old man's house exit",
+        "id": 123,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Old man's house",
+        "dst_region_name": "Kiiruberg - Frozen pond",
+        "rule": {}
+    },
+    "Snowman square rope from bottom": {
+        "name": "Snowman square rope from bottom",
+        "id": 124,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Snowman square top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Military base entrance": {
+        "name": "Military base entrance",
+        "id": 125,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Military base",
+        "rule": {}
+    },
+    "Meck's house entrance": {
+        "name": "Meck's house entrance",
+        "id": 126,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Meck's house",
+        "rule": {}
+    },
+    "Snowman square down": {
+        "name": "Snowman square down",
+        "id": 127,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Birthday party top",
+        "rule": {}
+    },
+    "Snowman square rope from top": {
+        "name": "Snowman square rope from top",
+        "id": 128,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg - Snowman square bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Snowman square left": {
+        "name": "Snowman square left",
+        "id": 129,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg - Outside wizard tower",
+        "rule": {}
+    },
+    "Snowman square up": {
+        "name": "Snowman square up",
+        "id": 130,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg - Cliffs bottom",
+        "rule": {}
+    },
+    "Military base exit": {
+        "name": "Military base exit",
+        "id": 131,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Military base",
+        "dst_region_name": "Kiiruberg - Snowman square bottom",
+        "rule": {}
+    },
+    "Meck's house exit": {
+        "name": "Meck's house exit",
+        "id": 132,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Meck's house",
+        "dst_region_name": "Kiiruberg - Snowman square bottom",
+        "rule": {}
+    },
+    "Wizard tower entrance": {
+        "name": "Wizard tower entrance",
+        "id": 133,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Outside wizard tower",
+        "dst_region_name": "Kiiruberg - Wizard tower",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Outside wizard tower right": {
+        "name": "Outside wizard tower right",
+        "id": 134,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Outside wizard tower",
+        "dst_region_name": "Kiiruberg - Snowman square top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Wizard portal entrance": {
+        "name": "Wizard portal entrance",
+        "id": 135,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Wizard tower",
+        "dst_region_name": "Kiiruberg - Cosmo Garden",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Ice wizard's research",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Wizard tower exit": {
+        "name": "Wizard tower exit",
+        "id": 136,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Wizard tower",
+        "dst_region_name": "Kiiruberg - Outside wizard tower",
+        "rule": {}
+    },
+    "Wizard portal exit": {
+        "name": "Wizard portal exit",
+        "id": 137,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Cosmo Garden",
+        "dst_region_name": "Kiiruberg - Wizard tower",
+        "rule": {}
+    },
+    "Cliffs down": {
+        "name": "Cliffs down",
+        "id": 138,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Cliffs bottom",
+        "dst_region_name": "Kiiruberg - Snowman square top",
+        "rule": {}
+    },
+    "Cliffs bottom rope from bottom": {
+        "name": "Cliffs bottom rope from bottom",
+        "id": 139,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs bottom",
+        "dst_region_name": "Kiiruberg - Cliffs middle",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Cliffs right": {
+        "name": "Cliffs right",
+        "id": 140,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Honk attachment",
+                "count": 1
+            }
+        }
+    },
+    "Cliffs bottom rope from middle": {
+        "name": "Cliffs bottom rope from middle",
+        "id": 141,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg - Cliffs bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Cliffs top rope from middle": {
+        "name": "Cliffs top rope from middle",
+        "id": 142,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg - Cliffs top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Cliffs up": {
+        "name": "Cliffs up",
+        "id": 143,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Cliffs top",
+        "dst_region_name": "Kiiruberg - Outside observatory bottom",
+        "rule": {}
+    },
+    "Cliffs top rope from top": {
+        "name": "Cliffs top rope from top",
+        "id": 144,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs top",
+        "dst_region_name": "Kiiruberg - Cliffs middle",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Blizzard bridge left": {
+        "name": "Blizzard bridge left",
+        "id": 145,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "dst_region_name": "Kiiruberg - Cliffs middle",
+        "rule": {}
+    },
+    "Blizzard bridge rope from lower left": {
+        "name": "Blizzard bridge rope from lower left",
+        "id": 146,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "dst_region_name": "Kiiruberg - Blizzard bridge right",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Climbing boots",
+                    "Puffer hat",
+                    "Scarf",
+                    "Ski goggles"
+                ]
+            }
+        }
+    },
+    "Blizzard bridge break ice from bottom": {
+        "name": "Blizzard bridge break ice from bottom",
+        "id": 147,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "dst_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Climbing boots",
+                    "Honk attachment",
+                    "Puffer hat",
+                    "Scarf",
+                    "Ski goggles"
+                ]
+            }
+        }
+    },
+    "Man cave entrance": {
+        "name": "Man cave entrance",
+        "id": 148,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "dst_region_name": "Kiiruberg - Man cave",
+        "rule": {
+            "rule": "CanReachLocation",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "location_name": "Quest - Experience TOEM",
+                "parent_region_name": "",
+                "skip_indirect_connection": false
+            }
+        }
+    },
+    "Blizzard bridge rope from upper left": {
+        "name": "Blizzard bridge rope from upper left",
+        "id": 149,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "dst_region_name": "Kiiruberg - Blizzard bridge right",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Climbing boots",
+                    "Puffer hat",
+                    "Scarf",
+                    "Ski goggles"
+                ]
+            }
+        }
+    },
+    "Blizzard bridge break ice from top": {
+        "name": "Blizzard bridge break ice from top",
+        "id": 150,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "dst_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Honk attachment",
+                "count": 1
+            }
+        }
+    },
+    "Blizzard bridge rope from lower right": {
+        "name": "Blizzard bridge rope from lower right",
+        "id": 151,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge right",
+        "dst_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Blizzard bridge rope from upper right": {
+        "name": "Blizzard bridge rope from upper right",
+        "id": 152,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge right",
+        "dst_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Climbing boots",
+                    "Puffer hat",
+                    "Scarf",
+                    "Ski goggles"
+                ]
+            }
+        }
+    },
+    "Blizzard bridge right": {
+        "name": "Blizzard bridge right",
+        "id": 153,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Blizzard bridge right",
+        "dst_region_name": "Kiiruberg - Blizzard monster",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Honk attachment",
+                "count": 1
+            }
+        }
+    },
+    "Man cave exit": {
+        "name": "Man cave exit",
+        "id": 154,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Man cave",
+        "dst_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "rule": {}
+    },
+    "Blizzard monster exit": {
+        "name": "Blizzard monster exit",
+        "id": 155,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Blizzard monster",
+        "dst_region_name": "Kiiruberg - Blizzard bridge right",
+        "rule": {}
+    },
+    "Observatory entrance": {
+        "name": "Observatory entrance",
+        "id": 156,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Outside observatory top",
+        "dst_region_name": "Kiiruberg - Observatory",
+        "rule": {}
+    },
+    "Outside observatory rope from top": {
+        "name": "Outside observatory rope from top",
+        "id": 157,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory top",
+        "dst_region_name": "Kiiruberg - Outside observatory bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Outside observatory rope from bottom": {
+        "name": "Outside observatory rope from bottom",
+        "id": 158,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory bottom",
+        "dst_region_name": "Kiiruberg - Outside observatory top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Outside observatory down": {
+        "name": "Outside observatory down",
+        "id": 159,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Outside observatory bottom",
+        "dst_region_name": "Kiiruberg - Cliffs top",
+        "rule": {}
+    },
+    "Outside observatory right": {
+        "name": "Outside observatory right",
+        "id": 160,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Outside observatory bottom",
+        "dst_region_name": "Kiiruberg - Ski mountain top",
+        "rule": {}
+    },
+    "Observatory exit": {
+        "name": "Observatory exit",
+        "id": 161,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Observatory",
+        "dst_region_name": "Kiiruberg - Outside observatory top",
+        "rule": {}
+    },
+    "Ski lodge entrance": {
+        "name": "Ski lodge entrance",
+        "id": 162,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski lift base",
+        "dst_region_name": "Kiiruberg - Ski lodge",
+        "rule": {}
+    },
+    "Ski lift base left": {
+        "name": "Ski lift base left",
+        "id": 163,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski lift base",
+        "dst_region_name": "Kiiruberg - Birthday party bottom",
+        "rule": {}
+    },
+    "Ski lift up": {
+        "name": "Ski lift up",
+        "id": 164,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski lift base",
+        "dst_region_name": "Kiiruberg - Ski mountain top",
+        "rule": {}
+    },
+    "Ski lodge exit": {
+        "name": "Ski lodge exit",
+        "id": 165,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski lodge",
+        "dst_region_name": "Kiiruberg - Ski lift base",
+        "rule": {}
+    },
+    "Ski mountain top left": {
+        "name": "Ski mountain top left",
+        "id": 166,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski mountain top",
+        "dst_region_name": "Kiiruberg - Outside observatory bottom",
+        "rule": {}
+    },
+    "Ski lift down": {
+        "name": "Ski lift down",
+        "id": 167,
+        "group": 5,
+        "src_region_name": "Kiiruberg - Ski mountain top",
+        "dst_region_name": "Kiiruberg - Ski lift base",
+        "rule": {}
+    },
+    "Mountain top bus stop climb": {
+        "name": "Mountain top bus stop climb",
+        "id": 168,
+        "group": 6,
+        "src_region_name": "Mountain Top - Bus stop",
+        "dst_region_name": "Mountain Top - Toem",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Toem descend": {
+        "name": "Toem descend",
+        "id": 169,
+        "group": 6,
+        "src_region_name": "Mountain Top - Toem",
+        "dst_region_name": "Mountain Top - Bus stop",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Climbing boots",
+                "count": 1
+            }
+        }
+    },
+    "Basto harbor gate from top": {
+        "name": "Basto harbor gate from top",
+        "id": 170,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Harbor bottom",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Water popper attachment",
+                "count": 1
+            }
+        }
+    },
+    "Basto harbor up": {
+        "name": "Basto harbor up",
+        "id": 171,
+        "group": 7,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Lily pad pond left",
+        "rule": {}
+    },
+    "Basto harbor gate from bottom": {
+        "name": "Basto harbor gate from bottom",
+        "id": 172,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto - Harbor top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Water popper attachment",
+                "count": 1
+            }
+        }
+    },
+    "Viking express Basto stop": {
+        "name": "Viking express Basto stop",
+        "id": 173,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Stanhamn - Docks left",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Viking express ticket",
+                "count": 1
+            }
+        }
+    },
+    "Lily pad pond down": {
+        "name": "Lily pad pond down",
+        "id": 174,
+        "group": 7,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Harbor top",
+        "rule": {}
+    },
+    "Lily pad pond left": {
+        "name": "Lily pad pond left",
+        "id": 175,
+        "group": 7,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Campsite",
+        "rule": {}
+    },
+    "Lily pad pond night bridge from left": {
+        "name": "Lily pad pond night bridge from left",
+        "id": 176,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Lily pad pond right",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Basto - Lily pad pond left night",
+                "count": 1
+            }
+        }
+    },
+    "Lily pad pond right": {
+        "name": "Lily pad pond right",
+        "id": 177,
+        "group": 7,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto - Ghost hangout",
+        "rule": {}
+    },
+    "Lily pad pond up": {
+        "name": "Lily pad pond up",
+        "id": 178,
+        "group": 7,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto - Outside castle",
+        "rule": {}
+    },
+    "Lily pad pond night bridge from right": {
+        "name": "Lily pad pond night bridge from right",
+        "id": 179,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto - Lily pad pond left",
+        "rule": {}
+    },
+    "Tent entrance": {
+        "name": "Tent entrance",
+        "id": 180,
+        "group": 7,
+        "src_region_name": "Basto - Campsite",
+        "dst_region_name": "Basto - Tent",
+        "rule": {}
+    },
+    "Campsite right": {
+        "name": "Campsite right",
+        "id": 181,
+        "group": 7,
+        "src_region_name": "Basto - Campsite",
+        "dst_region_name": "Basto - Lily pad pond left",
+        "rule": {}
+    },
+    "Tent exit": {
+        "name": "Tent exit",
+        "id": 182,
+        "group": 7,
+        "src_region_name": "Basto - Tent",
+        "dst_region_name": "Basto - Campsite",
+        "rule": {}
+    },
+    "Castle entrance": {
+        "name": "Castle entrance",
+        "id": 183,
+        "group": 7,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Castle",
+        "rule": {}
+    },
+    "Gym house entrance": {
+        "name": "Gym house entrance",
+        "id": 184,
+        "group": 7,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Gym house",
+        "rule": {}
+    },
+    "Outside castle down": {
+        "name": "Outside castle down",
+        "id": 185,
+        "group": 7,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Lily pad pond right",
+        "rule": {}
+    },
+    "Outside castle left": {
+        "name": "Outside castle left",
+        "id": 186,
+        "group": 7,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Bonfire top",
+        "rule": {}
+    },
+    "Castle exit": {
+        "name": "Castle exit",
+        "id": 187,
+        "group": 7,
+        "src_region_name": "Basto - Castle",
+        "dst_region_name": "Basto - Outside castle",
+        "rule": {}
+    },
+    "Gym house exit": {
+        "name": "Gym house exit",
+        "id": 188,
+        "group": 7,
+        "src_region_name": "Basto - Gym house",
+        "dst_region_name": "Basto - Outside castle",
+        "rule": {}
+    },
+    "Bonfire lower right": {
+        "name": "Bonfire lower right",
+        "id": 189,
+        "group": 7,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Outside castle",
+        "rule": {}
+    },
+    "Bonfire upper right": {
+        "name": "Bonfire upper right",
+        "id": 190,
+        "group": 7,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Jungle",
+        "rule": {}
+    },
+    "Bonfire day bridge from top": {
+        "name": "Bonfire day bridge from top",
+        "id": 191,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Bonfire bottom",
+        "rule": {}
+    },
+    "Carnival entrance": {
+        "name": "Carnival entrance",
+        "id": 192,
+        "group": 7,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Carnival",
+        "rule": {}
+    },
+    "Bonfire day bridge from bottom": {
+        "name": "Bonfire day bridge from bottom",
+        "id": 193,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Bonfire top",
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Basto - Bonfire bottom day",
+                "count": 1
+            }
+        }
+    },
+    "Carnival exit": {
+        "name": "Carnival exit",
+        "id": 194,
+        "group": 7,
+        "src_region_name": "Basto - Carnival",
+        "dst_region_name": "Basto - Bonfire bottom",
+        "rule": {}
+    },
+    "Ghost hangout cave entrance": {
+        "name": "Ghost hangout cave entrance",
+        "id": 195,
+        "group": 7,
+        "src_region_name": "Basto - Ghost hangout",
+        "dst_region_name": "Basto - Cave",
+        "rule": {}
+    },
+    "Ghost hangout left": {
+        "name": "Ghost hangout left",
+        "id": 196,
+        "group": 7,
+        "src_region_name": "Basto - Ghost hangout",
+        "dst_region_name": "Basto - Lily pad pond right",
+        "rule": {}
+    },
+    "Secret cave room entrance": {
+        "name": "Secret cave room entrance",
+        "id": 197,
+        "group": 7,
+        "src_region_name": "Basto - Cave",
+        "dst_region_name": "Basto - Secret cave room",
+        "rule": {
+            "rule": "HasAll",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_names": [
+                    "Pickaxe",
+                    "Water popper attachment"
+                ]
+            }
+        }
+    },
+    "Ghost hangout cave exit": {
+        "name": "Ghost hangout cave exit",
+        "id": 198,
+        "group": 7,
+        "src_region_name": "Basto - Cave",
+        "dst_region_name": "Basto - Ghost hangout",
+        "rule": {}
+    },
+    "Jungle cave exit": {
+        "name": "Jungle cave exit",
+        "id": 199,
+        "group": 7,
+        "src_region_name": "Basto - Cave",
+        "dst_region_name": "Basto - Jungle",
+        "rule": {}
+    },
+    "Secret cave room exit": {
+        "name": "Secret cave room exit",
+        "id": 200,
+        "group": 7,
+        "src_region_name": "Basto - Secret cave room",
+        "dst_region_name": "Basto - Cave",
+        "rule": {}
+    },
+    "Jungle cave entrance": {
+        "name": "Jungle cave entrance",
+        "id": 201,
+        "group": 7,
+        "src_region_name": "Basto - Jungle",
+        "dst_region_name": "Basto - Cave",
+        "rule": {}
+    },
+    "Jungle left": {
+        "name": "Jungle left",
+        "id": 202,
+        "group": 7,
+        "src_region_name": "Basto - Jungle",
+        "dst_region_name": "Basto - Bonfire top",
+        "rule": {}
+    },
+    "Fashion show from bottom": {
+        "name": "Fashion show from bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show bottom",
+        "dst_region_name": "Logcity - Fashion show",
+        "rule": {}
+    },
+    "Fashion show from top": {
+        "name": "Fashion show from top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show top",
+        "dst_region_name": "Logcity - Fashion show",
+        "rule": {}
+    },
+    "Balloon animal from Birthday party bottom": {
+        "name": "Balloon animal from Birthday party bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Balloon animal",
+        "rule": {}
+    },
+    "Balloon animal from Birthday party top": {
+        "name": "Balloon animal from Birthday party top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Balloon animal",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Asteroid from Snowman square bottom": {
+        "name": "Asteroid from Snowman square bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Asteroid",
+        "rule": {}
+    },
+    "Asteroid from Snowman square top": {
+        "name": "Asteroid from Snowman square top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg - Asteroid",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Bad hair day from Bonfire top": {
+        "name": "Bad hair day from Bonfire top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Bad hair day",
+        "rule": {}
+    },
+    "Bad hair day from Bonfire bottom": {
+        "name": "Bad hair day from Bonfire bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Bad hair day",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Dry season from Harbor bottom": {
+        "name": "Dry season from Harbor bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto - Dry season (Harbor)",
+        "rule": {}
+    },
+    "Dry season from Harbor top": {
+        "name": "Dry season from Harbor top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Dry season (Harbor)",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Squirrel from Ghost cup game": {
+        "name": "Squirrel from Ghost cup game",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Ghost cup game",
+        "dst_region_name": "Oaklaville - Squirrels",
+        "rule": {}
+    },
+    "Squirrels from Hotel elevator": {
+        "name": "Squirrels from Hotel elevator",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Hotel elevator",
+        "dst_region_name": "Oaklaville - Squirrels",
+        "rule": {}
+    },
+    "Sero from Graveyard": {
+        "name": "Sero from Graveyard",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville - Sero",
+        "rule": {}
+    },
+    "Sero from Skeleton house balcony": {
+        "name": "Sero from Skeleton house balcony",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Skeleton house balcony",
+        "dst_region_name": "Oaklaville - Sero",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Tato fly from Skeleton house balcony": {
+        "name": "Tato fly from Skeleton house balcony",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Skeleton house balcony",
+        "dst_region_name": "Oaklaville - Tato fly",
+        "rule": {}
+    },
+    "Tato fly from Graveyard": {
+        "name": "Tato fly from Graveyard",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville - Tato fly",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Seagulls from Stanhamn bus stop": {
+        "name": "Seagulls from Stanhamn bus stop",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn - Seagulls",
+        "rule": {}
+    },
+    "Seagulls from Hippo beach": {
+        "name": "Seagulls from Hippo beach",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Hippo beach",
+        "dst_region_name": "Stanhamn - Seagulls",
+        "rule": {}
+    },
+    "Seagulls from Outside lighthouse": {
+        "name": "Seagulls from Outside lighthouse",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Outside lighthouse",
+        "dst_region_name": "Stanhamn - Seagulls",
+        "rule": {}
+    },
+    "Seagulls from Outside hydroplant (before honking)": {
+        "name": "Seagulls from Outside hydroplant (before honking)",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Outside hydroplant",
+        "dst_region_name": "Stanhamn - Seagulls",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Seagulls from Pirate Drawbridge (if sandwich present)": {
+        "name": "Seagulls from Pirate Drawbridge (if sandwich present)",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Pirate Drawbridge",
+        "dst_region_name": "Stanhamn - Seagulls",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "And",
+                "options": [],
+                "filtered_resolution": false,
+                "children": [
+                    {
+                        "rule": "Has",
+                        "options": [],
+                        "filtered_resolution": false,
+                        "args": {
+                            "item_name": "Ghost glasses",
+                            "count": 1
+                        }
+                    },
+                    {
+                        "rule": "CanReachRegion",
+                        "options": [],
+                        "filtered_resolution": false,
+                        "args": {
+                            "region_name": "Stanhamn - Outside hydroplant"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "Sunday swan from Docks left": {
+        "name": "Sunday swan from Docks left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn - Sunday swan",
+        "rule": {}
+    },
+    "Sunday swan from Docks right": {
+        "name": "Sunday swan from Docks right",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn - Sunday swan",
+        "rule": {}
+    },
+    "Fia from Docks right": {
+        "name": "Fia from Docks right",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn - Fia",
+        "rule": {}
+    },
+    "Fia from Docks left": {
+        "name": "Fia from Docks left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn - Fia",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Fr\u00e4s from Docks left": {
+        "name": "Fr\u00e4s from Docks left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn - Fr\u00e4s",
+        "rule": {}
+    },
+    "Fr\u00e4s from Docks right": {
+        "name": "Fr\u00e4s from Docks right",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn - Fr\u00e4s",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Pigeon from Clock tower": {
+        "name": "Pigeon from Clock tower",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity - Pigeon",
+        "rule": {}
+    },
+    "Pigeon from Outside cafe": {
+        "name": "Pigeon from Outside cafe",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity - Pigeon",
+        "rule": {}
+    },
+    "Pigeon from Outside gallery": {
+        "name": "Pigeon from Outside gallery",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside gallery",
+        "dst_region_name": "Logcity - Pigeon",
+        "rule": {}
+    },
+    "Pigeon from Ratskullz alley": {
+        "name": "Pigeon from Ratskullz alley",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Ratskullz alley",
+        "dst_region_name": "Logcity - Pigeon",
+        "rule": {}
+    },
+    "Mouse from Overpass": {
+        "name": "Mouse from Overpass",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity - Mouse",
+        "rule": {}
+    },
+    "Mouse from Cafe (before honking)": {
+        "name": "Mouse from Cafe (before honking)",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Cafe",
+        "dst_region_name": "Logcity - Mouse",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Fluff ball from Birthday party bottom": {
+        "name": "Fluff ball from Birthday party bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory bottom",
+        "dst_region_name": "Kiiruberg - Fluff ball",
+        "rule": {}
+    },
+    "Fluff ball from Birthday party top": {
+        "name": "Fluff ball from Birthday party top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory top",
+        "dst_region_name": "Kiiruberg - Fluff ball",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Hedgehog from Birthday party bottom": {
+        "name": "Hedgehog from Birthday party bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Hedgehog",
+        "rule": {}
+    },
+    "Hedgehog from Birthday party top": {
+        "name": "Hedgehog from Birthday party top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Hedgehog",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Meteopal from Snowman square bottom": {
+        "name": "Meteopal from Snowman square bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg - Meteopal",
+        "rule": {}
+    },
+    "Meteopal from Snowman square top": {
+        "name": "Meteopal from Snowman square top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg - Meteopal",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Goat from Birthday party bottom": {
+        "name": "Goat from Birthday party bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Goat (Birthday party)",
+        "rule": {}
+    },
+    "Goat from Birthday party top": {
+        "name": "Goat from Birthday party top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Goat (Birthday party)",
+        "rule": {}
+    },
+    "Goat from Cliffs top": {
+        "name": "Goat from Cliffs top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs top",
+        "dst_region_name": "Kiiruberg - Goat (Cliffs)",
+        "rule": {}
+    },
+    "Goat from Cliffs middle": {
+        "name": "Goat from Cliffs middle",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg - Goat (Cliffs)",
+        "rule": {}
+    },
+    "Goat from Birthday party": {
+        "name": "Goat from Birthday party",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Goat (Birthday party)",
+        "dst_region_name": "Kiiruberg - Goat",
+        "rule": {}
+    },
+    "Goat from Ski mountain top": {
+        "name": "Goat from Ski mountain top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Ski mountain top",
+        "dst_region_name": "Kiiruberg - Goat",
+        "rule": {}
+    },
+    "Goat from Cliffs": {
+        "name": "Goat from Cliffs",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Goat (Cliffs)",
+        "dst_region_name": "Kiiruberg - Goat",
+        "rule": {}
+    },
+    "Owl from Cliffs top": {
+        "name": "Owl from Cliffs top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs top",
+        "dst_region_name": "Kiiruberg - Owl",
+        "rule": {}
+    },
+    "Owl from Cliffs middle": {
+        "name": "Owl from Cliffs middle",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg - Owl",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Bat from Cave": {
+        "name": "Bat from Cave",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Cave",
+        "dst_region_name": "Basto - Bat",
+        "rule": {}
+    },
+    "Bat from Bonfire top": {
+        "name": "Bat from Bonfire top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Bat",
+        "rule": {}
+    },
+    "Bat from Outside castle": {
+        "name": "Bat from Outside castle",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Bat",
+        "rule": {}
+    },
+    "Bat from Bonfire bottom": {
+        "name": "Bat from Bonfire bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Bat",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Beak bird from Harbor bottom": {
+        "name": "Beak bird from Harbor bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto - Beak bird",
+        "rule": {}
+    },
+    "Beak bird from Harbor top": {
+        "name": "Beak bird from Harbor top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Beak bird",
+        "rule": {}
+    },
+    "Beak bird from Lily pad pond left": {
+        "name": "Beak bird from Lily pad pond left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Beak bird",
+        "rule": {}
+    },
+    "Beak bird from Lily pad pond right": {
+        "name": "Beak bird from Lily pad pond right",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto - Beak bird",
+        "rule": {}
+    },
+    "Bitling tato from Harbor bottom": {
+        "name": "Bitling tato from Harbor bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto - Bitling tato",
+        "rule": {}
+    },
+    "Bitling tato from Harbor top": {
+        "name": "Bitling tato from Harbor top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Bitling tato",
+        "rule": {}
+    },
+    "Drill mole from Bonfire top": {
+        "name": "Drill mole from Bonfire top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Drill mole",
+        "rule": {}
+    },
+    "Drill mole from Bonfire bottom": {
+        "name": "Drill mole from Bonfire bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Drill mole",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Night lizard from Bonfire top": {
+        "name": "Night lizard from Bonfire top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Night lizard",
+        "rule": {}
+    },
+    "Night lizard from Bonfire bottom": {
+        "name": "Night lizard from Bonfire bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto - Night lizard",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Water strider from Lily pad pond left": {
+        "name": "Water strider from Lily pad pond left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Water strider",
+        "rule": {}
+    },
+    "Water strider from Outside castle": {
+        "name": "Water strider from Outside castle",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto - Water strider",
+        "rule": {}
+    },
+    "Water strider from Lily pad pond right": {
+        "name": "Water strider from Lily pad pond right",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto - Water strider",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Ghost glasses from Graveyard": {
+        "name": "Ghost glasses from Graveyard",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville - Ghost glasses",
+        "rule": {}
+    },
+    "Ghost glasses from Skeleton house balcony": {
+        "name": "Ghost glasses from Skeleton house balcony",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Skeleton house balcony",
+        "dst_region_name": "Oaklaville - Ghost glasses",
+        "rule": {}
+    },
+    "Pet Tom": {
+        "name": "Pet Tom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Oskar": {
+        "name": "Pet Oskar",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Hotel",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Sero": {
+        "name": "Pet Sero",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet the Pet rock": {
+        "name": "Pet the Pet rock",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Camp",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Fia": {
+        "name": "Pet Fia",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Fr\u00e4s": {
+        "name": "Pet Fr\u00e4s",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Willemijn": {
+        "name": "Pet Willemijn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - King fish beach",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Portillo": {
+        "name": "Pet Portillo",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Mik\u00e9e or Nariko": {
+        "name": "Pet Mik\u00e9e or Nariko",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Balloon house",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Pet Teddy": {
+        "name": "Pet Teddy",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Meck's house",
+        "dst_region_name": "Pet a pet",
+        "rule": {}
+    },
+    "Sit on a chair in Lily pad pond left": {
+        "name": "Sit on a chair in Lily pad pond left",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto - Maximum vacation",
+        "rule": {}
+    },
+    "Sit on a chair in Gym house": {
+        "name": "Sit on a chair in Gym house",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Gym house",
+        "dst_region_name": "Basto - Maximum vacation",
+        "rule": {}
+    },
+    "Sit on a chair in Carnival": {
+        "name": "Sit on a chair in Carnival",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Carnival",
+        "dst_region_name": "Basto - Maximum vacation",
+        "rule": {}
+    },
+    "Sit on a chair in Bonfire top": {
+        "name": "Sit on a chair in Bonfire top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto - Maximum vacation",
+        "rule": {}
+    },
+    "Sit on a chair in Ghost hangout": {
+        "name": "Sit on a chair in Ghost hangout",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Ghost hangout",
+        "dst_region_name": "Basto - Maximum vacation",
+        "rule": {}
+    },
+    "Visit Logicity bus stop": {
+        "name": "Visit Logicity bus stop",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Bus stop",
+        "dst_region_name": "Logcity - Big city cassette",
+        "rule": {}
+    },
+    "Visit Outside fasion show": {
+        "name": "Visit Outside fasion show",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity - Big city cassette",
+        "rule": {}
+    },
+    "Visit Birthday party bottom": {
+        "name": "Visit Birthday party bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg - Stories of snow cassette",
+        "rule": {}
+    },
+    "Visit Birthday party top": {
+        "name": "Visit Birthday party top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg - Stories of snow cassette",
+        "rule": {}
+    },
+    "Visit Harbor bottom": {
+        "name": "Visit Harbor bottom",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto - Song of the sea cassette",
+        "rule": {}
+    },
+    "Visit Harbor top": {
+        "name": "Visit Harbor top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto - Song of the sea cassette",
+        "rule": {
+            "rule": "HardLogic",
+            "options": [],
+            "filtered_resolution": false,
+            "child": {
+                "rule": "True_",
+                "options": [],
+                "filtered_resolution": false,
+                "args": {}
+            }
+        }
+    },
+    "Oaklaville - Bus stop in Oaklaville": {
+        "name": "Oaklaville - Bus stop in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Bus stop",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Outside hotel in Oaklaville": {
+        "name": "Oaklaville - Outside hotel in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside hotel",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Hotel in Oaklaville": {
+        "name": "Oaklaville - Hotel in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Hotel",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Hotel elevator in Oaklaville": {
+        "name": "Oaklaville - Hotel elevator in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Hotel elevator",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Ghost cup game in Oaklaville": {
+        "name": "Oaklaville - Ghost cup game in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Ghost cup game",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Mushroom house in Oaklaville": {
+        "name": "Oaklaville - Mushroom house in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Mushroom house",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Hide and seek in Oaklaville": {
+        "name": "Oaklaville - Hide and seek in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Hide and seek",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Graveyard in Oaklaville": {
+        "name": "Oaklaville - Graveyard in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Graveyard",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Skeleton house in Oaklaville": {
+        "name": "Oaklaville - Skeleton house in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Skeleton house",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Skeleton house balcony in Oaklaville": {
+        "name": "Oaklaville - Skeleton house balcony in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Skeleton house balcony",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Camp in Oaklaville": {
+        "name": "Oaklaville - Camp in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Camp",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Trail top in Oaklaville": {
+        "name": "Oaklaville - Trail top in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Trail top",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Trail bottom in Oaklaville": {
+        "name": "Oaklaville - Trail bottom in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Trail bottom",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Lookout in Oaklaville": {
+        "name": "Oaklaville - Lookout in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Lookout",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Playground in Oaklaville": {
+        "name": "Oaklaville - Playground in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Playground",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Outside rave top in Oaklaville": {
+        "name": "Oaklaville - Outside rave top in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside rave top",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Outside rave bottom in Oaklaville": {
+        "name": "Oaklaville - Outside rave bottom in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Outside rave bottom",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Oaklaville - Rave in Oaklaville": {
+        "name": "Oaklaville - Rave in Oaklaville",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Oaklaville - Rave",
+        "dst_region_name": "Oaklaville",
+        "rule": {}
+    },
+    "Stanhamn - Bus stop in Stanhamn": {
+        "name": "Stanhamn - Bus stop in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Bus stop",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Photo guild hut in Stanhamn": {
+        "name": "Stanhamn - Photo guild hut in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Photo guild hut",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Pirate Drawbridge in Stanhamn": {
+        "name": "Stanhamn - Pirate Drawbridge in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Pirate Drawbridge",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Hippo beach in Stanhamn": {
+        "name": "Stanhamn - Hippo beach in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Hippo beach",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Underwater in Stanhamn": {
+        "name": "Stanhamn - Underwater in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Underwater",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Outside lighthouse in Stanhamn": {
+        "name": "Stanhamn - Outside lighthouse in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Outside lighthouse",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Lighthouse in Stanhamn": {
+        "name": "Stanhamn - Lighthouse in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Lighthouse",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Lighthouse roof in Stanhamn": {
+        "name": "Stanhamn - Lighthouse roof in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Lighthouse roof",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - King fish beach in Stanhamn": {
+        "name": "Stanhamn - King fish beach in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - King fish beach",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Docks left in Stanhamn": {
+        "name": "Stanhamn - Docks left in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks left",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Docks right in Stanhamn": {
+        "name": "Stanhamn - Docks right in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Docks right",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Fishing tower in Stanhamn": {
+        "name": "Stanhamn - Fishing tower in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Fishing tower",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Ghost drawbridge top in Stanhamn": {
+        "name": "Stanhamn - Ghost drawbridge top in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Ghost drawbridge top",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Ghost drawbridge bottom in Stanhamn": {
+        "name": "Stanhamn - Ghost drawbridge bottom in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Ghost drawbridge bottom",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Outside hydroplant in Stanhamn": {
+        "name": "Stanhamn - Outside hydroplant in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Outside hydroplant",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Stanhamn - Hydroplant in Stanhamn": {
+        "name": "Stanhamn - Hydroplant in Stanhamn",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Stanhamn - Hydroplant",
+        "dst_region_name": "Stanhamn",
+        "rule": {}
+    },
+    "Logcity - Bus stop in Logcity": {
+        "name": "Logcity - Bus stop in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Bus stop",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Clock tower in Logcity": {
+        "name": "Logcity - Clock tower in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Clock tower",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Cross walk in Logcity": {
+        "name": "Logcity - Cross walk in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Cross walk",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Overpass in Logcity": {
+        "name": "Logcity - Overpass in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Overpass",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - News house in Logcity": {
+        "name": "Logcity - News house in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - News house",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Skate park in Logcity": {
+        "name": "Logcity - Skate park in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Skate park",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Ratskullz alley in Logcity": {
+        "name": "Logcity - Ratskullz alley in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Ratskullz alley",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Outside fashion show in Logcity": {
+        "name": "Logcity - Outside fashion show in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside fashion show",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Fashion show top in Logcity": {
+        "name": "Logcity - Fashion show top in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show top",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Fashion show bottom in Logcity": {
+        "name": "Logcity - Fashion show bottom in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show bottom",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Fashion show backstage in Logcity": {
+        "name": "Logcity - Fashion show backstage in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Fashion show backstage",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Outside cafe in Logcity": {
+        "name": "Logcity - Outside cafe in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside cafe",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Cafe in Logcity": {
+        "name": "Logcity - Cafe in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Cafe",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Outside gallery in Logcity": {
+        "name": "Logcity - Outside gallery in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Outside gallery",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Logcity - Gallery in Logcity": {
+        "name": "Logcity - Gallery in Logcity",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Logcity - Gallery",
+        "dst_region_name": "Logcity",
+        "rule": {}
+    },
+    "Kiiruberg - Bus stop in Kiiruberg": {
+        "name": "Kiiruberg - Bus stop in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Bus stop",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Birthday party bottom in Kiiruberg": {
+        "name": "Kiiruberg - Birthday party bottom in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party bottom",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Birthday party top in Kiiruberg": {
+        "name": "Kiiruberg - Birthday party top in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Birthday party top",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Balloon house in Kiiruberg": {
+        "name": "Kiiruberg - Balloon house in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Balloon house",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Frozen pond in Kiiruberg": {
+        "name": "Kiiruberg - Frozen pond in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Frozen pond",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Old man's house in Kiiruberg": {
+        "name": "Kiiruberg - Old man's house in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Old man's house",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Snowman square bottom in Kiiruberg": {
+        "name": "Kiiruberg - Snowman square bottom in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square bottom",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Snowman square top in Kiiruberg": {
+        "name": "Kiiruberg - Snowman square top in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Snowman square top",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Military base in Kiiruberg": {
+        "name": "Kiiruberg - Military base in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Military base",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Meck's house in Kiiruberg": {
+        "name": "Kiiruberg - Meck's house in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Meck's house",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Outside wizard tower in Kiiruberg": {
+        "name": "Kiiruberg - Outside wizard tower in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside wizard tower",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Wizard tower in Kiiruberg": {
+        "name": "Kiiruberg - Wizard tower in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Wizard tower",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Cosmo Garden in Kiiruberg": {
+        "name": "Kiiruberg - Cosmo Garden in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cosmo Garden",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Cliffs bottom in Kiiruberg": {
+        "name": "Kiiruberg - Cliffs bottom in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs bottom",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Cliffs middle in Kiiruberg": {
+        "name": "Kiiruberg - Cliffs middle in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs middle",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Cliffs top in Kiiruberg": {
+        "name": "Kiiruberg - Cliffs top in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Cliffs top",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Blizzard bridge lower left in Kiiruberg": {
+        "name": "Kiiruberg - Blizzard bridge lower left in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge lower left",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Blizzard bridge upper left in Kiiruberg": {
+        "name": "Kiiruberg - Blizzard bridge upper left in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge upper left",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Blizzard bridge right in Kiiruberg": {
+        "name": "Kiiruberg - Blizzard bridge right in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard bridge right",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Man cave in Kiiruberg": {
+        "name": "Kiiruberg - Man cave in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Man cave",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Blizzard monster in Kiiruberg": {
+        "name": "Kiiruberg - Blizzard monster in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Blizzard monster",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Outside observatory top in Kiiruberg": {
+        "name": "Kiiruberg - Outside observatory top in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory top",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Outside observatory bottom in Kiiruberg": {
+        "name": "Kiiruberg - Outside observatory bottom in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Outside observatory bottom",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Observatory in Kiiruberg": {
+        "name": "Kiiruberg - Observatory in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Observatory",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Ski lift base in Kiiruberg": {
+        "name": "Kiiruberg - Ski lift base in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Ski lift base",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Ski lodge in Kiiruberg": {
+        "name": "Kiiruberg - Ski lodge in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Ski lodge",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Kiiruberg - Ski mountain top in Kiiruberg": {
+        "name": "Kiiruberg - Ski mountain top in Kiiruberg",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Kiiruberg - Ski mountain top",
+        "dst_region_name": "Kiiruberg",
+        "rule": {}
+    },
+    "Mountain Top - Bus stop in Mountain Top": {
+        "name": "Mountain Top - Bus stop in Mountain Top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Mountain Top - Bus stop",
+        "dst_region_name": "Mountain Top",
+        "rule": {}
+    },
+    "Mountain Top - Toem in Mountain Top": {
+        "name": "Mountain Top - Toem in Mountain Top",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Mountain Top - Toem",
+        "dst_region_name": "Mountain Top",
+        "rule": {}
+    },
+    "Basto - Harbor top in Basto": {
+        "name": "Basto - Harbor top in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor top",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Harbor bottom in Basto": {
+        "name": "Basto - Harbor bottom in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Harbor bottom",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Lily pad pond left in Basto": {
+        "name": "Basto - Lily pad pond left in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond left",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Lily pad pond right in Basto": {
+        "name": "Basto - Lily pad pond right in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Lily pad pond right",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Campsite in Basto": {
+        "name": "Basto - Campsite in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Campsite",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Tent in Basto": {
+        "name": "Basto - Tent in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Tent",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Outside castle in Basto": {
+        "name": "Basto - Outside castle in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Outside castle",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Castle in Basto": {
+        "name": "Basto - Castle in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Castle",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Gym house in Basto": {
+        "name": "Basto - Gym house in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Gym house",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Bonfire top in Basto": {
+        "name": "Basto - Bonfire top in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire top",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Bonfire bottom in Basto": {
+        "name": "Basto - Bonfire bottom in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Bonfire bottom",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Carnival in Basto": {
+        "name": "Basto - Carnival in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Carnival",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Ghost hangout in Basto": {
+        "name": "Basto - Ghost hangout in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Ghost hangout",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Cave in Basto": {
+        "name": "Basto - Cave in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Cave",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Secret cave room in Basto": {
+        "name": "Basto - Secret cave room in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Secret cave room",
+        "dst_region_name": "Basto",
+        "rule": {}
+    },
+    "Basto - Jungle in Basto": {
+        "name": "Basto - Jungle in Basto",
+        "id": 0,
+        "group": 0,
+        "src_region_name": "Basto - Jungle",
+        "dst_region_name": "Basto",
+        "rule": {}
+    }
+}
