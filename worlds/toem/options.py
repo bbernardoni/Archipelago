@@ -127,7 +127,7 @@ class ToemOptions(PerGameCommonOptions):
     include_achievements: IncludeAchievements
 
     honk_attachment_early: HonkAttachmentEarly
-    force_bast_gate_open: ForceBastoGateOpen
+    force_basto_gate_open: ForceBastoGateOpen
 
     progressive_stamps: ProgressiveStamps
     homelanda_stamp_requirement: HomelandaStampRequirement

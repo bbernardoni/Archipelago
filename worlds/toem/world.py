@@ -292,7 +292,7 @@ class ToemWorld(World):
                 "include_cassettes",
                 "include_achievements",
                 "honk_attachment_early",
-                "force_bast_gate_open",
+                "force_basto_gate_open",
                 "progressive_stamps",
                 "homelanda_stamp_requirement",
                 "oaklaville_stamp_requirement",
