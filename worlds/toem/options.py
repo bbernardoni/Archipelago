@@ -1,13 +1,25 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from Options import Choice, PerGameCommonOptions, Range, StartInventoryPool, Toggle
+from Options import Choice, OptionGroup, PerGameCommonOptions, Range, StartInventoryPool, Toggle
 
 
 class IncludeBasto(Toggle):
     """Include the free DLC Basto. Changes the goal to the Basto bonfire."""
     display_name: ClassVar[str] = "Include Basto"
     default: ClassVar[int] = 0
+
+
+class EntranceRandomization(Choice):
+    """
+    Should area entrances be randomized?
+    Disabled: No entrance randomization is done
+    Within Region: Only entrances within a region are randomized with each other
+    """
+    display_name = "Entrance Randomization"
+    default = 0
+    option_disabled = 0
+    option_within_region = 1
 
 
 class IncludeItems(Toggle):
@@ -25,6 +37,24 @@ class IncludeCassettes(Toggle):
 class IncludeAchievements(Toggle):
     """Include achievements as locations. Adds more photos to the pool to compensate."""
     display_name: ClassVar[str] = "Include Achievements"
+    default: ClassVar[int] = 0
+
+
+class HonkAttachmentEarly(Toggle):
+    """
+    Add honk attachment to `early_items`.
+    Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn.
+    """
+    display_name: ClassVar[str] = "Honk Attachment Early"
+    default: ClassVar[int] = 0
+
+
+class ForceBastoGateOpen(Toggle):
+    """
+    Forces the gate at the start of Basto open,
+    removing the requirement of the water popper attachment for exploring Basto.
+    """
+    display_name: ClassVar[str] = "Force Basto Gate Open"
     default: ClassVar[int] = 0
 
 
@@ -85,34 +115,20 @@ class BastoStampRequirement(Range):
     default = 10
 
 
-class HonkAttachmentEarly(Toggle):
-    """
-    Add honk attachment to `early_items`.
-    Will force it to be in a player's sphere 1 to make it more likely to be found before reaching Stanhamn.
-    """
-    display_name: ClassVar[str] = "Honk Attachment Early"
-    default: ClassVar[int] = 0
-
-
-class EntranceRandomization(Choice):
-    """
-    Should area entrances be randomized?
-    Disabled: No entrance randomization is done
-    Within Region: Only entrances within a region are randomized with each other
-    """
-    display_name = "Entrance Randomization"
-    default = 0
-    option_disabled = 0
-    option_within_region = 1
-
-
 @dataclass
 class ToemOptions(PerGameCommonOptions):
     start_inventory_from_pool: StartInventoryPool
+
     include_basto: IncludeBasto
+    entrance_randomization: EntranceRandomization
+
     include_items: IncludeItems
     include_cassettes: IncludeCassettes
     include_achievements: IncludeAchievements
+
+    honk_attachment_early: HonkAttachmentEarly
+    force_bast_gate_open: ForceBastoGateOpen
+
     progressive_stamps: ProgressiveStamps
     homelanda_stamp_requirement: HomelandaStampRequirement
     oaklaville_stamp_requirement: OaklavilleStampRequirement
@@ -120,6 +136,25 @@ class ToemOptions(PerGameCommonOptions):
     logcity_stamp_requirement: LogcityStampRequirement
     kiiruberg_stamp_requirement: KiirubergStampRequirement
     basto_stamp_requirement: BastoStampRequirement
-    honk_attachment_early: HonkAttachmentEarly
-    entrance_randomization: EntranceRandomization
 
+
+toem_option_groups = [
+    OptionGroup("Location Options", [
+        IncludeItems,
+        IncludeCassettes,
+        IncludeAchievements,
+    ]),
+    OptionGroup("QoL Options", [
+        HonkAttachmentEarly,
+        ForceBastoGateOpen,
+    ]),
+    OptionGroup("Stamp Options", [
+        ProgressiveStamps,
+        HomelandaStampRequirement,
+        OaklavilleStampRequirement,
+        StanhamnStampRequirement,
+        LogcityStampRequirement,
+        KiirubergStampRequirement,
+        BastoStampRequirement,
+    ]),
+]

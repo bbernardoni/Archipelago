@@ -31,7 +31,7 @@ from .locations import (
     location_to_item_name,
     portrait_locations,
 )
-from .options import EntranceRandomization, ToemOptions
+from .options import EntranceRandomization, ToemOptions, toem_option_groups
 from .regions import Area, RegionName
 from .rules import init_stamp_requirements, set_entrance_rules, set_location_rules, set_victory_rule
 
@@ -51,6 +51,7 @@ class ToemWebWorld(WebWorld):
             authors=["DrTChops","0xDEAFC0DE"],
         ),
     ]
+    option_groups = toem_option_groups
 
 
 class ToemWorld(World):
@@ -286,9 +287,12 @@ class ToemWorld(World):
             "version": self.world_version.as_simple_string(),
             "options": self.options.as_dict(
                 "include_basto",
+                "entrance_randomization",
                 "include_items",
                 "include_cassettes",
                 "include_achievements",
+                "honk_attachment_early",
+                "force_bast_gate_open",
                 "progressive_stamps",
                 "homelanda_stamp_requirement",
                 "oaklaville_stamp_requirement",
@@ -296,8 +300,6 @@ class ToemWorld(World):
                 "logcity_stamp_requirement",
                 "kiiruberg_stamp_requirement",
                 "basto_stamp_requirement",
-                "honk_attachment_early",
-                "entrance_randomization",
             ),
             "transitions": self.transitions
         }

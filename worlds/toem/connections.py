@@ -4,10 +4,11 @@ from typing import ClassVar, final
 
 from BaseClasses import Entrance, Region
 from entrance_rando import ERPlacementState
-from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Rule, True_
+from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, OptionFilter, Rule, True_
 
 from .items import HardLogic, ItemName
 from .locations import EventName, LocationName, get_stamp_rule
+from .options import ForceBastoGateOpen
 from .regions import Area, RegionName, area_lists
 
 
@@ -662,12 +663,14 @@ region_connections: dict[str, Connection] = {
     # Basto
     ConnectionName.BASTO_HARBOR_GATE_FROM_TOP: Connection(
         RegionName.BASTO_BUS_STOP_TOP, RegionName.BASTO_BUS_STOP_BOTTOM, ERGroups.EXCLUDED,
-        Has(ItemName.WATERGUN)),
+        Has(ItemName.WATERGUN, options=[OptionFilter(ForceBastoGateOpen, ForceBastoGateOpen.option_false)],
+            filtered_resolution=True)),
     ConnectionName.BASTO_HARBOR_UP: Connection(
         RegionName.BASTO_BUS_STOP_TOP, RegionName.BASTO_LILY_PAD_POND_LEFT, ERGroups.BASTO),
     ConnectionName.BASTO_HARBOR_GATE_FROM_BOTTOM: Connection(
         RegionName.BASTO_BUS_STOP_BOTTOM, RegionName.BASTO_BUS_STOP_TOP, ERGroups.EXCLUDED,
-        Has(ItemName.WATERGUN)),
+        Has(ItemName.WATERGUN, options=[OptionFilter(ForceBastoGateOpen, ForceBastoGateOpen.option_false)],
+            filtered_resolution=True)),
     ConnectionName.VIKING_EXPRESS_BASTO_STOP: Connection(
         RegionName.BASTO_BUS_STOP_BOTTOM, RegionName.STANHAMN_DOCKS_LEFT, ERGroups.EXCLUDED,
         Has(ItemName.BASTO_TICKET)),
