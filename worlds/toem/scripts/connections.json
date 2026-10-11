@@ -1995,8 +1995,14 @@
         "dst_region_name": "Basto - Harbor bottom",
         "rule": {
             "rule": "Has",
-            "options": [],
-            "filtered_resolution": false,
+            "options": [
+                {
+                    "option": "worlds.toem.options.ForceBastoGateOpen",
+                    "value": 0,
+                    "operator": "eq"
+                }
+            ],
+            "filtered_resolution": true,
             "args": {
                 "item_name": "Water popper attachment",
                 "count": 1
@@ -2019,8 +2025,14 @@
         "dst_region_name": "Basto - Harbor top",
         "rule": {
             "rule": "Has",
-            "options": [],
-            "filtered_resolution": false,
+            "options": [
+                {
+                    "option": "worlds.toem.options.ForceBastoGateOpen",
+                    "value": 0,
+                    "operator": "eq"
+                }
+            ],
+            "filtered_resolution": true,
             "args": {
                 "item_name": "Water popper attachment",
                 "count": 1
