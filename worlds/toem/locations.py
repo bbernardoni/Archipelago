@@ -22,7 +22,7 @@ from .options import (
     ProgressiveStamps,
     StanhamnStampRequirement,
 )
-from .regions import Area, RegionName, gameplay_areas
+from .regions import Area, RegionName, area_offsets, gameplay_areas
 
 if TYPE_CHECKING:
     from . import ToemWorld
@@ -401,6 +401,14 @@ class LocationData:
     region: str
     group: str
     rule: Rule | None = None
+    area_override: str | None = None
+
+    @property
+    def area(self) -> str:
+        if self.area_override:
+            return self.area_override
+        return self.region.split(" - ")[0]
+
 
 def CanReachAllRegions(*regions: str) -> Rule:  # noqa: N802
     rule = CanReachRegion(regions[0])
@@ -635,6 +643,7 @@ class RatskullzRule(Rule["ToemWorld"], game=GAME_NAME):
             return f"Can reach 5x regions from ({', '.join(ratskullz_regions)})"
 
 location_table: dict[str, LocationData] = {
+    # Homelanda locations
     LocationName.QUEST_PHOTO_OF_NANA: LocationData(RegionName.HOMELANDA_BUS_STOP, LocationGroup.QUEST),
     LocationName.QUEST_HIDDEN_GIFT: LocationData(RegionName.HOMELANDA_BUS_STOP, LocationGroup.QUEST,
             Has(ItemName.CLOGS)),
@@ -650,6 +659,8 @@ location_table: dict[str, LocationData] = {
     LocationName.TAPE_PHOTO_OF_HOME: LocationData(RegionName.HOMELANDA_LIVING_ROOM, LocationGroup.CASSETTE),
     LocationName.CHEEVO_BEGINNING: LocationData(RegionName.HOMELANDA_LIVING_ROOM, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_HOME_SWEET_HOME: LocationData(RegionName.HOMELANDA_BUS_STOP, LocationGroup.ACHIEVEMENT),
+
+    # Oaklaville locations
     LocationName.QUEST_SUS_FOREST: LocationData(RegionName.OAKLAVILLE_TRAIL_BOTTOM, LocationGroup.QUEST,
             CanReachRegion(RegionName.OAKLAVILLE_HIDE_AND_SEEK)),
     LocationName.QUEST_MONSTERS: LocationData(RegionName.OAKLAVILLE_HOTEL, LocationGroup.QUEST,
@@ -699,7 +710,7 @@ location_table: dict[str, LocationData] = {
     LocationName.COMP_TATO_FLY: LocationData(RegionName.TATO_FLY, LocationGroup.COMPENDIUM),
     LocationName.ITEM_FINGER: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.ITEM),
     LocationName.ITEM_TRIPOD: LocationData(RegionName.START_MENU, LocationGroup.ITEM,
-            CanReachAnyLocation(*photo_challenges)),
+            CanReachAnyLocation(*photo_challenges), Area.OAKLAVILLE),
     LocationName.ITEM_COWBOY_HAT: LocationData(RegionName.OAKLAVILLE_MUSHROOM_HOUSE, LocationGroup.ITEM),
     LocationName.ITEM_WET_SOCKS: LocationData(RegionName.OAKLAVILLE_GHOST_CUP_GAME, LocationGroup.ITEM,
             CanReachLocation(LocationName.QUEST_CUP_CHAMP)),
@@ -725,6 +736,8 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_JUST_A_SOCK: LocationData(RegionName.OAKLAVILLE_OUTSIDE_HOTEL, LocationGroup.ACHIEVEMENT,
             CanReachLocation(LocationName.QUEST_SOCKS)),
     LocationName.CHEEVO_YOU_FOUND_US: LocationData(RegionName.OAKLAVILLE_HOTEL, LocationGroup.ACHIEVEMENT),
+
+    # Stanhamn locations
     LocationName.QUEST_KING_FISH: LocationData(RegionName.STANHAMN_BUS_STOP, LocationGroup.QUEST,
             CanReachLocation(LocationName.COMP_KING_FISH)),
     LocationName.QUEST_GOOD_SPOT: LocationData(RegionName.STANHAMN_HIPPO_BEACH, LocationGroup.QUEST),
@@ -808,7 +821,9 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_FLIGHT_READY: LocationData(RegionName.STANHAMN_FISHING_TOWER, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_SPARKLING_JUMP: LocationData(RegionName.STANHAMN_BUS_STOP, LocationGroup.ACHIEVEMENT,
             Has(ItemName.HONK_ATTACHMENT)),
-    LocationName.CHEEVO_GOOD_BOY: LocationData(RegionName.GOOD_BOY, LocationGroup.ACHIEVEMENT),
+    LocationName.CHEEVO_GOOD_BOY: LocationData(RegionName.GOOD_BOY, LocationGroup.ACHIEVEMENT, None, Area.STANHAMN),
+
+    # Logcity locations
     LocationName.QUEST_SUS_CITY: LocationData(RegionName.LOGCITY_OUTSIDE_FASHION_SHOW, LocationGroup.QUEST,
             CanReachRegion(RegionName.LOGCITY_CROSSWALK)),
     LocationName.QUEST_RATSKULLZ: LocationData(RegionName.LOGCITY_RATSKULLZ_ALLEY, LocationGroup.QUEST,
@@ -876,6 +891,8 @@ location_table: dict[str, LocationData] = {
             CanReachLocation(LocationName.QUEST_INFLUENCER)),
     LocationName.CHEEVO_NEW_JOB: LocationData(RegionName.LOGCITY_BUS_STOP, LocationGroup.ACHIEVEMENT,
             CanReachLocation(LocationName.QUEST_CLEANING)),
+
+    # Kiiruberg locations
     LocationName.QUEST_YETI_CUTE: LocationData(RegionName.KIIRUBERG_CLIFFS_MIDDLE, LocationGroup.QUEST,
             CanReachLocation(LocationName.COMP_FLUFF)),
     LocationName.QUEST_ICE_WIZARD: LocationData(RegionName.KIIRUBERG_WIZARD_TOWER, LocationGroup.QUEST,
@@ -937,7 +954,7 @@ location_table: dict[str, LocationData] = {
             warm_clothes),
     LocationName.CHEEVO_SNOWY_PEAKS: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_GEARED_UP: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
-            warm_clothes),
+            warm_clothes, Area.KIIRUBERG),
     LocationName.CHEEVO_HURDLE: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(LocationName.QUEST_CHALLENGE_7, LocationName.QUEST_CHALLENGE_8)),
     LocationName.CHEEVO_FIGHTER: LocationData(RegionName.KIIRUBERG, LocationGroup.ACHIEVEMENT,
@@ -946,18 +963,25 @@ location_table: dict[str, LocationData] = {
             CanReachLocation(LocationName.QUEST_SNOWBALL)),
     LocationName.CHEEVO_STORY: LocationData(RegionName.KIIRUBERG_CLIFFS_MIDDLE, LocationGroup.ACHIEVEMENT,
             CanReachLocation(LocationName.QUEST_PAINTINGS)),
+
+    # Mountain top locations
     LocationName.CHEEVO_CLOSE: LocationData(RegionName.MOUNTAIN_TOP, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_TOEM: LocationData(RegionName.MOUNTAIN_TOP_TOEM, LocationGroup.ACHIEVEMENT,
             Has(ItemName.CLIMBING_BOOTS)),
+
+    # Base game locations
     LocationName.CHEEVO_CUTIES: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(*dev_animals)),
     LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(*base_animals)),
-    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.MOUNTAIN_TOP_TOEM, LocationGroup.ACHIEVEMENT), # TODO revisit soft logic  # noqa: E501
+    LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
+            CanReachLocation(RegionName.MOUNTAIN_TOP_TOEM)), # TODO revisit soft logic
     LocationName.CHEEVO_COSPLAYER: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             HasAll(*clothing_items)),
     LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(*completionist_reqs)),
+
+    # Basto locations
     LocationName.QUEST_BALLOONS: LocationData(RegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.QUEST,
             Has(ItemName.WATERGUN) & CanReachAllRegions(RegionName.BASTO_LILY_PAD_POND_LEFT,
                 RegionName.BASTO_LILY_PAD_POND_RIGHT, RegionName.BASTO_CAMP,
@@ -1034,7 +1058,7 @@ location_table: dict[str, LocationData] = {
             Has(ItemName.WATERGUN)),
     LocationName.COMP_WATER_STRIDER: LocationData(RegionName.WATER_STRIDER, LocationGroup.COMPENDIUM),
     LocationName.ITEM_BASTO_TICKET: LocationData(RegionName.HOMELANDA_LIVING_ROOM, LocationGroup.ITEM,
-            CanReachLocation(LocationName.QUEST_EXPERIENCE_TOEM)),
+            CanReachLocation(LocationName.QUEST_EXPERIENCE_TOEM), Area.BASTO),
     LocationName.ITEM_WATERGUN: LocationData(RegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.ITEM),
     LocationName.ITEM_SUN_HAT: LocationData(RegionName.BASTO_TENT, LocationGroup.ITEM),
     LocationName.ITEM_MELONEAR: LocationData(RegionName.BASTO_LILY_PAD_POND_RIGHT, LocationGroup.ITEM,
@@ -1196,15 +1220,30 @@ location_to_item_name: dict[str, str] = {
     LocationName.TAPE_SONG_OF_THE_SEA: ItemName.SONG_OF_THE_SEA_TAPE,
 }
 
-location_name_to_id: dict[str, int] = {name: i for i, name in enumerate(location_table, start=1)}
+location_group_offsets: dict[str, int] = {
+    LocationGroup.QUEST:        0,
+    LocationGroup.COMPENDIUM:   100,
+    LocationGroup.ITEM:         200,
+    LocationGroup.CASSETTE:     300,
+    LocationGroup.ACHIEVEMENT:  400,
+}
+def get_location_offset(location_name: str) -> int:
+    area_offset = area_offsets[location_table[location_name].area]
+    group_offset = location_group_offsets[location_table[location_name].group]
+    return area_offset + group_offset
 
+location_name_to_id: dict[str, int] = {
+    name: i
+    for group_offset, location_names in groupby(sorted(location_table, key=get_location_offset), get_location_offset)
+    for i, name in enumerate(location_names, start=group_offset)
+}
 
 def get_location_group(location_name: str) -> str:
     return location_table[location_name].group
 
 
 def get_location_area(location_name: str) -> str:
-    return location_table[location_name].region.split(" - ")[0]
+    return location_table[location_name].area
 
 
 location_name_groups: dict[str, set[str]] = {

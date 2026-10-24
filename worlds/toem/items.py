@@ -9,7 +9,7 @@ from NetUtils import JSONMessagePart
 from rule_builder.rules import False_, Rule, WrapperRule
 
 from .constants import GAME_NAME
-from .regions import Area
+from .regions import Area, area_offsets
 
 if TYPE_CHECKING:
     from . import ToemWorld
@@ -378,7 +378,23 @@ item_table: dict[str, ItemData] = {
     ItemName.SONG_OF_THE_SEA_TAPE: ItemData(ItemClassification.filler, 1, ItemGroup.CASSETTE, Area.BASTO),
 }
 
-item_name_to_id: dict[str, int] = {name: i for i, name in enumerate(item_table, start=1)}
+
+item_group_offsets: dict[str, int] = {
+    ItemGroup.STAMP:    0,
+    ItemGroup.PHOTO:    100,
+    ItemGroup.ITEM:     200,
+    ItemGroup.CASSETTE: 300,
+}
+def get_item_offset(item_name: str) -> int:
+    area_offset = area_offsets[item_table[item_name].area]
+    group_offset = item_group_offsets[item_table[item_name].group]
+    return area_offset + group_offset
+
+item_name_to_id: dict[str, int] = {
+    name: i
+    for group_offset, item_names in groupby(sorted(item_table, key=get_item_offset), get_item_offset)
+    for i, name in enumerate(item_names, start=group_offset)
+}
 
 
 def get_item_group(item_name: str) -> str:

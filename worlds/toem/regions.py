@@ -16,6 +16,18 @@ gameplay_areas = (
     Area.HOMELANDA, Area.OAKLAVILLE, Area.STANHAMN, Area.LOGCITY, Area.KIIRUBERG, Area.MOUNTAIN_TOP, Area.BASTO
 )
 
+# offsets for location / item ids
+area_offsets: dict[str, int] = {
+    Area.HOMELANDA:     1000,
+    Area.OAKLAVILLE:    2000,
+    Area.STANHAMN:      3000,
+    Area.LOGCITY:       4000,
+    Area.KIIRUBERG:     5000,
+    Area.MOUNTAIN_TOP:  6000,
+    Area.MENU:          7000,
+    Area.BASTO:         8000,
+}
+
 @final
 class RegionName:
     # Menu
