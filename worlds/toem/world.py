@@ -5,8 +5,15 @@ from typing_extensions import override
 from BaseClasses import Entrance, EntranceType, Item, ItemClassification, Region, Tutorial
 from entrance_rando import EntranceRandomizationError, disconnect_entrance_for_randomization, randomize_entrances
 from Options import Accessibility
-from Utils import Version
+from Utils import tuplize_version
 from worlds.AutoWorld import WebWorld, World
+
+try:
+    from worlds.tracker import TrackerException
+except ImportError:
+    class TrackerException(Exception):
+        def __init__(self, *args: object, message:str) -> None:
+            super().__init__(message, *args)
 
 from .connections import (
     ERGroups,
@@ -16,7 +23,7 @@ from .connections import (
     helper_connections,
     within_region_groups,
 )
-from .constants import GAME_NAME, TOEM_MAX_GER_ATTEMPTS
+from .constants import GAME_NAME, MINIMUM_VERSION, TOEM_MAX_GER_ATTEMPTS
 from .items import ItemGroup, ItemName, ToemItem, item_name_groups, item_name_to_id, item_table
 from .locations import (
     EventName,
@@ -79,11 +86,21 @@ class ToemWorld(World):
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
-            gen_version = Version(*map(int, slot_data["version"].split(".")))
-            if gen_version[:2] != self.world_version[:2]:
-                raise Exception(
-                    f"Toem version error: The version of the apworld used to generate ({slot_data['version']}) "
-                    f"does not match the version installed ({self.world_version.as_simple_string()})"
+            gen_version = slot_data.get("version", "0.0.0")
+            min_gen_version = slot_data.get("minimum_version", gen_version[:-1]+"0")
+            if tuplize_version(gen_version) < MINIMUM_VERSION:
+                raise TrackerException(message=
+                    f"Toem version error: The version of the apworld used to generate ({gen_version}) "
+                    f"is older than the miniumum supported version ({MINIMUM_VERSION.as_simple_string()}) "
+                    f"of the installed apworld ({self.world_version.as_simple_string()}). "
+                    f"Install apworld version {gen_version} to track."
+                )
+            if self.world_version < tuplize_version(min_gen_version):
+                raise TrackerException(message=
+                    f"Toem version error: The installed apworld version ({self.world_version.as_simple_string()}) "
+                    f"is older than the miniumum supported version ({min_gen_version}) "
+                    f"of the apworld used to generate ({gen_version}). "
+                    f"Install apworld version {gen_version} to track."
                 )
             for key, value in slot_data["options"].items():
                 opt = getattr(self.options, key, None)
@@ -285,6 +302,7 @@ class ToemWorld(World):
     def fill_slot_data(self) -> dict[str, Any]:
         return {
             "version": self.world_version.as_simple_string(),
+            "minimum_version": MINIMUM_VERSION.as_simple_string(),
             "options": self.options.as_dict(
                 "include_basto",
                 "entrance_randomization",
