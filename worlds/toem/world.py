@@ -71,7 +71,7 @@ class ToemWorld(World):
     ut_can_gen_without_yaml: ClassVar = True
     glitches_item_name: ClassVar = ItemName.HARD_LOGIC
     deferred_entrances: dict[str, tuple[Entrance, Region]]
-    found_entrances_datastorage_key = "Slot:{player}:TraversedEntrances"
+    found_entrances_datastorage_key = "toem_{player}_{team}_traversed_entrances"
 
     @override
     def generate_early(self) -> None:
