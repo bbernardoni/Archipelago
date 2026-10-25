@@ -548,12 +548,23 @@ def get_stamp_rule(region: str) -> Rule:
         Area.KIIRUBERG: ItemName.KIIRUBERG_STAMP,
         Area.BASTO: ItemName.BASTO_STAMP,
     }[region]
-    return (
+    stamp_rule = (
         Has(ItemName.PROGRESSIVE_STAMP, FromWorldAttr(f"progressive_stamp_requirements.{region}"),
             options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_true)]) |
         Has(stamp_item, FromOption(stamp_option),
             options=[OptionFilter(ProgressiveStamps, ProgressiveStamps.option_false)])
     )
+    location_req = {
+        Area.HOMELANDA: CanReachRegion(RegionName.HOMELANDA_BUS_STOP),
+        Area.OAKLAVILLE: CanReachRegion(RegionName.OAKLAVILLE_BUS_STOP),
+        Area.STANHAMN: CanReachRegion(RegionName.STANHAMN_BUS_STOP),
+        Area.LOGCITY: CanReachRegion(RegionName.LOGCITY_BUS_STOP),
+        Area.KIIRUBERG: CanReachRegion(RegionName.KIIRUBERG_BUS_STOP),
+        Area.BASTO: None,
+    }[region]
+    if location_req is not None:
+        stamp_rule &= location_req
+    return stamp_rule
 
 bonfire_rule = Has(ItemName.WATERGUN) & get_stamp_rule(Area.BASTO)
 

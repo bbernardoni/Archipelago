@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import IntEnum
+from itertools import groupby
 from typing import ClassVar, final
 
 from BaseClasses import Entrance, Region
@@ -9,7 +10,7 @@ from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Op
 from .items import HardLogic, ItemName
 from .locations import EventName, LocationName, get_stamp_rule
 from .options import ForceBastoGateOpen
-from .regions import Area, RegionName, area_lists
+from .regions import Area, RegionName, area_lists, area_offsets
 
 
 class ERGroups(IntEnum):
@@ -40,20 +41,30 @@ class Connection:
     group: int = ERGroups.EXCLUDED
     rule: Rule | None = None
 
+    @property
+    def area(self) -> str:
+        return self.src_region_name.split(" - ")[0]
+
 @final
 class ConnectionName:
     # Menu
     START_GAME = "Start game"
+    HOMELANDA_BUS_STOP = "Homelanda bus stop"
+    OAKLAVILLE_BUS_STOP = "Oaklaville bus stop"
+    STANHAMN_BUS_STOP = "Stanhamn bus stop"
+    LOGCITY_BUS_STOP = "Logcity bus stop"
+    KIIRUBERG_BUS_STOP = "Kiiruberg bus stop"
+    MOUNTAIN_TOP_BUS_STOP = "Mountain top bus stop"
 
     # Homelanda
     PLAYER_ROOM_EXIT = "Player room exit"
     PLAYER_ROOM_ENTRANCE = "Player room entrance"
     HOMELANDA_HOUSE_EXIT = "Homelanda house exit"
     HOMELANDA_HOUSE_ENTRANCE = "Homelanda house entrance"
-    OAKLAVILLE_BUS_STOP = "Oaklaville bus stop"
+    HOMELANDA_BUS_PICKUP = "Homelanda bus pickup"
 
     # Oaklaville
-    STANHAMN_BUS_STOP = "Stanhamn bus stop"
+    OAKLAVILLE_BUS_PICKUP = "Oaklaville bus pickup"
     OAKLAVILLE_BUS_STOP_EXIT = "Oaklaville bus stop exit"
     OUTSIDE_HOTEL_DOWN = "Outside hotel down"
     OUTSIDE_HOTEL_LEFT = "Outside hotel left"
@@ -90,7 +101,7 @@ class ConnectionName:
     RAVE_EXIT = "Rave exit"
 
     # Stanhamn
-    LOGCITY_BUS_STOP = "Logcity bus stop"
+    STANHAMN_BUS_PICKUP = "Stanhamn bus pickup"
     PHOTO_GUILD_HUT_ENTRANCE = "Photo guild hut entrance"
     STANHAMN_BUS_STOP_LEFT = "Stanhamn bus stop left"
     STANHAMN_BUS_STOP_RIGHT = "Stanhamn bus stop right"
@@ -126,7 +137,7 @@ class ConnectionName:
     HYDROPLANT_EXIT = "Hydroplant exit"
 
     # Logcity
-    KIIRUBERG_BUS_STOP = "Kiiruberg bus stop"
+    LOGCITY_BUS_PICKUP = "Logcity bus pickup"
     ESCALATOR_UP = "Escalator up"
     LOGCITY_BUS_STOP_ENTRANCE = "Logcity bus stop entrance"
     CLOCK_TOWER_LEFT = "Clock tower left"
@@ -163,7 +174,7 @@ class ConnectionName:
     GALLERY_EXIT = "Gallery exit"
 
     # Kiiruberg
-    MOUNTAIN_TOP_BUS_STOP = "Mountain top bus stop"
+    KIIRUBERG_BUS_PICKUP = "Kiiruberg bus pickup"
     KIIRUBERG_BUS_STOP_UP = "Kiiruberg bus stop up"
     BIRTHDAY_PARTY_ROPE_FROM_BOTTOM = "Birthday party rope from bottom"
     BALLOON_HOUSE_ENTRANCE = "Balloon house entrance"
@@ -222,6 +233,7 @@ class ConnectionName:
     SKI_LIFT_DOWN = "Ski lift down"
 
     # Mountain top
+    MOUNTAIN_TOP_BUS_PICKUP = "Mountain top bus pickup"
     MOUNTAIN_TOP_BUS_STOP_CLIMB = "Mountain top bus stop climb"
     TOEM_DESCEND = "Toem descend"
 
@@ -264,6 +276,17 @@ class ConnectionName:
 region_connections: dict[str, Connection] = {
     # Menu
     ConnectionName.START_GAME: Connection(RegionName.START_MENU, RegionName.HOMELANDA_PLAYER_ROOM),
+    ConnectionName.HOMELANDA_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.HOMELANDA_BUS_STOP),
+    ConnectionName.OAKLAVILLE_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.OAKLAVILLE_BUS_STOP,
+        ERGroups.EXCLUDED, get_stamp_rule(Area.HOMELANDA)),
+    ConnectionName.STANHAMN_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.STANHAMN_BUS_STOP,
+        ERGroups.EXCLUDED, get_stamp_rule(Area.OAKLAVILLE)),
+    ConnectionName.LOGCITY_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.LOGCITY_BUS_STOP,
+        ERGroups.EXCLUDED, get_stamp_rule(Area.STANHAMN)),
+    ConnectionName.KIIRUBERG_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.KIIRUBERG_BUS_STOP,
+        ERGroups.EXCLUDED, get_stamp_rule(Area.LOGCITY)),
+    ConnectionName.MOUNTAIN_TOP_BUS_STOP: Connection(RegionName.BUS_MENU, RegionName.MOUNTAIN_TOP_BUS_STOP,
+        ERGroups.EXCLUDED, get_stamp_rule(Area.KIIRUBERG)),
 
     # Homelanda
     ConnectionName.PLAYER_ROOM_EXIT: Connection(
@@ -274,14 +297,10 @@ region_connections: dict[str, Connection] = {
         RegionName.HOMELANDA_LIVING_ROOM, RegionName.HOMELANDA_BUS_STOP, ERGroups.HOMELANDA),
     ConnectionName.HOMELANDA_HOUSE_ENTRANCE: Connection(
         RegionName.HOMELANDA_BUS_STOP, RegionName.HOMELANDA_LIVING_ROOM, ERGroups.HOMELANDA),
-    ConnectionName.OAKLAVILLE_BUS_STOP: Connection(
-        RegionName.HOMELANDA_BUS_STOP, RegionName.OAKLAVILLE_BUS_STOP, ERGroups.EXCLUDED,
-        get_stamp_rule(Area.HOMELANDA)),
+    ConnectionName.HOMELANDA_BUS_PICKUP: Connection(RegionName.HOMELANDA_BUS_STOP, RegionName.BUS_MENU),
 
     # Oaklaville
-    ConnectionName.STANHAMN_BUS_STOP: Connection(
-        RegionName.OAKLAVILLE_BUS_STOP, RegionName.STANHAMN_BUS_STOP, ERGroups.EXCLUDED,
-        get_stamp_rule(Area.OAKLAVILLE)),
+    ConnectionName.OAKLAVILLE_BUS_PICKUP: Connection(RegionName.OAKLAVILLE_BUS_STOP, RegionName.BUS_MENU),
     ConnectionName.OAKLAVILLE_BUS_STOP_EXIT: Connection(
         RegionName.OAKLAVILLE_BUS_STOP, RegionName.OAKLAVILLE_OUTSIDE_HOTEL, ERGroups.OAKLAVILLE),
     ConnectionName.OUTSIDE_HOTEL_DOWN: Connection(
@@ -358,9 +377,7 @@ region_connections: dict[str, Connection] = {
         RegionName.OAKLAVILLE_RAVE, RegionName.OAKLAVILLE_OUTSIDE_RAVE_TOP, ERGroups.OAKLAVILLE),
 
     # Stanhamn
-    ConnectionName.LOGCITY_BUS_STOP: Connection(
-        RegionName.STANHAMN_BUS_STOP, RegionName.LOGCITY_BUS_STOP, ERGroups.EXCLUDED,
-        get_stamp_rule(Area.STANHAMN)),
+    ConnectionName.STANHAMN_BUS_PICKUP: Connection(RegionName.STANHAMN_BUS_STOP, RegionName.BUS_MENU),
     ConnectionName.PHOTO_GUILD_HUT_ENTRANCE: Connection(
         RegionName.STANHAMN_BUS_STOP, RegionName.STANHAMN_PHOTO_GUILD_HUT, ERGroups.STANHAMN),
     ConnectionName.STANHAMN_BUS_STOP_LEFT: Connection(
@@ -438,9 +455,7 @@ region_connections: dict[str, Connection] = {
         RegionName.STANHAMN_HYDROPLANT, RegionName.STANHAMN_OUTSIDE_HYDROPLANT, ERGroups.STANHAMN),
 
     # Logcity
-    ConnectionName.KIIRUBERG_BUS_STOP: Connection(
-        RegionName.LOGCITY_BUS_STOP, RegionName.KIIRUBERG_BUS_STOP, ERGroups.EXCLUDED,
-        get_stamp_rule(Area.LOGCITY)),
+    ConnectionName.LOGCITY_BUS_PICKUP: Connection(RegionName.LOGCITY_BUS_STOP, RegionName.BUS_MENU),
     ConnectionName.ESCALATOR_UP: Connection(
         RegionName.LOGCITY_BUS_STOP, RegionName.LOGCITY_CLOCK_TOWER, ERGroups.LOGCITY),
     ConnectionName.LOGCITY_BUS_STOP_ENTRANCE: Connection(
@@ -513,9 +528,7 @@ region_connections: dict[str, Connection] = {
         RegionName.LOGCITY_GALLERY, RegionName.LOGCITY_OUTSIDE_GALLERY, ERGroups.LOGCITY),
 
     # Kiiruberg
-    ConnectionName.MOUNTAIN_TOP_BUS_STOP: Connection(
-        RegionName.KIIRUBERG_BUS_STOP, RegionName.MOUNTAIN_TOP_BUS_STOP, ERGroups.EXCLUDED,
-        get_stamp_rule(Area.KIIRUBERG)),
+    ConnectionName.KIIRUBERG_BUS_PICKUP: Connection(RegionName.KIIRUBERG_BUS_STOP, RegionName.BUS_MENU),
     ConnectionName.KIIRUBERG_BUS_STOP_UP: Connection(
         RegionName.KIIRUBERG_BUS_STOP, RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM, ERGroups.KIIRUBERG),
     ConnectionName.BIRTHDAY_PARTY_ROPE_FROM_BOTTOM: Connection(
@@ -653,6 +666,7 @@ region_connections: dict[str, Connection] = {
         RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP, RegionName.KIIRUBERG_SKI_LIFT_BASE, ERGroups.KIIRUBERG),
 
     # Mountain top
+    ConnectionName.MOUNTAIN_TOP_BUS_PICKUP: Connection(RegionName.MOUNTAIN_TOP_BUS_STOP, RegionName.BUS_MENU),
     ConnectionName.MOUNTAIN_TOP_BUS_STOP_CLIMB: Connection(
         RegionName.MOUNTAIN_TOP_BUS_STOP, RegionName.MOUNTAIN_TOP_TOEM, ERGroups.MOUNTAIN_TOP,
         Has(ItemName.CLIMBING_BOOTS)),
@@ -940,7 +954,15 @@ for area, region_list in area_lists.items():
 
 all_connections = region_connections | helper_connections
 
-connection_name_to_id: dict[str, int] = {name: i for i, name in enumerate(region_connections, start=1)}
+
+def get_area_offset(connection_name: str) -> int:
+    return area_offsets[region_connections[connection_name].area]
+
+connection_name_to_id: dict[str, int] = {
+    name: i
+    for group_offset, connection_names in groupby(sorted(region_connections, key=get_area_offset), get_area_offset)
+    for i, name in enumerate(connection_names, start=group_offset)
+}
 
 
 required_regions_always = {
