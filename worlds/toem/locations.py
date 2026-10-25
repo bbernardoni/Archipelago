@@ -975,7 +975,7 @@ location_table: dict[str, LocationData] = {
     LocationName.CHEEVO_COLLECT_EM_ALL: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             CanReachAllLocations(*base_animals)),
     LocationName.CHEEVO_GOING_LONG: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
-            CanReachLocation(RegionName.MOUNTAIN_TOP_TOEM)), # TODO revisit soft logic
+            CanReachRegion(RegionName.MOUNTAIN_TOP_TOEM)), # TODO revisit soft logic
     LocationName.CHEEVO_COSPLAYER: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
             HasAll(*clothing_items)),
     LocationName.CHEEVO_COMPLETIONIST: LocationData(RegionName.START_MENU, LocationGroup.ACHIEVEMENT,
