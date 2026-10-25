@@ -8,13 +8,6 @@ from Options import Accessibility
 from Utils import tuplize_version
 from worlds.AutoWorld import WebWorld, World
 
-try:
-    from worlds.tracker import TrackerException
-except ImportError:
-    class TrackerException(Exception):
-        def __init__(self, *args: object, message:str) -> None:
-            super().__init__(message, *args)
-
 from .connections import (
     ERGroups,
     ToemRegion,
@@ -85,6 +78,13 @@ class ToemWorld(World):
         self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
         re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
         if re_gen_passthrough and self.game in re_gen_passthrough:
+            try:
+                from worlds.tracker import TrackerException
+            except ImportError:
+                class TrackerException(Exception):
+                    def __init__(self, *args: object, message:str) -> None:
+                        super().__init__(message, *args)
+
             slot_data: dict[str, Any] = re_gen_passthrough[self.game]
             gen_version = slot_data.get("version", "0.0.0")
             min_gen_version = slot_data.get("minimum_version", gen_version[:-1]+"0")
