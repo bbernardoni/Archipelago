@@ -1120,7 +1120,7 @@ location_table: dict[str, LocationData] = {
     LocationName.TAPE_HAMMOCK_DAYS: LocationData(RegionName.BASTO_JUNGLE, LocationGroup.CASSETTE),
     LocationName.TAPE_SAILORS_TUNE: LocationData(RegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE,
             bonfire_rule),
-    LocationName.TAPE_SONG_OF_THE_SEA: LocationData(RegionName.SONG_OF_THE_SEA, LocationGroup.CASSETTE,
+    LocationName.TAPE_SONG_OF_THE_SEA: LocationData(RegionName.BASTO_BUS_STOP_BOTTOM, LocationGroup.CASSETTE,
             Has(ItemName.WATERGUN)),
     LocationName.CHEEVO_TOPICAL_PARADISE: LocationData(RegionName.BASTO, LocationGroup.ACHIEVEMENT),
     LocationName.CHEEVO_MAXIMUM_VACATION: LocationData(RegionName.MAXIMUM_VACATION, LocationGroup.ACHIEVEMENT,

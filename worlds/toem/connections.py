@@ -835,8 +835,8 @@ helper_region_data: dict[str, list[HelperConnection]] = {
                          HardLogic(True_())),
     ],
     RegionName.FLUFF: [
-        HelperConnection("Fluff ball from Birthday party bottom", RegionName.KIIRUBERG_OUTSIDE_OBSERV_BOTTOM),
-        HelperConnection("Fluff ball from Birthday party top", RegionName.KIIRUBERG_OUTSIDE_OBSERV_TOP,
+        HelperConnection("Fluff ball from Outside observatory bottom", RegionName.KIIRUBERG_OUTSIDE_OBSERV_BOTTOM),
+        HelperConnection("Fluff ball from Outside observatory top", RegionName.KIIRUBERG_OUTSIDE_OBSERV_TOP,
                          HardLogic(True_())),
     ],
     RegionName.HEDGEHOG: [
@@ -936,11 +936,6 @@ helper_region_data: dict[str, list[HelperConnection]] = {
     RegionName.STORIES_OF_SNOW_TAPE: [
         HelperConnection("Visit Birthday party bottom", RegionName.KIIRUBERG_BIRTHDAY_PARTY_BOTTOM),
         HelperConnection("Visit Birthday party top", RegionName.KIIRUBERG_BIRTHDAY_PARTY_TOP),
-    ],
-    RegionName.SONG_OF_THE_SEA: [
-        HelperConnection("Visit Harbor bottom", RegionName.BASTO_BUS_STOP_BOTTOM),
-        HelperConnection("Visit Harbor top", RegionName.BASTO_BUS_STOP_TOP,
-                         HardLogic(True_())),
     ],
 }
 helper_connections: dict[str, Connection] = {

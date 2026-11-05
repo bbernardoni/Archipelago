@@ -190,7 +190,6 @@ class RegionName:
     # Cassette regions
     BIG_CITY_TAPE = f"{Area.LOGCITY} - Big city cassette"
     STORIES_OF_SNOW_TAPE = f"{Area.KIIRUBERG} - Stories of snow cassette"
-    SONG_OF_THE_SEA = f"{Area.BASTO} - Song of the sea cassette"
 
 oaklaville_regions = (
     RegionName.OAKLAVILLE_BUS_STOP, RegionName.OAKLAVILLE_OUTSIDE_HOTEL, RegionName.OAKLAVILLE_HOTEL,
