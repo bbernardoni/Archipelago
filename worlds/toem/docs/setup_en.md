@@ -49,3 +49,25 @@ For more advanced users, you can generate a template yaml and edit it manually.
 3. If successful, the connection details box will now display the "Connected" status.
 4. If you already have a previous save, the "New Adventure" menu will pop up. If achievements are randomized, the "Reset in-game achievements" option should already be turned on. Hit yes to reset your save.
 5. Start the game normally.
+
+## Trackers
+
+There are two supported ways to track this game Universal Tracker and Poptracker.
+
+### Universal Tracker (UT)
+
+UT extends the basic text client by providing a tab that lists the locations that are currently in logic. The toem apworld improves the basic UT experience by implementing support for yaml-less, deferred entrances (unexplored entrances show up as green in the list to not spoil where they lead), and hard logic. Install instructions:
+
+1. See steps 1-3 from the Options creator section to install the launcher and apworld.
+2. Download and install the latest [UT release](https://github.com/FarisTheAncient/Archipelago/releases?q=Tracker).
+3. Run the launcher and select `Universal Tracker`.
+4. Enter you connection details and hit connect.
+
+See the [UT troubleshooting discord pin](https://discord.com/channels/731205301247803413/1367270230635839539/1475320475277070427) for more help.
+
+### Poptracker (PT)
+
+PT provides a visual interface to track items received and locations in logic. A Toem specific Poptracker pack has been developed by culk. See the [Toem Poptracker pack README](https://github.com/culk/toem-poptracker-pack/blob/main/README.md) for more details.
+
+- [Toem Poptracker pack latest release](https://github.com/culk/toem-poptracker-pack/releases/latest)
+- [Poptracker latest release](https://github.com/black-sliver/PopTracker/releases/latest)
