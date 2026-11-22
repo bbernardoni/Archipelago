@@ -10,7 +10,17 @@ from rule_builder.rules import CanReachLocation, CanReachRegion, Has, HasAll, Op
 from .items import HardLogic, ItemName
 from .locations import EventName, LocationName, get_stamp_rule
 from .options import ForceBastoGateOpen
-from .regions import Area, RegionName, area_lists, area_offsets
+from .regions import (
+    Area,
+    RegionName,
+    area_lists,
+    area_offsets,
+    basto_regions,
+    kiiruberg_regions,
+    logcity_regions,
+    oaklaville_regions,
+    stanhamn_regions,
+)
 
 
 class ERGroups(IntEnum):
@@ -989,6 +999,21 @@ required_regions_no_items = required_regions_always | {
     ConnectionName.MAN_CAVE_ENTRANCE: (RegionName.KIIRUBERG_FROZEN_POND, RegionName.KIIRUBERG_SKI_LODGE,
                                        RegionName.KIIRUBERG_SKI_MOUNTAIN_TOP),
 }
+restrictive_entrances = {
+    ConnectionName.OUTSIDE_RAVE_LEFT: oaklaville_regions, # ghost glasses
+    ConnectionName.FASHION_SHOW_EXIT: logcity_regions, # reporter hat
+    ConnectionName.WIZARD_TOWER_EXIT: kiiruberg_regions, # warm clothes
+    ConnectionName.BLIZZARD_BRIDGE_LEFT: kiiruberg_regions, # warm clothes
+}
+restrictive_exits = {
+    ConnectionName.RAFT_UP: stanhamn_regions, # honk attachment
+    ConnectionName.HIPPO_BEACH_MANHOLE: stanhamn_regions, # honk attachment, diving helmet
+    ConnectionName.OUTSIDE_LIGHTHOUSE_UP: stanhamn_regions, # honk attachment
+    ConnectionName.RAFT_DOWN: stanhamn_regions, # honk attachment
+    ConnectionName.MAN_CAVE_ENTRANCE: kiiruberg_regions, # warm clothes
+    ConnectionName.BLIZZARD_BRIDGE_RIGHT: kiiruberg_regions, # warm clothes
+    ConnectionName.SECRET_CAVE_ROOM_ENTRANCE: basto_regions, # water popper, pickaxe
+}
 
 class ToemEntrance(Entrance):
     def can_connect_to(self, other: Entrance, dead_end: bool, er_state: "ERPlacementState") -> bool:
@@ -999,12 +1024,25 @@ class ToemEntrance(Entrance):
             if other.name in {ConnectionName.OAKLAVILLE_TRAIL_UP, ConnectionName.RAVE_ENTRANCE,
                               ConnectionName.FASHION_SHOW_BACKSTAGE_ENTRANCE}:
                 return False
+
             required_regions = required_regions_always if er_state.world.options.include_items \
                                else required_regions_no_items
             if other.name in required_regions:
                 if not all(er_state.world.get_region(region) in er_state.placed_regions
                            for region in required_regions[other.name]):
                     return False
+
+            if er_state.world.options.include_items and other.name in restrictive_entrances:
+                area_regions = restrictive_entrances[other.name]
+                reachable = sum(er_state.world.get_region(region) in er_state.placed_regions for region in area_regions)
+                if reachable < len(area_regions) * 0.5:
+                    return False
+            if er_state.world.options.include_items and self.name in restrictive_exits:
+                area_regions = restrictive_exits[self.name]
+                reachable = sum(er_state.world.get_region(region) in er_state.placed_regions for region in area_regions)
+                if reachable < len(area_regions) * 0.5:
+                    return False
+
             expanding_dead_ends = {
                 ConnectionName.HYDROPLANT_EXIT: Area.STANHAMN,
                 ConnectionName.LOOKOUT_EXIT: Area.OAKLAVILLE,

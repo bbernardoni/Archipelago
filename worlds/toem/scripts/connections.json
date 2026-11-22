@@ -2836,16 +2836,16 @@
             }
         }
     },
-    "Fluff ball from Birthday party bottom": {
-        "name": "Fluff ball from Birthday party bottom",
+    "Fluff ball from Outside observatory bottom": {
+        "name": "Fluff ball from Outside observatory bottom",
         "id": 0,
         "group": 0,
         "src_region_name": "Kiiruberg - Outside observatory bottom",
         "dst_region_name": "Kiiruberg - Fluff ball",
         "rule": {}
     },
-    "Fluff ball from Birthday party top": {
-        "name": "Fluff ball from Birthday party top",
+    "Fluff ball from Outside observatory top": {
+        "name": "Fluff ball from Outside observatory top",
         "id": 0,
         "group": 0,
         "src_region_name": "Kiiruberg - Outside observatory top",
@@ -3339,32 +3339,6 @@
         "src_region_name": "Kiiruberg - Birthday party top",
         "dst_region_name": "Kiiruberg - Stories of snow cassette",
         "rule": {}
-    },
-    "Visit Harbor bottom": {
-        "name": "Visit Harbor bottom",
-        "id": 0,
-        "group": 0,
-        "src_region_name": "Basto - Harbor bottom",
-        "dst_region_name": "Basto - Song of the sea cassette",
-        "rule": {}
-    },
-    "Visit Harbor top": {
-        "name": "Visit Harbor top",
-        "id": 0,
-        "group": 0,
-        "src_region_name": "Basto - Harbor top",
-        "dst_region_name": "Basto - Song of the sea cassette",
-        "rule": {
-            "rule": "HardLogic",
-            "options": [],
-            "filtered_resolution": false,
-            "child": {
-                "rule": "True_",
-                "options": [],
-                "filtered_resolution": false,
-                "args": {}
-            }
-        }
     },
     "Oaklaville - Bus stop in Oaklaville": {
         "name": "Oaklaville - Bus stop in Oaklaville",

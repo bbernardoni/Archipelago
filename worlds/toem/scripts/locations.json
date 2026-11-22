@@ -5389,7 +5389,15 @@
         "id": 8107,
         "group": "Compendium",
         "region": "Basto - Jungle",
-        "rule": {}
+        "rule": {
+            "rule": "Has",
+            "options": [],
+            "filtered_resolution": false,
+            "args": {
+                "item_name": "Water popper attachment",
+                "count": 1
+            }
+        }
     },
     "Compendium - Day lizard": {
         "name": "Compendium - Day lizard",
@@ -6066,7 +6074,7 @@
         "name": "Cassette - Launchable Socks - Song Of The Sea",
         "id": 8305,
         "group": "Cassette",
-        "region": "Basto - Song of the sea cassette",
+        "region": "Basto - Harbor bottom",
         "rule": {
             "rule": "Has",
             "options": [],
