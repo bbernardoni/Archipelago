@@ -6,16 +6,16 @@ See [here](https://github.com/bbernardoni/Archipelago/blob/toem/worlds/toem/docs
 
 - [TOEM: A Photo Adventure](https://store.steampowered.com/app/1307580/TOEM_A_Photo_Adventure/)
   - The Steam, GOG, Epic versions has been tested
-- [BepInEx IL2CPP v6 x64](https://builds.bepinex.dev/projects/bepinex_be)
+- [BepInEx IL2CPP v6 x64](https://builds.bepinex.dev/projects/bepinex_be/738/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.738%2Baf0cba7.zip)
   - It must be specifically the IL2CPP x64 version
-  - Currently you must use the bleeding edge release of v6 since the stable version does not support IL2CPP. A direct download for the version tested against can be found [here](https://builds.bepinex.dev/projects/bepinex_be/738/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.738%2Baf0cba7.zip).
+  - Currently you must use the bleeding edge release of v6 since the stable version does not support IL2CPP. v738 is version tested against and the one linked above.
 - [Archipelago Mod for TOEM](https://github.com/bbernardoni/Archipelago.TOEM/releases/latest)
 
 ## Mod Installation
 
 1. Download and extract [BepInEx](https://builds.bepinex.dev/projects/bepinex_be/738/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.738%2Baf0cba7.zip) into your TOEM install folder. The contents of the zip (such as the `doorstop_config.ini` file) should be next to the `TOEM.exe`. On Steam the install folder can be found by right clicking on the game "Manage > Browse local files".
-2. Start Toem once so that BepInEx can create its required configuration files.
-3. Download and extract the [Toem Archipelago Mod](https://github.com/bbernardoni/Archipelago.TOEM/releases/latest) into the `BepInEx/plugins` folder in TOEM install folder.
+2. Download and the [Archipelago.TOEM.dll](https://github.com/bbernardoni/Archipelago.TOEM/releases/latest) and copy it to the `BepInEx/plugins` folder in TOEM install folder.
+3. Start the game as normal. If installed properly, a BepInEx terminal logging window will open alongside the game.
 
 ## Creating a yaml
 
@@ -45,10 +45,18 @@ For more advanced users, you can generate a template yaml and edit it manually.
 ## Joining a Multiworld Game
 
 1. Launch the game (if installed correctly, the BepInEx terminal window should open as well).
-2. Enter your connection details in the text boxes at the top left and hit connect.
-3. If successful, the connection details box will now display the "Connected" status.
-4. If you already have a previous save, the "New Adventure" menu will pop up. If achievements are randomized, the "Reset in-game achievements" option should already be turned on. Hit yes to reset your save.
-5. Start the game normally.
+2. Enter your connection details on the title screen and press the connect button.
+3. If successful, the "Connect & Start" button will change to "Start".
+4. A new save will be created for each multiworld, leaving your vanilla save untouched.
+5. Press "Start" to start the game.
+
+## In game options
+
+A new AP tab has been added in the options menu.
+
+- "Unlock Cursor" - Allows the cursor to not be confined to just the game window to make it easier to multitask while playing. Note this feature was accidently enabled in previous releases, and now the vanilla behavior has been restored with an option to change it back.
+- "Open Save Directory" - Opens the folder that contains the save data. All AP saves begin with "AP_".
+- "Delete AP Saves" - Deletes all AP saves. Essentially deleting all folders beginning with "AP_" in the save directory beside the current save if currently connected.
 
 ## Trackers
 
